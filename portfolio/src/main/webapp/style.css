@@ -7,3 +7,31 @@
 #greeting-container {
   margin-top: 20px;
 }
+
+.header {
+    background-color: #f1f3f4;
+    padding: 10px;
+    text-align: left;
+}
+
+/** Style the top navigation bar */
+.topnav {
+    overflow: hidden;
+    background-color: #76a0a6;
+}
+
+/** Style for the topnav links */ 
+.topnav a{
+    float: right;
+    display: block;
+    color: #333;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+/** Change color on link when mousing over it*/ 
+.topnav a:hover {
+    color: #fcb040;
+}
+
