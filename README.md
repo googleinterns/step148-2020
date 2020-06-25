@@ -1,6 +1,6 @@
 # Google Student Training in Engineering Program
 
-This repo contains the capstone project we'll work on for the second half of STEP!
+This repo contains the capstone project we'll work on for the second half of STEP!!
 This work is based on the [Google Software Product Sprint](https://g.co/softwareproductsprint) program.
 
 To get started:
