@@ -5,8 +5,9 @@
     <title>Capstone Project</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKBx261NIGW5RGlPpiUEcEQKnyITd909s"></script>
   </head>
-  <body>
+  <body onload="createMap();">
     <div class="header">
       <h1>GoSafe</h1>
     </div>
@@ -18,18 +19,18 @@
 
     <img src="images/home-page.png" alt="Map image" class="pictures"/>
 
-    <div class="Instructions">
+    <div class="instructions">
         <h2>Instructions</h2>
         <ul>
-        <li>Click on the map (Heat Map or Report)you want to display</li>
+        <li>Click on the map (Heat Map or Report) you want to display</li>
         <li>Select a destination on the Search bar</li>
         <li>Select which types of crime as well as the time</li>
         <li>Choose destination</li>
         </ul>
     </div>
-    
-    <img class="image-thumbnails" onclick="getMaps()" id="maps" src="/images/heatmap.jpg"/>
 
+    <div id="map"></div>
+    
     <footer>
         <p>Contact us</p>
     </footer>

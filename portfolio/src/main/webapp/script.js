@@ -12,15 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-function getMaps() {
-    if (document.images['maps'].src == 'https://8080-dc5833f4-40d8-4c50-aabc-0b228cb084e0.us-central1.cloudshell.dev/images/heatmap.jpg') {
-        document.images['maps'].src = '/images/final-route-markers.jpg' ;
-    } else if ( document.images['maps'].src == 'https://8080-dc5833f4-40d8-4c50-aabc-0b228cb084e0.us-central1.cloudshell.dev/images/final-route-markers.jpg') {
-        document.images['maps'].src = '/images/reportsMarkersMap.png';
-    } else if (document.images['maps'].src == 'https://8080-dc5833f4-40d8-4c50-aabc-0b228cb084e0.us-central1.cloudshell.dev/images/reportsMarkersMap.png'){
-        document.images['maps'].src = '/images/heatmap.jpg';
-    }
-    else {
-        alert('error');
-    }
+/** Creates a map and adds it to the page. */
+function createMap(){
+    map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 37.422, lng: -122.084 }, 
+        zoom:10});
 }
