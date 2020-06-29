@@ -18,12 +18,12 @@ package com.google.sps.data;
 public class Marker {
     private final double lat;
     private final double lng;
-    private final String content;
+    private final String type;
 
-    public Marker(double lat, double lng, String content){
+    public Marker(double lat, double lng, String type){
         this.lat = lat;
         this.lng = lng;
-        this.content = content;
+        this.type = type;
     }
 
     public double getLat(){
@@ -34,7 +34,7 @@ public class Marker {
         return lng;
     }
 
-    public String getContent(){
-        return content;
+    public String getType(){
+        return type;
     }
 }

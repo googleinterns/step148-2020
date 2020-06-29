@@ -34,16 +34,16 @@ function createMap(){
 function fetchMarkers(){
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.content);
+            createMarkerForDisplay(marker.lat, marker.lng, marker.type);
         });
     });
 }
 
 /** Creates a marker that shows a read-only info window when clicked */
-function createMarkerForDisplay(lat, lng, content){
+function createMarkerForDisplay(lat, lng, type){
     const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
 
-    var infoWindow = new google.maps.InfoWindow({content: content});
+    var infoWindow = new google.maps.InfoWindow({content: type});
 
     marker.addListener('click', () => {
         infoWindow.open(map, marker);
@@ -51,12 +51,12 @@ function createMarkerForDisplay(lat, lng, content){
 }
 
 /** Sends a marker to the backend for saving */
-function postMarker(lat, lng, content){
+function postMarker(lat, lng, type){
     const params = new URLSearchParams();
 
     params.append('lat', lat);
     params.append('lng', lng);
-    params.append('content', content);
+    params.append('type', type);
 
     fetch('/markers', {method: 'POST', body: params})
     .catch((error) => {
@@ -83,22 +83,38 @@ function createMarkerForEdit(lat, lng){
     infoWindow.open(map, editMarker);
 }
 
-/** Builds and returns HTML elements that show an editable textbod and submit button */
+/** Builds and returns HTML elements that show an editable textbox and submit button */
 function buildInfoWindow(lat, lng){
-    const textbox = document.createElement('textarea');
+    const form = document.createElement('form');
+    form.setAttribute('id', 'form');
+    const datalist = document.createElement('datalist');
+    datalist.setAttribute('id', 'crimes');
+
+    var typeOptions = ['Robbery', 'Sexual Assault', 'Homicide'];
+
+    for (var i = 0; i < 3; i++) {
+        var option = document.createElement('option');
+        option.value = typeOptions[i];
+        datalist.appendChild(option);
+    }
+
+    document.getElementById('form').appendChild(datalist);
+    
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
+    console.log(document.getElementById('crimes'));
 
     button.onclick = () => {
-        postMarker(lat, lng, textbox.value);
+        postMarker(lat, lng, datalist.value);
         createMarkerForDisplay(lat, lng);
         editMarker.setMap(null);
     }
 
     const containerDiv = document.createElement('div');
-    containerDiv.appendChild(textbox);
+    var type = document.createTextNode('Type');
+    containerDiv.appendChild(type);
+    // containerDiv.appendChild(datalist);
     containerDiv.appendChild(document.createElement('br'));
     containerDiv.appendChild(button);
-
     return containerDiv;
 }

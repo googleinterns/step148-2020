@@ -25,7 +25,8 @@ public class MarkerServlet extends HttpServlet {
     private static final String ENTITY_TITLE = "Marker";
     private static final String ENTITY_PROPERTY_KEY_1 = "lat";
     private static final String ENTITY_PROPERTY_KEY_2 = "lng";
-    private static final String ENTITY_PROPERTY_KEY_3 = "content";
+    private static final String ENTITY_PROPERTY_KEY_3 = "type"; // The type of crime for the report.
+    // private static final String ENTITY_PROPERTY_KEY_4 = "time";
 
 
     /** Responds with JSON array containing marker data. */
@@ -46,7 +47,7 @@ public class MarkerServlet extends HttpServlet {
         /** Use to ensure that end-user provided HTML contains only elements and attributes that you 
             are expecting; no junk */
         try{
-            String content = Jsoup.clean(request.getParameter("content"), Whitelist.none());
+            String content = Jsoup.clean(request.getParameter("type"), Whitelist.none());
             Marker marker = new Marker(lat, lng, content);
             storeMarker(marker);
         }
@@ -64,7 +65,7 @@ public class MarkerServlet extends HttpServlet {
         for(Entity entity: results.asIterable()){
             double lat = (double) entity.getProperty("lat");
             double lng = (double) entity.getProperty("lng");
-            String content = (String) entity.getProperty("content");
+            String content = (String) entity.getProperty("type");
 
             Marker marker = new Marker(lat, lng, content);
             markers.add(marker);
@@ -77,7 +78,7 @@ public class MarkerServlet extends HttpServlet {
         Entity markerEntity = new Entity(ENTITY_TITLE);
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_1, marker.getLat());
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_2, marker.getLng());
-        markerEntity.setProperty(ENTITY_PROPERTY_KEY_3, marker.getContent());
+        markerEntity.setProperty(ENTITY_PROPERTY_KEY_3, marker.getType());
 
         datastore.put(markerEntity);
     }
