@@ -16,7 +16,7 @@ let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
 let userLocation;
-
+let reports;
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
@@ -27,7 +27,8 @@ function createMap(){
     map.addListener('click', (event) => {
         createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
     });
-
+    var controlDiv = document.getElementById('floating-panel');
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
     fetchMarkers();
 }
 
@@ -136,7 +137,8 @@ function initMap() {
             title: 'User location'
         });
         marker.setMap(map);
-        map.setCenter(pos);
+        map.setCenter(userLocation);
+        hardcodedMarkers();
         }, function() {
             handleLocationError(true, infoWindow, map.getCenter());
             });
@@ -155,19 +157,44 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 }
 
 function hardcodedMarkers(){
-    var reports = [
+    reports = [
         ['report1',31.62931,-106.392942],
         ['report2',31.627014,-106.396744],
         ['report3',31.632739,-106.396744],
         ['report4',31.634478,-106.400389]
     ];
-    var report1 = {
-        lat:31.62931,
-        lng: -106.392942
+    
+    var infowindow = new google.maps.InfoWindow();
+    var marker, i;
+    for (i = 0; i < reports.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(reports[i][1], reports[i][2]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(reports[i][0]);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
     }
-    var marker = new google.maps.Marker({
-        position: report1,
-        map: map,
-        });
-    marker.setMap(map);
 }
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (var i = 0; i < reports.length; i++) {
+    reports[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
+}
+
