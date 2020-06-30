@@ -15,6 +15,7 @@
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
+let userLocation;
 
 /** Creates a map and adds it to the page. */
 function createMap(){
@@ -117,4 +118,56 @@ function buildInfoWindow(lat, lng){
     containerDiv.appendChild(document.createElement('br'));
     containerDiv.appendChild(button);
     return containerDiv;
+}
+
+
+function initMap() {
+    var infoWindow = new google.maps.InfoWindow;
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        var marker = new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            title: 'User location'
+        });
+        marker.setMap(map);
+        map.setCenter(pos);
+        }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+            });
+    } else {
+          // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+    }
+}
+
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
+    infoWindow.open(map);
+}
+
+function hardcodedMarkers(){
+    var reports = [
+        ['report1',31.62931,-106.392942],
+        ['report2',31.627014,-106.396744],
+        ['report3',31.632739,-106.396744],
+        ['report4',31.634478,-106.400389]
+    ];
+    var report1 = {
+        lat:31.62931,
+        lng: -106.392942
+    }
+    var marker = new google.maps.Marker({
+        position: report1,
+        map: map,
+        });
+    marker.setMap(map);
 }
