@@ -18,12 +18,21 @@ package com.google.sps.data;
 public class Marker {
     private final double lat;
     private final double lng;
-    private final String type;
+    private final String crimeType;
+    private final String date;
+    private final String time;
+    private final String address;
+    private final String description;
 
-    public Marker(double lat, double lng, String type){
+
+    public Marker(double lat, double lng, String crimeType, String date, String time, String address, String description){
         this.lat = lat;
         this.lng = lng;
-        this.type = type;
+        this.crimeType = crimeType;
+        this.date = date;
+        this.time = time;
+        this.address = address;
+        this.description = description;
     }
 
     public double getLat(){
@@ -34,7 +43,23 @@ public class Marker {
         return lng;
     }
 
-    public String getType(){
-        return type;
+    public String getCrimeType(){
+        return crimeType;
+    }
+
+    public String getDate(){
+        return date;
+    }
+
+    public String getTime(){
+        return time;
+    }
+    
+    public String getAddress(){
+        return address;
+    }
+
+    public String getDescription(){
+        return description;
     }
 }
