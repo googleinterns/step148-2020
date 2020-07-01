@@ -15,7 +15,8 @@
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
-
+let userLocation;
+let reports;
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
@@ -26,7 +27,8 @@ function createMap(){
     map.addListener('click', (event) => {
         createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
     });
-
+    var controlDiv = document.getElementById('floating-panel');
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
     fetchMarkers();
 }
 
@@ -73,8 +75,10 @@ function createMarkerForEdit(lat, lng){
 
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
+
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
 
+    
     /** When the user closes the editable info window, remove the marker */
     google.maps.event.addListener(infoWindow, 'closeclick', () => {
         editMarker.setMap(null);
@@ -85,45 +89,96 @@ function createMarkerForEdit(lat, lng){
 
 /** Builds and returns HTML elements that show an editable textbox and submit button */
 function buildInfoWindow(lat, lng){
-    // const textbox = document.createElement('textarea');
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
 
     button.onclick = () => {
-        postMarker(lat, lng, textbox.value);
+        postMarker(lat, lng,document.getElementById('description'));
         createMarkerForDisplay(lat, lng);
         editMarker.setMap(null);
     }
 
-    var createForm = document.createElement('form');
+    var divContainer = document.createElement('div');
 
-    var typeOfCrime = document.createElement('label');
-    typeOfCrime.innerHTML = 'Type of crime: ';
-    createForm.appendChild(typeOfCrime);
-    createForm.appendChild(document.createElement('br'));
+    divContainer.appendChild(document.getElementById('reportsForm'));
+    divContainer.appendChild(button);
 
-    var inputCrime1 = document.createElement('input');
-    var labelCrime1 = document.createElement('label');
-    labelCrime1.innerHTML = 'Homicide';
-    inputCrime1.setAttribute('type', 'radio');
-    inputCrime1.value = 'Homicide';
-    labelCrime1.appendChild(inputCrime1);
-    createForm.appendChild(labelCrime1);
-    createForm.appendChild(document.createElement('br'));
-
-    var inputCrime2 = document.createElement('input');
-    var labelCrime2 = document.createElement('label');
-    labelCrime2.innerHTML = 'Sexual Assault';
-    inputCrime2.setAttribute('type', 'radio');
-    inputCrime2.value = 'Sexual Assault';
-    labelCrime2.appendChild(inputCrime2);
-    createForm.appendChild(labelCrime2);
-
-    const containerDiv = document.createElement('div');
-    containerDiv.setAttribute('id', 'reports');
-    containerDiv.appendChild(createForm);
-    containerDiv.appendChild(document.createElement('br'));
-    containerDiv.appendChild(button);
-
-    return containerDiv;
+    return divContainer;
 }
+
+function initMap() {
+    var infoWindow = new google.maps.InfoWindow;
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+        userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        var marker = new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            title: 'User location'
+        });
+        marker.setMap(map);
+        map.setCenter(userLocation);
+        hardcodedMarkers();
+        }, function() {
+            handleLocationError(true, infoWindow, map.getCenter());
+            });
+    } else {
+          // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+    }
+}
+
+function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+    infoWindow.setPosition(pos);
+    infoWindow.setContent(browserHasGeolocation ?
+        'Error: The Geolocation service failed.' :
+        'Error: Your browser doesn\'t support geolocation.');
+    infoWindow.open(map);
+}
+
+function hardcodedMarkers(){
+    reports = [
+        ['report1',31.62931,-106.392942],
+        ['report2',31.627014,-106.396744],
+        ['report3',31.632739,-106.396744],
+        ['report4',31.634478,-106.400389]
+    ];
+    
+    var infowindow = new google.maps.InfoWindow();
+    var marker, i;
+    for (i = 0; i < reports.length; i++) {  
+      marker = new google.maps.Marker({
+        position: new google.maps.LatLng(reports[i][1], reports[i][2]),
+        map: map
+      });
+
+      google.maps.event.addListener(marker, 'click', (function(marker, i) {
+        return function() {
+          infowindow.setContent(reports[i][0]);
+          infowindow.open(map, marker);
+        }
+      })(marker, i));
+    }
+}
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (var i = 0; i < reports.length; i++) {
+    reports[i].setMap(map);
+  }
+}
+
+// Removes the markers from the map, but keeps them in the array.
+function clearMarkers() {
+  setMapOnAll(null);
+}
+
+// Shows any markers currently in the array.
+function showMarkers() {
+  setMapOnAll(map);
+}
+
