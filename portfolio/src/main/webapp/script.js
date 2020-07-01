@@ -101,9 +101,6 @@ function buildInfoWindow(lat, lng){
 
     var divContainer = document.createElement('div');
 
-<<<<<<< HEAD
-
-=======
     divContainer.appendChild(document.getElementById('reportsForm'));
     divContainer.appendChild(button);
 
@@ -111,7 +108,6 @@ function buildInfoWindow(lat, lng){
 }
 
 function getUserLocation() {
->>>>>>> 97a658bbe21254d4c82241549f5a580238eb2751
     var infoWindow = new google.maps.InfoWindow;
     // Try HTML5 geolocation.
     if (navigator.geolocation) {
