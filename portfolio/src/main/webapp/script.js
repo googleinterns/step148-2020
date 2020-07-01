@@ -76,8 +76,10 @@ function createMarkerForEdit(lat, lng){
 
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
+
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
 
+    
     /** When the user closes the editable info window, remove the marker */
     google.maps.event.addListener(infoWindow, 'closeclick', () => {
         editMarker.setMap(null);
@@ -88,41 +90,28 @@ function createMarkerForEdit(lat, lng){
 
 /** Builds and returns HTML elements that show an editable textbox and submit button */
 function buildInfoWindow(lat, lng){
-    const form = document.createElement('form');
-    form.setAttribute('id', 'form');
-    const datalist = document.createElement('datalist');
-    datalist.setAttribute('id', 'crimes');
-
-    var typeOptions = ['Robbery', 'Sexual Assault', 'Homicide'];
-
-    for (var i = 0; i < 3; i++) {
-        var option = document.createElement('option');
-        option.value = typeOptions[i];
-        datalist.appendChild(option);
-    }
-
-    document.getElementById('form').appendChild(datalist);
-    
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
-    console.log(document.getElementById('crimes'));
 
     button.onclick = () => {
-        postMarker(lat, lng, datalist.value);
+        postMarker(lat, lng,document.getElementById('description'));
         createMarkerForDisplay(lat, lng);
         editMarker.setMap(null);
     }
 
-    const containerDiv = document.createElement('div');
-    var type = document.createTextNode('Type');
-    containerDiv.appendChild(type);
-    // containerDiv.appendChild(datalist);
-    containerDiv.appendChild(document.createElement('br'));
-    containerDiv.appendChild(button);
-    return containerDiv;
+    var divContainer = document.createElement('div');
+
+<<<<<<< HEAD
+
+=======
+    divContainer.appendChild(document.getElementById('reportsForm'));
+    divContainer.appendChild(button);
+
+    return divContainer;
 }
 
 function getUserLocation() {
+>>>>>>> 97a658bbe21254d4c82241549f5a580238eb2751
     var infoWindow = new google.maps.InfoWindow;
     // Try HTML5 geolocation.
     if (navigator.geolocation) {
@@ -207,6 +196,3 @@ function getPoints() {
 function filters() {
   alert("FILTERS:");
 }
-
-
-
