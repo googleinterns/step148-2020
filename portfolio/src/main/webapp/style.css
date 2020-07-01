@@ -7,8 +7,8 @@
 #map {
   border: thin solid black;
   height: 500px;
-  width: 1000px;
-  margin-left: auto;
+  width: 70%;
+  margin-left: 0;
   margin-right: auto;
 }
 
@@ -65,3 +65,30 @@ footer {
   padding: 5px;
   margin: 5px;
 }
+
+span.b {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+  border: 1px solid blue;    
+  background-color: yellow; 
+}
+
+.column {
+    margin-left: auto;
+  margin-right:0;
+  height: 250px;
+  width: 30%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.column .column-item {
+  height: auto;
+  background: rgb(248, 170, 25);
+  border-radius: 20px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+

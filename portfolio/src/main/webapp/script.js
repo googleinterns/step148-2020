@@ -17,11 +17,12 @@ let map;
 let editMarker;
 let userLocation;
 let reports;
+
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: 37.422, lng: -122.084 }, 
-        zoom:10});
+        zoom:15});
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
     map.addListener('click', (event) => {
@@ -111,7 +112,7 @@ function buildInfoWindow(lat, lng){
     return divContainer;
 }
 
-function initMap() {
+function getUserLocation() {
     var infoWindow = new google.maps.InfoWindow;
     // Try HTML5 geolocation.
     if (navigator.geolocation) {
@@ -128,9 +129,11 @@ function initMap() {
         marker.setMap(map);
         map.setCenter(userLocation);
         hardcodedMarkers();
-        }, function() {
+        initHeatMap();
+        }, 
+        function() {
             handleLocationError(true, infoWindow, map.getCenter());
-            });
+        });
     } else {
           // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
@@ -147,12 +150,12 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 
 function hardcodedMarkers(){
     reports = [
-        ['report1',31.62931,-106.392942],
-        ['report2',31.627014,-106.396744],
-        ['report3',31.632739,-106.396744],
-        ['report4',31.634478,-106.400389]
+        ['Robbery',31.62931,-106.392942],
+        ['Murder',31.627014,-106.396744],
+        ['Harassment',31.632739,-106.396744],
+        ['Robbery',31.634478,-106.400389]
     ];
-    
+
     var infowindow = new google.maps.InfoWindow();
     var marker, i;
     for (i = 0; i < reports.length; i++) {  
@@ -169,21 +172,28 @@ function hardcodedMarkers(){
       })(marker, i));
     }
 }
+var heatmap;
 
-// Sets the map on all markers in the array.
-function setMapOnAll(map) {
-  for (var i = 0; i < reports.length; i++) {
-    reports[i].setMap(map);
-  }
+function initHeatMap() {
+    heatmap = new google.maps.visualization.HeatmapLayer({
+    data: getPoints(),
+    map: map
+    });
 }
 
-// Removes the markers from the map, but keeps them in the array.
-function clearMarkers() {
-  setMapOnAll(null);
+function toggleHeatmap() {
+    heatmap.setMap(heatmap.getMap() ? null : map);
+}
+      
+function getPoints() {
+    return [
+          new google.maps.LatLng(reports[0][1], reports[0][2]),
+          new google.maps.LatLng(reports[1][1], reports[1][2]),
+          new google.maps.LatLng(reports[2][1], reports[2][2]),
+          new google.maps.LatLng(reports[3][1], reports[3][2])
+    ];
 }
 
-// Shows any markers currently in the array.
-function showMarkers() {
-  setMapOnAll(map);
+function filters() {
+  alert("FILTERS:");
 }
-
