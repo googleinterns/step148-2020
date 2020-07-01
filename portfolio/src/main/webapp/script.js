@@ -43,10 +43,10 @@ function fetchMarkers(){
 }
 
 /** Creates a marker that shows a read-only info window when clicked */
-function createMarkerForDisplay(lat, lng, crimeType){
+function createMarkerForDisplay(lat, lng, crimeType, date){
     const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
 
-    var infoWindow = new google.maps.InfoWindow({content: crimeType});
+    var infoWindow = new google.maps.InfoWindow({content: crimeType,date});
 
     marker.addListener('click', () => {
         infoWindow.open(map, marker);
@@ -54,13 +54,13 @@ function createMarkerForDisplay(lat, lng, crimeType){
 }
 
 /** Sends a marker to the backend for saving */
-function postMarker(lat, lng, type){
+function postMarker(lat, lng, type, date){
     const params = new URLSearchParams();
 
     params.append('lat', lat);
     params.append('lng', lng);
     params.append('crimeType', type);
-    // params.append('date', date);
+    params.append('date', date);
     // params.append('time', time);
     // params.append('address', address);
     // params.append('description', description);
@@ -98,8 +98,8 @@ function buildInfoWindow(lat, lng){
     button.appendChild(document.createTextNode('Submit'));
 
     button.onclick = () => {
-        postMarker(lat, lng, getRadioValueCrimes());
-        createMarkerForDisplay(lat, lng, getRadioValueCrimes());
+        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value);
+        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value);
         editMarker.setMap(null);
     }
 
@@ -124,8 +124,7 @@ function getRadioValueCrimes(){
         return document.getElementById('kidnapping').value;
     }else if(document.getElementById('drugs').checked) {
         return document.getElementById('drugs').value;
-    }
-    else{
+    }else{
         return document.getElementById('other').value;
     }
 }
