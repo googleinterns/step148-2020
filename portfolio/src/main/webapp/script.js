@@ -85,36 +85,45 @@ function createMarkerForEdit(lat, lng){
 
 /** Builds and returns HTML elements that show an editable textbox and submit button */
 function buildInfoWindow(lat, lng){
-    const form = document.createElement('form');
-    form.setAttribute('id', 'form');
-    const datalist = document.createElement('datalist');
-    datalist.setAttribute('id', 'crimes');
-
-    var typeOptions = ['Robbery', 'Sexual Assault', 'Homicide'];
-
-    for (var i = 0; i < 3; i++) {
-        var option = document.createElement('option');
-        option.value = typeOptions[i];
-        datalist.appendChild(option);
-    }
-
-    document.getElementById('form').appendChild(datalist);
-    
+    // const textbox = document.createElement('textarea');
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
-    console.log(document.getElementById('crimes'));
 
     button.onclick = () => {
-        postMarker(lat, lng, datalist.value);
+        postMarker(lat, lng, textbox.value);
         createMarkerForDisplay(lat, lng);
         editMarker.setMap(null);
     }
 
+    var createForm = document.createElement('form');
+
+    var typeOfCrime = document.createElement('label');
+    typeOfCrime.innerHTML = 'Type of crime: ';
+    createForm.appendChild(typeOfCrime);
+    createForm.appendChild(document.createElement('br'));
+
+    var inputCrime1 = document.createElement('input');
+    var labelCrime1 = document.createElement('label');
+    labelCrime1.innerHTML = 'Homicide';
+    inputCrime1.setAttribute('type', 'radio');
+    inputCrime1.value = 'Homicide';
+    labelCrime1.appendChild(inputCrime1);
+    createForm.appendChild(labelCrime1);
+    createForm.appendChild(document.createElement('br'));
+
+    var inputCrime2 = document.createElement('input');
+    var labelCrime2 = document.createElement('label');
+    labelCrime2.innerHTML = 'Sexual Assault';
+    inputCrime2.setAttribute('type', 'radio');
+    inputCrime2.value = 'Sexual Assault';
+    labelCrime2.appendChild(inputCrime2);
+    createForm.appendChild(labelCrime2);
+
     const containerDiv = document.createElement('div');
-    var type = document.createTextNode('Type');
-    containerDiv.appendChild(type);
-    // containerDiv.appendChild(datalist);
+    containerDiv.setAttribute('id', 'reports');
+    containerDiv.appendChild(createForm);
     containerDiv.appendChild(document.createElement('br'));
     containerDiv.appendChild(button);
+
     return containerDiv;
 }
