@@ -5,7 +5,7 @@
     <title>Capstone Project</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKBx261NIGW5RGlPpiUEcEQKnyITd909s&libraries=visualization&callback=initMap"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKBx261NIGW5RGlPpiUEcEQKnyITd909s&libraries=visualization&callback=getUserLocation"></script>
   </head>
   <body onload="createMap();">
     <div class="header">
@@ -29,11 +29,22 @@
         </ul>
     </div>
     <div class="container" id="floating-panel">
-        <input onclick="clearMarkers();" type=button value="Hide Reports">
-        <input onclick="showMarkers();" type=button value="Show All Reports">
-        <input onlcick="HeatMap();" type=button value="HeatMap">
+        <button onclick="toggleMakers()">Reports</button>
+        <button onclick="toggleHeatmap()">Heatmap</button>
     </div>
     <div id="map"></div>
+    <div class="column">
+        <div class="column-item">
+            <h2>Latest Reports</h2>
+            <button onclick="filters()">Click to apply filters</button>
+            <ul>
+              <li>Robbery-June 30 2:00 PM. 2 people took the purse of a woman</li>
+              <li>Murder-June 30 11:00 AM. Description of the crime</li>
+              <li>Harassment-June 29 10:00 PM. Description of the crime</li>
+              <li>Robbery-June 29 5:00 PM. Description of the crime</li>
+            </ul>
+        </div>
+    </div>
     <footer>
         <p>Contact us</p>
     </footer>
