@@ -37,17 +37,16 @@ function createMap(){
 function fetchMarkers(){
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.address, marker.description);
+            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType);
         });
     });
 }
 
 /** Creates a marker that shows a read-only info window when clicked */
-function createMarkerForDisplay(lat, lng, crimeType, date, time, address, description){
+function createMarkerForDisplay(lat, lng, crimeType){
     const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
 
-    var contentString = '<p>crimeType + date + time + address + description</p>';
-    var infoWindow = new google.maps.InfoWindow({content: contentString});
+    var infoWindow = new google.maps.InfoWindow({content: crimeType});
 
     marker.addListener('click', () => {
         infoWindow.open(map, marker);
@@ -55,16 +54,16 @@ function createMarkerForDisplay(lat, lng, crimeType, date, time, address, descri
 }
 
 /** Sends a marker to the backend for saving */
-function postMarker(lat, lng, type, date, time, address, description){
+function postMarker(lat, lng, type){
     const params = new URLSearchParams();
 
     params.append('lat', lat);
     params.append('lng', lng);
-    params.append('type', type);
-    params.append('date', date);
-    params.append('time', time);
-    params.append('address', address);
-    params.append('description', description);
+    params.append('crimeType', type);
+    // params.append('date', date);
+    // params.append('time', time);
+    // params.append('address', address);
+    // params.append('description', description);
 
     fetch('/markers', {method: 'POST', body: params})
     .catch((error) => {
@@ -99,8 +98,8 @@ function buildInfoWindow(lat, lng){
     button.appendChild(document.createTextNode('Submit'));
 
     button.onclick = () => {
-        postMarker(lat, lng, document.getElementById('homicide').value, document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-        createMarkerForDisplay(lat, lng, document.getElementById('homicide').value, document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+        postMarker(lat, lng, getRadioValueCrimes());
+        createMarkerForDisplay(lat, lng, getRadioValueCrimes());
         editMarker.setMap(null);
     }
 
@@ -110,6 +109,25 @@ function buildInfoWindow(lat, lng){
     divContainer.appendChild(button);
 
     return divContainer;
+}
+
+function getRadioValueCrimes(){
+    if(document.getElementById('homicide').checked) {
+        return document.getElementById('homicide').value;
+    }else if(document.getElementById('sexualAssault').checked) {
+        return document.getElementById('sexualAssault').value;
+    }else if(document.getElementById('robbery').checked) {
+        return document.getElementById('robbery').value;
+    }else if(document.getElementById('harrassment').checked) {
+        return document.getElementById('harrassment').value;
+    }else if(document.getElementById('kidnapping').checked) {
+        return document.getElementById('kidnapping').value;
+    }else if(document.getElementById('drugs').checked) {
+        return document.getElementById('drugs').value;
+    }
+    else{
+        return document.getElementById('other').value;
+    }
 }
 
 function getUserLocation() {

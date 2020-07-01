@@ -36,7 +36,7 @@
         <button onclick="toggleMakers()">Reports</button>
         <button onclick="toggleHeatmap()">Heatmap</button>
     </div>
-    <div id="map"></div>
+
     <div class="column">
         <div class="column-item">
             <h2>Latest Reports</h2>
@@ -48,13 +48,23 @@
               <li>Robbery-June 29 5:00 PM. Description of the crime</li>
             </ul>
         </div>
+    </div>
+    
     <div id="reportsForm">
         <form id="form" name="reports">
             <p><b>Type of crime:</b></p>
             <input type="radio" id="homicide" name="crimes" value="Homicide"/>
-            <label for="homicide">Homicide</label><br>
+            <label for="homicide">Homicide</label><br />
             <input type="radio" id="sexualAssault" name="crimes" value="Sexual Assault"/>
-            <label for="sexualAssault">Sexual Assault</label><br>
+            <label for="sexualAssault">Sexual Assault</label><br />
+            <input type="radio" id="robbery" name="crimes" value="Robbery"/>
+            <label for="robbery">Robbery</label><br />
+            <input type="radio" id="harrassment" name="crimes" value="Harrasment"/>
+            <label for="harrasment">Harrasment</label><br />
+            <input type="radio" id="kidnapping" name="crimes" value="Kidnapping"/>
+            <label for="kidnapping">Kidnapping</label><br />
+            <input type="radio" id="drugs" name="crimes" value="Drug Related"/>
+            <label for="drugs">Drug Related</label><br />
             <input type="radio" id="other" name="crimes" value="Other"/>
             <label for="other">Other</label>
             
