@@ -24,7 +24,6 @@ public class Marker {
     private final String address;
     private final String description;
 
-
     public Marker(double lat, double lng, String crimeType, String date, String time, String address, String description){
         this.lat = lat;
         this.lng = lng;

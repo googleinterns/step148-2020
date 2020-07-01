@@ -36,16 +36,17 @@ function createMap(){
 function fetchMarkers(){
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.type);
+            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.address, marker.description);
         });
     });
 }
 
 /** Creates a marker that shows a read-only info window when clicked */
-function createMarkerForDisplay(lat, lng, type){
+function createMarkerForDisplay(lat, lng, crimeType, date, time, address, description){
     const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
 
-    var infoWindow = new google.maps.InfoWindow({content: type});
+    var contentString = '<p>crimeType + date + time + address + description</p>';
+    var infoWindow = new google.maps.InfoWindow({content: contentString});
 
     marker.addListener('click', () => {
         infoWindow.open(map, marker);
@@ -53,12 +54,16 @@ function createMarkerForDisplay(lat, lng, type){
 }
 
 /** Sends a marker to the backend for saving */
-function postMarker(lat, lng, type){
+function postMarker(lat, lng, type, date, time, address, description){
     const params = new URLSearchParams();
 
     params.append('lat', lat);
     params.append('lng', lng);
     params.append('type', type);
+    params.append('date', date);
+    params.append('time', time);
+    params.append('address', address);
+    params.append('description', description);
 
     fetch('/markers', {method: 'POST', body: params})
     .catch((error) => {
@@ -75,10 +80,10 @@ function createMarkerForEdit(lat, lng){
 
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
+    console.log()
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
 
-    
     /** When the user closes the editable info window, remove the marker */
     google.maps.event.addListener(infoWindow, 'closeclick', () => {
         editMarker.setMap(null);
@@ -93,8 +98,8 @@ function buildInfoWindow(lat, lng){
     button.appendChild(document.createTextNode('Submit'));
 
     button.onclick = () => {
-        postMarker(lat, lng,document.getElementById('description'));
-        createMarkerForDisplay(lat, lng);
+        postMarker(lat, lng, document.getElementById('homicide').value, document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+        createMarkerForDisplay(lat, lng, document.getElementById('homicide').value, document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         editMarker.setMap(null);
     }
 
