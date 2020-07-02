@@ -3,9 +3,11 @@
   margin-right: auto;
   width: 650px;
 }
+
 * {
   box-sizing: border-box;
 }
+
 #map {
   float:left;
   border: thin solid black;
