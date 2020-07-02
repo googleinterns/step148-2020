@@ -5,7 +5,7 @@
     <title>Capstone Project</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKBx261NIGW5RGlPpiUEcEQKnyITd909s&libraries=visualization&callback=getUserLocation"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKBx261NIGW5RGlPpiUEcEQKnyITd909s&libraries=visualization&callback=getUserLocation&callback=initMap"></script>
   </head>
 
   <body onload="createMap();">
@@ -145,6 +145,11 @@
             <p><b>Description:</b></p>
             <input type="text" id="description" name="descriptionBox"/>
         </form>
+    </div>
+    <div id="floating-panel2">
+      <input onclick="clearMarkers();" type="button" value="Hide Markers" />
+      <input onclick="showMarkers();" type="button" value="Show All Markers" />
+      <input onclick="deleteMarkers();" type="button" value="Delete Markers" />
     </div>
     <footer>
         <p>Contact us</p>
