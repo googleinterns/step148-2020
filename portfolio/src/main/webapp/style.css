@@ -16,6 +16,10 @@
   margin-right: 2%;
 }
 
+#reportsForm {
+    display: none;
+}
+
 .header {
     background-color: #f1f3f4;
     padding: 10px;
