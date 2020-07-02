@@ -33,28 +33,28 @@ function createMap(){
     fetchMarkers();
 }
 
-/** Fetches markers from the backend and adds them to the map */
+/** Fetches markers from the backend and adds them to the map. */
 function fetchMarkers(){
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time);
+            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.description);
         });
     });
 }
 
-/** Creates a marker that shows a read-only info window when clicked */
-function createMarkerForDisplay(lat, lng, crimeType, date, time){
+/** Creates a marker that shows a read-only info window when clicked. */
+function createMarkerForDisplay(lat, lng, crimeType, date, time, address, description){
     const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
 
-    var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time});
+    var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time, address, description});
 
     marker.addListener('click', () => {
         infoWindow.open(map, marker);
     });
 }
 
-/** Sends a marker to the backend for saving */
-function postMarker(lat, lng, type, date, time){
+/** Sends a marker to the backend for saving. */
+function postMarker(lat, lng, type, date, time, address, description){
     const params = new URLSearchParams();
 
     params.append('lat', lat);
@@ -62,18 +62,19 @@ function postMarker(lat, lng, type, date, time){
     params.append('crimeType', type);
     params.append('date', date);
     params.append('time', time);
-    // params.append('address', address);
-    // params.append('description', description);
+    params.append('address', address);
+    params.append('description', description);
 
     fetch('/markers', {method: 'POST', body: params})
     .catch((error) => {
+        console.log(error);
         console.error(error);
     });
 }
 
-/** Creates a marker that shows a textbox the user can edit */
+/** Creates a marker that shows a textbox the user can edit. */
 function createMarkerForEdit(lat, lng){
-    /** If we are already showing an editable marker, then remove it */
+    /** If we are already showing an editable marker, then remove it. */
     if(editMarker){
         editMarker.setMap(null);
     }
@@ -82,7 +83,7 @@ function createMarkerForEdit(lat, lng){
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
 
-    /** When the user closes the editable info window, remove the marker */
+    /** When the user closes the editable info window, remove the marker. */
     google.maps.event.addListener(infoWindow, 'closeclick', () => {
         editMarker.setMap(null);
     });
@@ -90,14 +91,14 @@ function createMarkerForEdit(lat, lng){
     infoWindow.open(map, editMarker);
 }
 
-/** Builds and returns HTML elements that show an editable textbox and submit button */
+/** Builds and returns HTML elements that show an editable textbox and submit button. */
 function buildInfoWindow(lat, lng){
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
 
     button.onclick = () => {
-        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value);
-        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value);
+        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         editMarker.setMap(null);
     }
 
@@ -109,6 +110,7 @@ function buildInfoWindow(lat, lng){
     return divContainer;
 }
 
+/** Looks for the value checked in the type of crime report's section. */
 function getRadioValueCrimes(){
     if(document.getElementById('homicide').checked) {
         return document.getElementById('homicide').value;

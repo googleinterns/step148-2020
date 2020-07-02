@@ -29,7 +29,7 @@ public class MarkerServlet extends HttpServlet {
     private static final String ENTITY_PROPERTY_KEY_4 = "date"; 
     private static final String ENTITY_PROPERTY_KEY_5 = "time"; 
     private static final String ENTITY_PROPERTY_KEY_6 = "address";
-    // private static final String ENTITY_PROPERTY_KEY_7 = "description";  
+    private static final String ENTITY_PROPERTY_KEY_7 = "description";  
 
     /** Responds with JSON array containing marker data. */
     @Override
@@ -52,10 +52,10 @@ public class MarkerServlet extends HttpServlet {
             String crime = Jsoup.clean(request.getParameter("crimeType"), Whitelist.none());
             String crimeDate = Jsoup.clean(request.getParameter("date"), Whitelist.none());
             String crimeTime = Jsoup.clean(request.getParameter("time"), Whitelist.none());
-            // String addressCrime = Jsoup.clean(request.getParameter("address"), Whitelist.none());
-            // String descriptionCrime = Jsoup.clean(request.getParameter("description"), Whitelist.none());
+            String crimeAddress = Jsoup.clean(request.getParameter("address"), Whitelist.none());
+            String crimeDescription = Jsoup.clean(request.getParameter("description"), Whitelist.none());
 
-            Marker marker = new Marker(lat, lng, crime, crimeDate, crimeTime);
+            Marker marker = new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription);
             storeMarker(marker);
         }
         catch(Error error){
@@ -75,10 +75,10 @@ public class MarkerServlet extends HttpServlet {
             String crime = (String) entity.getProperty("crimeType");
             String date = (String) entity.getProperty("date");
             String time = (String) entity.getProperty("time");
-            // String address = (String) entity.getProperty("address");
-            // String description = (String) entity.getProperty("description");
+            String address = (String) entity.getProperty("address");
+            String description = (String) entity.getProperty("description");
 
-            Marker marker = new Marker(lat, lng, crime, date, time);
+            Marker marker = new Marker(lat, lng, crime, date, time, address, description);
             markers.add(marker);
         }
         return markers;
@@ -92,8 +92,8 @@ public class MarkerServlet extends HttpServlet {
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_3, marker.getCrimeType());
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_4, marker.getDate());
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_5, marker.getTime());
-        // markerEntity.setProperty(ENTITY_PROPERTY_KEY_6, marker.getAddress());
-        // markerEntity.setProperty(ENTITY_PROPERTY_KEY_7, marker.getDescription());
+        markerEntity.setProperty(ENTITY_PROPERTY_KEY_6, marker.getAddress());
+        markerEntity.setProperty(ENTITY_PROPERTY_KEY_7, marker.getDescription());
 
         datastore.put(markerEntity);
     }
