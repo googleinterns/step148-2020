@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Capstone Project</title>
     <link rel="stylesheet" href="style.css">
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
     <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCKBx261NIGW5RGlPpiUEcEQKnyITd909s&libraries=visualization&callback=getUserLocation"></script>
   </head>
 
@@ -29,27 +29,95 @@
         <li>Choose destination</li>
         </ul>
     </div>
-
-    <div id="map"></div>
-
-    <div class="container" id="floating-panel">
-        <button onclick="toggleMakers()">Reports</button>
-        <button onclick="toggleHeatmap()">Heatmap</button>
-    </div>
-
-    <div class="column">
-        <div class="column-item">
-            <h2>Latest Reports</h2>
-            <button onclick="filters()">Click to apply filters</button>
-            <ul>
-              <li>Robbery-June 30 2:00 PM. 2 people took the purse of a woman</li>
-              <li>Murder-June 30 11:00 AM. Description of the crime</li>
-              <li>Harassment-June 29 10:00 PM. Description of the crime</li>
-              <li>Robbery-June 29 5:00 PM. Description of the crime</li>
-            </ul>
+    <div class="row">
+        <div class="col">
+            <div id="map"></div>
+            <div class="container" id="floating-panel">
+                <button onclick="toggleMakers()">Reports</button>
+                <button onclick="toggleHeatmap()">Heatmap</button>
+            </div>
+        </div>
+        <div class="col2" style="background-color:#F5A21B">
+                    <h2>Latest Reports</h2>
+                    <!-- Trigger/Open The Modal -->
+                    <button id="myBtn">Click here to apply filters</button>
+                    <!-- The Modal -->
+                    <div id="myModal" class="modal">
+                    <!-- Modal content -->
+                    <div class="modal-content">
+                        <span class="close">&times;</span>
+                        <p> Type of crime: </p>
+                        <ul>
+                            <li><label><input type="checkbox" 
+                                    name="crime" 
+                                    value="all"/>
+                                    all </label>
+                                </li>
+                            <li><label><input type="checkbox" 
+                                    name="crime" 
+                                    value="robbery" />
+                                    robbery</label>
+                                </li>
+                            <li><label><input type="checkbox" 
+                                    name="crime"  
+                                    value="homicide" />
+                                    murder</label>
+                                </li>
+                            <li><label><input type="checkbox" 
+                                    name="crime" 
+                                    value="harrasment"/>
+                                    harassment </label>
+                                </li>
+                            <li><label><input type="checkbox" 
+                                    name="crime" 
+                                    value="sexual assault"/>
+                                    sexual assault </label>
+                                </li>
+                            <li><label><input type="checkbox" 
+                                    name="crime" 
+                                    value="drug related"/>
+                                    drug related </label>
+                                </li>
+                            <li><label><input type="checkbox" 
+                                    name="crime" 
+                                    value="kidnapping"/>
+                                    kidnaping </label>
+                                </li>
+                        </ul>
+                        <p> Time </p>
+                        <ul>
+                            <li><label><input type="checkbox" 
+                                    name="time" 
+                                    value="all"/>
+                                    all </label>
+                                </li>
+                           <li><label><input type="checkbox" 
+                                    name="time" 
+                                    value="today"/>
+                                    today </label>
+                                </li>
+                           <li><label><input type="checkbox" 
+                                    name="time" 
+                                    value="this week"/>
+                                    this week </label>
+                                </li>
+                           <li><label><input type="checkbox" 
+                                    name="time" 
+                                    value="this month"/>
+                                    this month </label>
+                                </li>
+                        </ul>
+                        <button id=apply>Apply</button>
+                    </div>
+                    </div>
+                    <ul>
+                    <li>Robbery-June 30 2:00 PM. 2 people took the purse of a woman</li>
+                    <li>Murder-June 30 11:00 AM. Description of the crime</li>
+                    <li>Harassment-June 29 10:00 PM. Description of the crime</li>
+                    <li>Robbery-June 29 5:00 PM. Description of the crime</li>
+                    </ul>
         </div>
     </div>
-    
     <div id="reportsForm">
         <form id="form" name="reports">
             <p><b>Type of crime:</b></p>

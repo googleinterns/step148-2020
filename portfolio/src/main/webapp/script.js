@@ -37,16 +37,16 @@ function createMap(){
 function fetchMarkers(){
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType);
+            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time);
         });
     });
 }
 
 /** Creates a marker that shows a read-only info window when clicked */
-function createMarkerForDisplay(lat, lng, crimeType, date){
+function createMarkerForDisplay(lat, lng, crimeType, date, time){
     const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
 
-    var infoWindow = new google.maps.InfoWindow({content: crimeType,date});
+    var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time});
 
     marker.addListener('click', () => {
         infoWindow.open(map, marker);
@@ -54,14 +54,14 @@ function createMarkerForDisplay(lat, lng, crimeType, date){
 }
 
 /** Sends a marker to the backend for saving */
-function postMarker(lat, lng, type, date){
+function postMarker(lat, lng, type, date, time){
     const params = new URLSearchParams();
 
     params.append('lat', lat);
     params.append('lng', lng);
     params.append('crimeType', type);
     params.append('date', date);
-    // params.append('time', time);
+    params.append('time', time);
     // params.append('address', address);
     // params.append('description', description);
 
@@ -80,8 +80,6 @@ function createMarkerForEdit(lat, lng){
 
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
-    console.log()
-
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
 
     /** When the user closes the editable info window, remove the marker */
@@ -98,8 +96,8 @@ function buildInfoWindow(lat, lng){
     button.appendChild(document.createTextNode('Submit'));
 
     button.onclick = () => {
-        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value);
-        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value);
+        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value);
+        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value);
         editMarker.setMap(null);
     }
 
@@ -211,6 +209,34 @@ function getPoints() {
     ];
 }
 
-function filters() {
-  alert("FILTERS:");
+// Get the modal
+var modal = document.getElementById("myModal");
+
+// Get the button that opens the modal
+var btn = document.getElementById("myBtn");
+
+// Get the <span> element that closes the modal
+var span = document.getElementsByClassName("close")[0];
+
+var apply = document.getElementById("apply");
+
+// When the user clicks the button, open the modal 
+btn.onclick = function() {
+  modal.style.display = "block";
+}
+
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
+  modal.style.display = "none";
+}
+
+// When the user clicks anywhere outside of the modal, close it
+window.onclick = function(event) {
+  if (event.target == modal) {
+    modal.style.display = "none";
+  }
+}
+
+apply.onclick = function(){
+    modal.style.display = "none";
 }

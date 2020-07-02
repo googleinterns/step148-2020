@@ -20,15 +20,16 @@ public class Marker {
     private final double lng;
     private final String crimeType;
     private final String date;
-    // private final String time;
+    private final String time;
     // private final String address;
     // private final String description;
 
-    public Marker(double lat, double lng, String crimeType, String date){
+    public Marker(double lat, double lng, String crimeType, String date, String time){
         this.lat = lat;
         this.lng = lng;
         this.crimeType = crimeType;
         this.date = date;
+        this.time = time;
     }
 
     public double getLat(){
@@ -47,9 +48,9 @@ public class Marker {
         return date;
     }
 
-    // public String getTime(){
-    //     return time;
-    // }
+    public String getTime(){
+        return time;
+    }
     
     // public String getAddress(){
     //     return address;

@@ -50,12 +50,12 @@ public class MarkerServlet extends HttpServlet {
             are expecting; no junk */
         try{
             String crime = Jsoup.clean(request.getParameter("crimeType"), Whitelist.none());
-            String dateCrime = Jsoup.clean(request.getParameter("date"), Whitelist.none());
-            // String timeCrime = Jsoup.clean(request.getParameter("time"), Whitelist.none());
+            String crimeDate = Jsoup.clean(request.getParameter("date"), Whitelist.none());
+            String crimeTime = Jsoup.clean(request.getParameter("time"), Whitelist.none());
             // String addressCrime = Jsoup.clean(request.getParameter("address"), Whitelist.none());
             // String descriptionCrime = Jsoup.clean(request.getParameter("description"), Whitelist.none());
 
-            Marker marker = new Marker(lat, lng, crime, dateCrime);
+            Marker marker = new Marker(lat, lng, crime, crimeDate, crimeTime);
             storeMarker(marker);
         }
         catch(Error error){
@@ -74,11 +74,11 @@ public class MarkerServlet extends HttpServlet {
             double lng = (double) entity.getProperty("lng");
             String crime = (String) entity.getProperty("crimeType");
             String date = (String) entity.getProperty("date");
-            // String time = (String) entity.getProperty("time");
+            String time = (String) entity.getProperty("time");
             // String address = (String) entity.getProperty("address");
             // String description = (String) entity.getProperty("description");
 
-            Marker marker = new Marker(lat, lng, crime, date);
+            Marker marker = new Marker(lat, lng, crime, date, time);
             markers.add(marker);
         }
         return markers;
@@ -91,7 +91,7 @@ public class MarkerServlet extends HttpServlet {
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_2, marker.getLng());
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_3, marker.getCrimeType());
         markerEntity.setProperty(ENTITY_PROPERTY_KEY_4, marker.getDate());
-        // markerEntity.setProperty(ENTITY_PROPERTY_KEY_5, marker.getTime());
+        markerEntity.setProperty(ENTITY_PROPERTY_KEY_5, marker.getTime());
         // markerEntity.setProperty(ENTITY_PROPERTY_KEY_6, marker.getAddress());
         // markerEntity.setProperty(ENTITY_PROPERTY_KEY_7, marker.getDescription());
 
