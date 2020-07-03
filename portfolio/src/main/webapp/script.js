@@ -29,6 +29,7 @@ function createMap(){
     map.addListener('click', (event) => {
         createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
     });
+
     var controlDiv = document.getElementById('floating-panel');
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
     fetchMarkers();
@@ -68,7 +69,6 @@ function postMarker(lat, lng, type, date, time, address, description){
 
     fetch('/markers', {method: 'POST', body: params})
     .catch((error) => {
-        console.log(error);
         console.error(error);
     });
 }
@@ -80,6 +80,7 @@ function createMarkerForEdit(lat, lng){
         editMarker.setMap(null);
     }
 
+    document.getElementById('reportsForm').style.display = "block";
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
@@ -97,16 +98,15 @@ function buildInfoWindow(lat, lng){
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
 
+    let divContainer = document.createElement('div');
+    divContainer.appendChild(document.getElementById('reportsForm'));
+    divContainer.appendChild(button);
+
     button.onclick = () => {
         postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         editMarker.setMap(null);
     }
-
-    var divContainer = document.createElement('div');
-
-    divContainer.appendChild(document.getElementById('reportsForm'));
-    divContainer.appendChild(button);
 
     return divContainer;
 }
