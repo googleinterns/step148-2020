@@ -50,6 +50,7 @@ function createMarkerForDisplay(lat, lng, crimeType, date, time, address, descri
     var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time, address, description});
 
     marker.addListener('click', () => {
+        console.log('OPENING INFO WINDOW FROM ONE OF THE MARKERS');
         infoWindow.open(map, marker);
     });
 }
@@ -78,8 +79,9 @@ function createMarkerForEdit(lat, lng){
     if(editMarker){
         editMarker.setMap(null);
     }
+    
+    document.getElementById('reportsForm').style.display = 'block';
 
-    document.getElementById('reportsForm').style.display = "block";
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
@@ -93,19 +95,19 @@ function createMarkerForEdit(lat, lng){
 }
 
 /** Builds and returns HTML elements that show an editable textbox and submit button. */
-function buildInfoWindow(lat, lng){
+function buildInfoWindow(lat,lng){
     const button = document.createElement('button');
     button.appendChild(document.createTextNode('Submit'));
-
-    let divContainer = document.createElement('div');
-    divContainer.appendChild(document.getElementById('reportsForm'));
-    divContainer.appendChild(button);
 
     button.onclick = () => {
         postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         editMarker.setMap(null);
     }
+    
+    let divContainer = document.createElement('div');
+    divContainer.appendChild(document.getElementById('reportsForm'));
+    divContainer.appendChild(button);
 
     return divContainer;
 }
@@ -118,8 +120,8 @@ function getRadioValueCrimes(){
         return document.getElementById('sexualAssault').value;
     }else if(document.getElementById('robbery').checked) {
         return document.getElementById('robbery').value;
-    }else if(document.getElementById('harrassment').checked) {
-        return document.getElementById('harrassment').value;
+    }else if(document.getElementById('harassment').checked) {
+        return document.getElementById('harassment').value;
     }else if(document.getElementById('kidnapping').checked) {
         return document.getElementById('kidnapping').value;
     }else if(document.getElementById('drugs').checked) {
