@@ -149,7 +149,8 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
-        hardcodedMarkers();
+        //hardcodedMarkers();
+        //fetchMarkers();
         initHeatMap();
         }, 
         function() {
@@ -170,7 +171,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     infoWindow.open(map);
 }
 
-function hardcodedMarkers(){
+/*function hardcodedMarkers(){
     reports = [
         ['Robbery',31.62931,-106.392942],
         ['Murder',31.627014, -106.396744],
@@ -194,12 +195,12 @@ function hardcodedMarkers(){
         }
       })(marker, i));
     }
-}
+}*/
+
 /**
 Show/Hide Heatmap
  */
 var heatmap;
-
 function initHeatMap() {
     heatmap = new google.maps.visualization.HeatmapLayer({
     data: getPoints(),
