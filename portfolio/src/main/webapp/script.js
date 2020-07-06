@@ -22,7 +22,7 @@ let markers = [];
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 37.422, lng: -122.084 }, 
+        center: getUserLocation(), 
         zoom:15});
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
@@ -147,7 +147,6 @@ function getUserLocation() {
         map.setCenter(userLocation);
         hardcodedMarkers();
         initHeatMap();
-        //addMarkers();
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -156,6 +155,7 @@ function getUserLocation() {
           // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
     }
+    return userLocation;
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -169,9 +169,11 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 function hardcodedMarkers(){
     reports = [
         ['Robbery',31.62931,-106.392942],
-        ['Murder',31.627014,-106.396744],
+        ['Murder',31.627014, -106.396744],
         ['Harassment',31.632739,-106.396744],
-        ['Robbery',31.634478,-106.400389]
+        ['Robbery',31.634478,-106.400389],
+        ['Murder', 31.745434, -106.486264],
+        ['Murder', 31.766113, -106.493548]
     ];
 
     var infowindow = new google.maps.InfoWindow();
@@ -212,7 +214,9 @@ function getPoints() {
           new google.maps.LatLng(reports[0][1], reports[0][2]),
           new google.maps.LatLng(reports[1][1], reports[1][2]),
           new google.maps.LatLng(reports[2][1], reports[2][2]),
-          new google.maps.LatLng(reports[3][1], reports[3][2])
+          new google.maps.LatLng(reports[3][1], reports[3][2]),
+          new google.maps.LatLng(reports[4][1], reports[4][2]),
+          new google.maps.LatLng(reports[5][1], reports[5][2])
     ];
 }
 
@@ -256,4 +260,105 @@ function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   } 
+}
+
+function route() { 
+    console.log("HEYYYYYY"); 
+    let directionsService = new google.maps.DirectionsService(); 
+    let directionsDisplay = new google.maps.DirectionsRenderer(); 
+    let request = {
+        origin: new google.maps.LatLng(31.742485, -106.485468),
+        destination: new google.maps.LatLng(31.774414, -106.501199),
+        provideRouteAlternatives: true,
+        travelMode: 'DRIVING'
+    }
+
+    let markerTry = new google.maps.LatLng({lat: 31.761679, lng: -106.491667});
+
+    directionsDisplay.setMap(map);
+    directionsService.route(request, function(result, status) {
+        if (status === 'OK') {
+            console.log(result.routes.length);
+            
+            /*for (var i =0; i < result.routes.length; i++) {
+                new google.maps.DirectionsRenderer({
+                map: map,
+                directions: result,
+                routeIndex: i
+                });
+            }*/
+
+            var counter = 0;
+
+            /*console.log(route.legs[0].steps.length);
+            console.log("Here we go again");
+            console.log(route.legs[0].steps[0].start_location.lat());
+            console.log(route.legs[0].steps[0].start_location.lng());
+            console.log(route.legs[0].steps[0].end_location.lat());
+            console.log(route.legs[0].steps[0].end_location.lng());
+            console.log(route.legs[0].steps[0].distance);*/
+            /*superMath(route.legs[0].steps[0].start_location, markerTry ,route.legs[0].steps[0].end_location);*/
+
+            var routeIndex = 0;
+            var lessCrimesInRoute = 1000;
+
+        for (var r=0; r < result.routes.length; r++){
+            var route = result.routes[r];
+
+            for (var j=0; j < route.legs[0].steps.length; j++){
+                var routeArray = new google.maps.Polyline({
+                path: [
+                    new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
+                    new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
+                ]
+                });
+                for (var l=0; l < markers.length; l++){
+                    var myPosition = new google.maps.LatLng(markers[l].getPosition().lat(), markers[l].getPosition().lng());
+
+                    if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0005)) {
+                    
+                        console.log("Relocate!");
+                        console.log(l);
+                        console.log(route.legs[0].steps[j].end_location.lat());
+                        console.log(route.legs[0].steps[j].end_location.lng());
+                        counter++;
+                    }
+                }     
+            }
+
+            if (counter < lessCrimesInRoute) {
+                lessCrimesInRoute = counter;
+                routeIndex = r;
+                console.log(r);
+            }
+            counter = 0;
+        }
+
+        console.log(routeIndex);
+
+                new google.maps.DirectionsRenderer({
+                map: map,
+                directions: result,
+                routeIndex: routeIndex
+                });
+        }
+    });
+    console.log("2222222");
+}
+
+function superMath(point1, point2, point3) {
+    console.log(point1.lat());
+    console.log(point1.lng());
+    console.log(point2.lat());
+    console.log(point2.lng());
+    console.log(point3.lat());
+    console.log(point3.lng());
+
+    var a = (point1.lat() - point3.lat()) * (point1.lat() - point3.lat());
+
+    var b = (point1.lng() - point3.lng()) * (point1.lng() - point3.lng());
+
+    var c = Math.sqrt(a+b); 
+
+    console.log(c);
 }
