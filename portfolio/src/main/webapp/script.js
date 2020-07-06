@@ -22,7 +22,7 @@ let markers = [];
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
-        center: userLocation, 
+        center: getUserLocation(), 
         zoom:15});
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
@@ -159,6 +159,7 @@ function getUserLocation() {
           // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
     }
+    return userLocation;
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
@@ -175,7 +176,6 @@ function hardcodedMarkers(){
         ['Murder',31.627014, -106.396744],
         ['Harassment',31.632739,-106.396744],
         ['Robbery',31.634478,-106.400389]
-        ['new marker']
     ];
 
     var infowindow = new google.maps.InfoWindow();
