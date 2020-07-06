@@ -17,6 +17,7 @@ let map;
 let editMarker;
 let userLocation;
 let reports;
+let markers = [];
 
 /** Creates a map and adds it to the page. */
 function createMap(){
@@ -131,6 +132,9 @@ function getRadioValueCrimes(){
     }
 }
 
+/**
+Puts a marker on the user's location
+ */
 function getUserLocation() {
     var infoWindow = new google.maps.InfoWindow;
     // Try HTML5 geolocation.
@@ -149,6 +153,7 @@ function getUserLocation() {
         map.setCenter(userLocation);
         hardcodedMarkers();
         initHeatMap();
+        //addMarkers();
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -182,6 +187,7 @@ function hardcodedMarkers(){
         position: new google.maps.LatLng(reports[i][1], reports[i][2]),
         map: map
       });
+      markers.push(marker);
 
       google.maps.event.addListener(marker, 'click', (function(marker, i) {
         return function() {
@@ -191,6 +197,9 @@ function hardcodedMarkers(){
       })(marker, i));
     }
 }
+/**
+Show/Hide Heatmap
+ */
 var heatmap;
 
 function initHeatMap() {
@@ -213,27 +222,44 @@ function getPoints() {
     ];
 }
 
-// Get the modal
-var modal = document.getElementById("myModal");
+var reportsSideBar = document.getElementById("sideBar");
 
-// Get the button that opens the modal
-var btn = document.getElementById("myBtn");
+var filters = document.getElementById("filters");
 
-// Get the <span> element that closes the modal
 var span = document.getElementsByClassName("close")[0];
 
 var apply = document.getElementById("apply");
 
 // When the user clicks the button, open the modal 
-btn.onclick = function() {
-  modal.style.display = "block";
+filters.onclick = function() {
+  reportsSideBar.style.display = "block";
 }
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
-  modal.style.display = "none";
+  reportsSideBar.style.display = "none";
 }
 
 apply.onclick = function(){
-    modal.style.display = "none";
+  reportsSideBar.style.display = "none";
+}
+
+/** 
+Hide and show markers of reports
+ */
+function toggleMarkers(map){
+    if(map == map){
+        // Shows any markers currently in the array.
+        setMapOnAll(map);
+    }else if(map == null){
+        // Removes the markers from the map, but keeps them in the array.
+        setMapOnAll(null);
+    }
+}
+
+// Sets the map on all markers in the array.
+function setMapOnAll(map) {
+  for (var i = 0; i < markers.length; i++) {
+    markers[i].setMap(map);
+  } 
 }

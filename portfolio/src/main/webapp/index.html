@@ -33,17 +33,15 @@
         <div class="col">
             <div id="map"></div>
             <div class="container" id="floating-panel">
-                <button onclick="toggleMakers()">Reports</button>
+                <input onclick="toggleMarkers(map);" type="button" value="Show Reports"/>
+                <input onclick="toggleMarkers();" type="button" value="Hide Reports" />
                 <button onclick="toggleHeatmap()">Heatmap</button>
             </div>
         </div>
         <div class="col2" style="background-color:#F5A21B">
                     <h2>Latest Reports</h2>
-                    <!-- Trigger/Open The Modal -->
-                    <button id="myBtn">Click here to apply filters</button>
-                    <!-- The Modal -->
-                    <div id="myModal" class="modal">
-                    <!-- Modal content -->
+                    <button id="filters">Click here to apply filters</button>
+                    <div id="sideBar" class="modal">
                     <div class="modal-content">
                         <span class="close">&times;</span>
                         <p> Type of crime: </p>
@@ -61,7 +59,7 @@
                             <li><label><input type="checkbox" 
                                     name="crime"  
                                     value="homicide" />
-                                    murder</label>
+                                    homicide</label>
                                 </li>
                             <li><label><input type="checkbox" 
                                     name="crime" 
@@ -112,7 +110,7 @@
                     </div>
                     <ul>
                     <li>Robbery-June 30 2:00 PM. 2 people took the purse of a woman</li>
-                    <li>Murder-June 30 11:00 AM. Description of the crime</li>
+                    <li>Homicide-June 30 11:00 AM. Description of the crime</li>
                     <li>Harassment-June 29 10:00 PM. Description of the crime</li>
                     <li>Robbery-June 29 5:00 PM. Description of the crime</li>
                     </ul>
