@@ -51,7 +51,6 @@ function createMarkerForDisplay(lat, lng, crimeType, date, time, address, descri
     var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time, address, description});
 
     marker.addListener('click', () => {
-        console.log('OPENING INFO WINDOW FROM ONE OF THE MARKERS');
         infoWindow.open(map, marker);
     });
 }
@@ -80,8 +79,6 @@ function createMarkerForEdit(lat, lng){
     if(editMarker){
         editMarker.setMap(null);
     }
-    
-    document.getElementById('reportsForm').style.display = 'block';
 
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
@@ -97,20 +94,17 @@ function createMarkerForEdit(lat, lng){
 
 /** Builds and returns HTML elements that show an editable textbox and submit button. */
 function buildInfoWindow(lat,lng){
-    const button = document.createElement('button');
-    button.appendChild(document.createTextNode('Submit'));
+    const clone = document.getElementById('reportsForm').cloneNode(true);
+    clone.style.display = 'block';
 
-    button.onclick = () => {
+    
+    document.getElementById('submitReport').addEventListener('click', () => {
         postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         editMarker.setMap(null);
-    }
-    
-    let divContainer = document.createElement('div');
-    divContainer.appendChild(document.getElementById('reportsForm'));
-    divContainer.appendChild(button);
+    });
 
-    return divContainer;
+    return clone;
 }
 
 /** Looks for the value checked in the type of crime report's section. */
