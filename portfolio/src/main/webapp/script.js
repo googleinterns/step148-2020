@@ -80,7 +80,6 @@ function createMarkerForEdit(lat, lng){
         editMarker.setMap(null);
     }
 
-    document.getElementById('reportsForm').style.display = "block";
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
@@ -94,21 +93,18 @@ function createMarkerForEdit(lat, lng){
 }
 
 /** Builds and returns HTML elements that show an editable textbox and submit button. */
-function buildInfoWindow(lat, lng){
-    const button = document.createElement('button');
-    button.appendChild(document.createTextNode('Submit'));
+function buildInfoWindow(lat,lng){
+    const clone = document.getElementById('reportsForm').cloneNode(true);
+    clone.style.display = 'block';
 
-    let divContainer = document.createElement('div');
-    divContainer.appendChild(document.getElementById('reportsForm'));
-    divContainer.appendChild(button);
-
-    button.onclick = () => {
+    
+    document.getElementById('submitReport').addEventListener('click', () => {
         postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
         editMarker.setMap(null);
-    }
+    });
 
-    return divContainer;
+    return clone;
 }
 
 /** Looks for the value checked in the type of crime report's section. */
@@ -119,8 +115,8 @@ function getRadioValueCrimes(){
         return document.getElementById('sexualAssault').value;
     }else if(document.getElementById('robbery').checked) {
         return document.getElementById('robbery').value;
-    }else if(document.getElementById('harrassment').checked) {
-        return document.getElementById('harrassment').value;
+    }else if(document.getElementById('harassment').checked) {
+        return document.getElementById('harassment').value;
     }else if(document.getElementById('kidnapping').checked) {
         return document.getElementById('kidnapping').value;
     }else if(document.getElementById('drugs').checked) {
@@ -176,7 +172,9 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
         ['Robbery',31.62931,-106.392942],
         ['Murder',31.627014, -106.396744],
         ['Harassment',31.632739,-106.396744],
-        ['Robbery',31.634478,-106.400389]
+        ['Robbery',31.634478,-106.400389],
+        ['Murder', 31.745434, -106.486264],
+        ['Murder', 31.766113, -106.493548]
     ];
 
     var infowindow = new google.maps.InfoWindow();
@@ -217,7 +215,9 @@ function getPoints() {
           new google.maps.LatLng(reports[0][1], reports[0][2]),
           new google.maps.LatLng(reports[1][1], reports[1][2]),
           new google.maps.LatLng(reports[2][1], reports[2][2]),
-          new google.maps.LatLng(reports[3][1], reports[3][2])
+          new google.maps.LatLng(reports[3][1], reports[3][2]),
+          new google.maps.LatLng(reports[4][1], reports[4][2]),
+          new google.maps.LatLng(reports[5][1], reports[5][2])
     ];
 }
 
@@ -281,13 +281,13 @@ function route() {
         if (status === 'OK') {
             console.log(result.routes.length);
             
-            for (var i =0; i < result.routes.length; i++) {
+            /*for (var i =0; i < result.routes.length; i++) {
                 new google.maps.DirectionsRenderer({
                 map: map,
                 directions: result,
                 routeIndex: i
                 });
-            }
+            }*/
 
             var counter = 0;
 
@@ -299,6 +299,9 @@ function route() {
             console.log(route.legs[0].steps[0].end_location.lng());
             console.log(route.legs[0].steps[0].distance);*/
             /*superMath(route.legs[0].steps[0].start_location, markerTry ,route.legs[0].steps[0].end_location);*/
+
+            var routeIndex = 0;
+            var lessCrimesInRoute = 1000;
 
         for (var r=0; r < result.routes.length; r++){
             var route = result.routes[r];
@@ -323,9 +326,22 @@ function route() {
                     }
                 }     
             }
+
+            if (counter < lessCrimesInRoute) {
+                lessCrimesInRoute = counter;
+                routeIndex = r;
+                console.log(r);
+            }
+            counter = 0;
         }
 
-        console.log(counter);
+        console.log(routeIndex);
+
+                new google.maps.DirectionsRenderer({
+                map: map,
+                directions: result,
+                routeIndex: routeIndex
+                });
         }
     });
     console.log("2222222");
