@@ -22,7 +22,7 @@ let markers = [];
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 37.422, lng: -122.084 }, 
+        center: getUserLocation(), 
         zoom:15});
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
@@ -151,7 +151,6 @@ function getUserLocation() {
         map.setCenter(userLocation);
         hardcodedMarkers();
         initHeatMap();
-        //addMarkers();
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -160,6 +159,7 @@ function getUserLocation() {
           // Browser doesn't support Geolocation
         handleLocationError(false, infoWindow, map.getCenter());
     }
+    return userLocation;
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
