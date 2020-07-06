@@ -22,7 +22,7 @@ let markers = [];
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 37.422, lng: -122.084 }, 
+        center: userLocation, 
         zoom:15});
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
@@ -151,7 +151,6 @@ function getUserLocation() {
         map.setCenter(userLocation);
         hardcodedMarkers();
         initHeatMap();
-        //addMarkers();
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -176,6 +175,7 @@ function hardcodedMarkers(){
         ['Murder',31.627014,-106.396744],
         ['Harassment',31.632739,-106.396744],
         ['Robbery',31.634478,-106.400389]
+        ['new marker']
     ];
 
     var infowindow = new google.maps.InfoWindow();
