@@ -145,8 +145,7 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
-        //hardcodedMarkers();
-        //fetchMarkers();
+        hardcodedMarkers();
         initHeatMap();
         }, 
         function() {
@@ -167,7 +166,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     infoWindow.open(map);
 }
 
-/*function hardcodedMarkers(){
+function hardcodedMarkers(){
     reports = [
         ['Robbery',31.62931,-106.392942],
         ['Murder',31.627014, -106.396744],
@@ -193,7 +192,7 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
         }
       })(marker, i));
     }
-}*/
+}
 
 /**
 Show/Hide Heatmap
