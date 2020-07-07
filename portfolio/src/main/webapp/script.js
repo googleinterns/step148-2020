@@ -18,6 +18,7 @@ let editMarker;
 let userLocation;
 let reports;
 let markers = [];
+let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 
@@ -168,7 +169,6 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
-        hardcodedMarkers();
         initHeatMap();
         }, 
         function() {
@@ -189,34 +189,6 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
     infoWindow.open(map);
 }
 
-function hardcodedMarkers(){
-    reports = [
-        ['Robbery',31.62931,-106.392942],
-        ['Murder',31.627014, -106.396744],
-        ['Harassment',31.632739,-106.396744],
-        ['Robbery',31.634478,-106.400389],
-        ['Murder', 31.745434, -106.486264],
-        ['Murder', 31.766113, -106.493548]
-    ];
-
-    var infowindow = new google.maps.InfoWindow();
-    var marker, i;
-    for (i = 0; i < reports.length; i++) {  
-      marker = new google.maps.Marker({
-        position: new google.maps.LatLng(reports[i][1], reports[i][2]),
-        map: map
-      });
-      markers.push(marker);
-
-      google.maps.event.addListener(marker, 'click', (function(marker, i) {
-        return function() {
-          infowindow.setContent(reports[i][0]);
-          infowindow.open(map, marker);
-        }
-      })(marker, i));
-    }
-}
-
 /**
 Show/Hide Heatmap
  */
@@ -234,12 +206,13 @@ function toggleHeatmap() {
       
 function getPoints() {
     return [
-          new google.maps.LatLng(reports[0][1], reports[0][2]),
+          /*new google.maps.LatLng(reports[0][1], reports[0][2]),
           new google.maps.LatLng(reports[1][1], reports[1][2]),
           new google.maps.LatLng(reports[2][1], reports[2][2]),
           new google.maps.LatLng(reports[3][1], reports[3][2]),
           new google.maps.LatLng(reports[4][1], reports[4][2]),
-          new google.maps.LatLng(reports[5][1], reports[5][2])
+          new google.maps.LatLng(reports[5][1], reports[5][2])*/
+          
     ];
 }
 
@@ -268,27 +241,20 @@ apply.onclick = function(){
 /** 
 Hide and show markers of reports
  */
-function toggleMarkers(map){
-    if(map == map){
-        // Shows any markers currently in the array.
-        setMapOnAll(map);
-        fetchReportMarkers(map);
-    }else if(map == null){
-        // Removes the markers from the map, but keeps them in the array.
-        setMapOnAll(null);
-        fetchReportMarkers(null);
-    }
+function showMarkers(){
+   // Shows any markers currently in the array.
+    fetchReportMarkers(map);
 }
 
-// Sets the map on all markers in the array.
-function setMapOnAll(map) {
-  for (var i = 0; i < markers.length; i++) {
-    markers[i].setMap(map);
+function hideMarkers(){
+    //Hides any markers currently in the array.
+  for (var i = 0; i < fetchedMarkers.length; i++) {
+      
+      fetchedMarkers[i].setMap(null);
   } 
 }
 
 function fetchReportMarkers(mapVariable){
-    console.log("fetching markers");
     var markerReport;
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
@@ -296,6 +262,7 @@ function fetchReportMarkers(mapVariable){
             position: new google.maps.LatLng(marker.lat, marker.lng),
             map: map
             }); 
+            fetchedMarkers.push(markerReport);
             markerReport.setMap(mapVariable);
         });
     });
