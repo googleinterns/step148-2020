@@ -36,6 +36,14 @@ function createMap(){
 
     var controlDiv = document.getElementById('floating-panel');
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+
+    var card = document.getElementById('search-reports');
+    var input = document.getElementById('searchBox-input');
+
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    var autocomplete = new google.maps.places.Autocomplete(input);
+    
+
     fetchMarkers();
 }
 
