@@ -25,7 +25,14 @@ let markerLng;
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
         center: getUserLocation(), 
-        zoom:15});
+        zoom:15,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+        mapTypeIds: ['roadmap', 'terrain','satellite'],
+        position: google.maps.ControlPosition.RIGHT_BOTTOM
+        }
+    });
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
     map.addListener('click', (event) => {
@@ -40,12 +47,15 @@ function createMap(){
     var card = document.getElementById('search-reports');
     var input = document.getElementById('searchBox-input');
 
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
     var autocomplete = new google.maps.places.Autocomplete(input);
 
     autocomplete.bindTo('bounds', map);
     
     fetchMarkers();
+}
+
+function autocompleteSearch(){
 }
 
 /** Fetches markers from the backend and adds them to the map. */
