@@ -252,11 +252,11 @@ function toggleMarkers(map){
     if(map == map){
         // Shows any markers currently in the array.
         setMapOnAll(map);
-        fetchMarkers(map);
+        fetchReportMarkers(map);
     }else if(map == null){
         // Removes the markers from the map, but keeps them in the array.
         setMapOnAll(null);
-        fetchMarkers(null);
+        fetchReportMarkers(null);
     }
 }
 
