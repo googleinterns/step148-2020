@@ -50,12 +50,12 @@ function createMap(){
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
     var autocomplete = new google.maps.places.Autocomplete(input);
 
+    /** Bind the map's bounds property to the autocomplete object, so that
+        the autocomplete requests use the current map bounds for the bounds
+        for the option in the request */
     autocomplete.bindTo('bounds', map);
-    
-    fetchMarkers();
-}
 
-function autocompleteSearch(){
+    fetchMarkers();
 }
 
 /** Fetches markers from the backend and adds them to the map. */
