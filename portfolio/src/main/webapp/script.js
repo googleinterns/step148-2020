@@ -18,6 +18,8 @@ let editMarker;
 let userLocation;
 let reports;
 let markers = [];
+let markerLat;
+let markerLng;
 
 /** Creates a map and adds it to the page. */
 function createMap(){
@@ -27,6 +29,8 @@ function createMap(){
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
     map.addListener('click', (event) => {
+        markerLat = event.latLng.lat();
+        markerLng = event.latLng.lng();
         createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
     });
 
@@ -80,7 +84,6 @@ function createMarkerForEdit(lat, lng){
         editMarker.setMap(null);
     }
 
-    document.getElementById('reportsForm').style.display = "block";
     editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
@@ -94,21 +97,17 @@ function createMarkerForEdit(lat, lng){
 }
 
 /** Builds and returns HTML elements that show an editable textbox and submit button. */
-function buildInfoWindow(lat, lng){
-    const button = document.createElement('button');
-    button.appendChild(document.createTextNode('Submit'));
+function buildInfoWindow(lat,lng){
+    const clone = document.getElementById('reportsForm').cloneNode(true);
+    clone.id = "";
+    clone.style.display = 'block';
+    return clone;
+}
 
-    let divContainer = document.createElement('div');
-    divContainer.appendChild(document.getElementById('reportsForm'));
-    divContainer.appendChild(button);
-
-    button.onclick = () => {
-        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-        editMarker.setMap(null);
-    }
-
-    return divContainer;
+function submitFormData(element){
+    postMarker(markerLat, markerLng, getRadioValueCrimes(element), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+    createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+    editMarker.setMap(null);
 }
 
 /** Looks for the value checked in the type of crime report's section. */
@@ -119,8 +118,8 @@ function getRadioValueCrimes(){
         return document.getElementById('sexualAssault').value;
     }else if(document.getElementById('robbery').checked) {
         return document.getElementById('robbery').value;
-    }else if(document.getElementById('harrassment').checked) {
-        return document.getElementById('harrassment').value;
+    }else if(document.getElementById('harassment').checked) {
+        return document.getElementById('harassment').value;
     }else if(document.getElementById('kidnapping').checked) {
         return document.getElementById('kidnapping').value;
     }else if(document.getElementById('drugs').checked) {
@@ -197,11 +196,11 @@ function hardcodedMarkers(){
       })(marker, i));
     }
 }
+
 /**
 Show/Hide Heatmap
  */
 var heatmap;
-
 function initHeatMap() {
     heatmap = new google.maps.visualization.HeatmapLayer({
     data: getPoints(),
@@ -253,9 +252,11 @@ function toggleMarkers(map){
     if(map == map){
         // Shows any markers currently in the array.
         setMapOnAll(map);
+        fetchReportMarkers(map);
     }else if(map == null){
         // Removes the markers from the map, but keeps them in the array.
         setMapOnAll(null);
+        fetchReportMarkers(null);
     }
 }
 
@@ -264,6 +265,20 @@ function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   } 
+}
+
+function fetchReportMarkers(mapVariable){
+    console.log("fetching markers");
+    var markerReport;
+    fetch('/markers').then(response => response.json()).then((markers) => {
+        markers.forEach((marker) => {
+            markerReport =new google.maps.Marker({
+            position: new google.maps.LatLng(marker.lat, marker.lng),
+            map: map
+            }); 
+            markerReport.setMap(mapVariable);
+        });
+    });
 }
 
 function route() { 
