@@ -42,8 +42,9 @@ function createMap(){
 
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(card);
     var autocomplete = new google.maps.places.Autocomplete(input);
-    
 
+    autocomplete.bindTo('bounds', map);
+    
     fetchMarkers();
 }
 
