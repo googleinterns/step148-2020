@@ -196,11 +196,11 @@ function hardcodedMarkers(){
       })(marker, i));
     }
 }
+
 /**
 Show/Hide Heatmap
  */
 var heatmap;
-
 function initHeatMap() {
     heatmap = new google.maps.visualization.HeatmapLayer({
     data: getPoints(),
