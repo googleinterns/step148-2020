@@ -52,7 +52,7 @@ function createMap(){
 
     /** Bind the map's bounds property to the autocomplete object, so that
         the autocomplete requests use the current map bounds for the bounds
-        for the option in the request */
+        for the option in the request. */
     autocomplete.bindTo('bounds', map);
 
     fetchMarkers();
@@ -123,6 +123,7 @@ function buildInfoWindow(lat,lng){
     return clone;
 }
 
+/** Manages the data of the report once the info window pops up. */
 function submitFormData(element){
     postMarker(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
     createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
