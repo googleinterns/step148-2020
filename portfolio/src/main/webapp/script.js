@@ -251,25 +251,23 @@ Hide and show markers of reports
 function toggleMarkers(map){
     if(map == map){
         // Shows any markers currently in the array.
-        //setMapOnAll(map);
+        setMapOnAll(map);
         fetchMarkers(map);
     }else if(map == null){
         // Removes the markers from the map, but keeps them in the array.
+        setMapOnAll(null);
         fetchMarkers(null);
-        //setMapOnAll(null);
     }
 }
 
 // Sets the map on all markers in the array.
 function setMapOnAll(map) {
-    System.out.println(fetchMarkers());
-    console.log(fetchMarkers());
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   } 
 }
 
-function fetchMarkers(map){
+function fetchReportMarkers(mapVariable){
     console.log("fetching markers");
     var markerReport;
     fetch('/markers').then(response => response.json()).then((markers) => {
@@ -278,7 +276,7 @@ function fetchMarkers(map){
             position: new google.maps.LatLng(marker.lat, marker.lng),
             map: map
             }); 
-            markerReport.setMap(map);
+            markerReport.setMap(mapVariable);
         });
     });
 }
