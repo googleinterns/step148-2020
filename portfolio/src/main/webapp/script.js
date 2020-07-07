@@ -105,7 +105,7 @@ function buildInfoWindow(lat,lng){
 }
 
 function submitFormData(element){
-    postMarker(markerLat, markerLng, getRadioValueCrimes(element), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+    postMarker(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
     createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
     editMarker.setMap(null);
 }
