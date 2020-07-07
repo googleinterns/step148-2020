@@ -260,9 +260,11 @@ function toggleMarkers(map){
     if(map == map){
         // Shows any markers currently in the array.
         setMapOnAll(map);
+        fetchReportMarkers(map);
     }else if(map == null){
         // Removes the markers from the map, but keeps them in the array.
         setMapOnAll(null);
+        fetchReportMarkers(null);
     }
 }
 
@@ -271,6 +273,20 @@ function setMapOnAll(map) {
   for (var i = 0; i < markers.length; i++) {
     markers[i].setMap(map);
   } 
+}
+
+function fetchReportMarkers(mapVariable){
+    console.log("fetching markers");
+    var markerReport;
+    fetch('/markers').then(response => response.json()).then((markers) => {
+        markers.forEach((marker) => {
+            markerReport =new google.maps.Marker({
+            position: new google.maps.LatLng(marker.lat, marker.lng),
+            map: map
+            }); 
+            markerReport.setMap(mapVariable);
+        });
+    });
 }
 
 function route() { 
