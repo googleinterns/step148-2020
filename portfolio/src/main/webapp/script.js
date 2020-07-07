@@ -271,8 +271,10 @@ function route() {
     let directionsService = new google.maps.DirectionsService(); 
     let directionsDisplay = new google.maps.DirectionsRenderer(); 
     let request = {
-        origin: new google.maps.LatLng(31.742485, -106.485468),
-        destination: new google.maps.LatLng(31.774414, -106.501199),
+        /*31.742485, -106.485468
+          31.774414, -106.501199*/
+        origin: new google.maps.LatLng(31.635106, -106.402459),
+        destination: new google.maps.LatLng(31.626101, -106.394159),
         provideRouteAlternatives: true,
         travelMode: 'DRIVING'
     }
@@ -320,16 +322,12 @@ function route() {
                     var myPosition = new google.maps.LatLng(markers[l].getPosition().lat(), markers[l].getPosition().lng());
 
                     if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0005)) {
-                    
                         console.log("Relocate!");
-                        console.log(l);
-                        console.log(route.legs[0].steps[j].end_location.lat());
-                        console.log(route.legs[0].steps[j].end_location.lng());
                         counter++;
                     }
                 }     
             }
-
+            console.log(counter);
             if (counter < lessCrimesInRoute) {
                 lessCrimesInRoute = counter;
                 routeIndex = r;
@@ -350,19 +348,3 @@ function route() {
     console.log("2222222");
 }
 
-function superMath(point1, point2, point3) {
-    console.log(point1.lat());
-    console.log(point1.lng());
-    console.log(point2.lat());
-    console.log(point2.lng());
-    console.log(point3.lat());
-    console.log(point3.lng());
-
-    var a = (point1.lat() - point3.lat()) * (point1.lat() - point3.lat());
-
-    var b = (point1.lng() - point3.lng()) * (point1.lng() - point3.lng());
-
-    var c = Math.sqrt(a+b); 
-
-    console.log(c);
-}
