@@ -18,6 +18,8 @@ let editMarker;
 let userLocation;
 let reports;
 let markers = [];
+let markerLat;
+let markerLng;
 
 /** Creates a map and adds it to the page. */
 function createMap(){
@@ -27,6 +29,8 @@ function createMap(){
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
     map.addListener('click', (event) => {
+        markerLat = event.latLng.lat();
+        markerLng = event.latLng.lng();
         createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
     });
 
@@ -95,16 +99,15 @@ function createMarkerForEdit(lat, lng){
 /** Builds and returns HTML elements that show an editable textbox and submit button. */
 function buildInfoWindow(lat,lng){
     const clone = document.getElementById('reportsForm').cloneNode(true);
+    clone.id = "";
     clone.style.display = 'block';
-
-    
-    document.getElementById('submitReport').addEventListener('click', () => {
-        postMarker(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-        createMarkerForDisplay(lat, lng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-        editMarker.setMap(null);
-    });
-
     return clone;
+}
+
+function submitFormData(element){
+    postMarker(markerLat, markerLng, getRadioValueCrimes(element), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+    createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+    editMarker.setMap(null);
 }
 
 /** Looks for the value checked in the type of crime report's section. */
