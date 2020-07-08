@@ -26,7 +26,14 @@ let markerLng;
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
         center: getUserLocation(), 
-        zoom:15});
+        zoom:15,
+        mapTypeControl: true,
+        mapTypeControlOptions: {
+        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+        mapTypeIds: ['roadmap', 'terrain','satellite'],
+        position: google.maps.ControlPosition.RIGHT_BOTTOM
+        }
+    });
         
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
     map.addListener('click', (event) => {
@@ -37,6 +44,18 @@ function createMap(){
 
     var controlDiv = document.getElementById('floating-panel');
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+
+    var card = document.getElementById('search-reports');
+    var input = document.getElementById('searchBox-input');
+
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
+    var autocomplete = new google.maps.places.Autocomplete(input);
+
+    /** Bind the map's bounds property to the autocomplete object, so that
+        the autocomplete requests use the current map bounds for the bounds
+        for the option in the request. */
+    autocomplete.bindTo('bounds', map);
+
     fetchMarkers();
 }
 
@@ -105,8 +124,9 @@ function buildInfoWindow(lat,lng){
     return clone;
 }
 
+/** Manages the data of the report once the info window pops up. */
 function submitFormData(element){
-    postMarker(markerLat, markerLng, getRadioValueCrimes(element), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
+    postMarker(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
     createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
     editMarker.setMap(null);
 }
