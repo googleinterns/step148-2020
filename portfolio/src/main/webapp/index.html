@@ -33,10 +33,13 @@
         <div class="col">
             <div id="map"></div>
             <div class="container" id="floating-panel">
+                <div id="directionsUI">
+                    <textarea name="text-comment">Type destination here...</textarea>
+                    <button onclick="route()">GO!</button>
+                </div>
                 <input onclick="toggleMarkers(map);" type="button" value="Show Reports"/>
                 <input onclick="toggleMarkers();" type="button" value="Hide Reports" />
                 <button onclick="toggleHeatmap()">Heatmap</button>
-                <button onclick="route()">TRYING</button>
             </div>
         </div>
         <div class="col2" style="background-color:#F5A21B">
