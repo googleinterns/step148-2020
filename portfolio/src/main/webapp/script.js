@@ -45,11 +45,8 @@ function createMap(){
     var controlDiv = document.getElementById('floating-panel');
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
 
-    var card = document.getElementById('search-reports');
-    var input = document.getElementById('searchBox-input');
-
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
-    var autocomplete = new google.maps.places.Autocomplete(input);
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('search-reports'));
+    var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox-input'));
 
     /** Bind the map's bounds property to the autocomplete object, so that the autocomplete requests 
         use the current map bounds for the bounds for the option in the request. */
@@ -62,6 +59,19 @@ function createMap(){
         markerLng = place.geometry.location.lng();
         createMarkerForEdit(markerLat,markerLng);
     });
+
+    function typeOfSearch(id, type){
+        var radioButton = document.getElementById(id);
+
+        radioButton.addEventListener('click', function(){
+            console.log(type);
+            autocomplete.setTypes(type);
+        });
+    }
+
+    typeOfSearch('type-all', []);
+    typeOfSearch('type-address', ['address']);
+    typeOfSearch('type-establishment', ['establishment']);
 
     fetchMarkers();
 }
