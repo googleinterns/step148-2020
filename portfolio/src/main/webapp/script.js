@@ -42,8 +42,7 @@ function createMap(){
         createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
     });
 
-    var controlDiv = document.getElementById('floating-panel');
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
+    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('floating-panel'));
 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('search-reports'));
     var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox-input'));
@@ -72,28 +71,6 @@ function createMap(){
     typeOfSearch('type-all', []);
     typeOfSearch('type-address', ['address']);
     typeOfSearch('type-establishment', ['establishment']);
-
-    fetchMarkers();
-}
-
-/** Fetches markers from the backend and adds them to the map. */
-function fetchMarkers(){
-    fetch('/markers').then(response => response.json()).then((markers) => {
-        markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.description);
-        });
-    });
-}
-
-/** Creates a marker that shows a read-only info window when clicked. */
-function createMarkerForDisplay(lat, lng, crimeType, date, time, address, description){
-    const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
-
-    var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time, address, description});
-
-    marker.addListener('click', () => {
-        infoWindow.open(map, marker);
-    });
 }
 
 /** Sends a marker to the backend for saving. */
@@ -144,7 +121,6 @@ function buildInfoWindow(lat,lng){
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element){
     postMarker(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-    createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
     editMarker.setMap(null);
 }
 
