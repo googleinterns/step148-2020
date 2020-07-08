@@ -51,10 +51,17 @@ function createMap(){
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
     var autocomplete = new google.maps.places.Autocomplete(input);
 
-    /** Bind the map's bounds property to the autocomplete object, so that
-        the autocomplete requests use the current map bounds for the bounds
-        for the option in the request. */
+    /** Bind the map's bounds property to the autocomplete object, so that the autocomplete requests 
+        use the current map bounds for the bounds for the option in the request. */
     autocomplete.bindTo('bounds', map);
+
+    /** Listens for the event fired when the user selects a prediction. The report's form pops up. */
+    autocomplete.addListener('place_changed', function() {
+        var place = autocomplete.getPlace();
+        markerLat = place.geometry.location.lat();
+        markerLng = place.geometry.location.lng();
+        createMarkerForEdit(markerLat,markerLng);
+    });
 
     fetchMarkers();
 }
