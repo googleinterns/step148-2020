@@ -63,7 +63,6 @@ function createMap(){
         var radioButton = document.getElementById(id);
 
         radioButton.addEventListener('click', function(){
-            console.log(type);
             autocomplete.setTypes(type);
         });
     }
