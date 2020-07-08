@@ -111,7 +111,7 @@ function createMarkerForEdit(lat, lng){
         editMarker.setMap(null);
     }
 
-    editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
+    editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map, draggable: true});
 
     let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
 
