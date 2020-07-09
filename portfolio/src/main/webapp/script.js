@@ -149,6 +149,8 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
+        initHeatMap();
+        console.log(userLocation.lat);
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -186,9 +188,10 @@ function toggleHeatmap() {
 function getPoints() {
     var heatPoints = [];
     var individualPoint;
-        fetch('/markers')
-        .then(response => response.json())
-        .then((markers) => {
+    var locationOfUser = locationToArray();
+    fetch("/markersByArea?location=" + locationOfUser)
+    .then(response => response.json())
+    .then((markers) => {
         markers.forEach((marker) => {
             individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
             heatPoints.push(individualPoint);
@@ -239,7 +242,10 @@ function hideMarkers(){
 
 function fetchReportMarkers(){
     var markerReport;
-    fetch('/markers').then(response => response.json()).then((markers) => {
+    var locationOfUser = locationToArray();
+    fetch("/markersByArea?location=" + locationOfUser)
+    .then(response => response.json())
+    .then((markers) => {
         markers.forEach((marker) => {
             markerReport =new google.maps.Marker({
             position: new google.maps.LatLng(marker.lat, marker.lng),
@@ -354,4 +360,12 @@ function superMath(point1, point2, point3) {
     var c = Math.sqrt(a+b); 
 
     console.log(c);
+}
+
+function locationToArray(){
+    var locArray = [];
+    locArray[0] = userLocation.lat;
+    locArray[1] = userLocation.lng;
+    console.log(locArray[0]);
+    return locArray;
 }
