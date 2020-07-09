@@ -46,12 +46,12 @@ function createMap() {
   });
 
   map.controls[google.maps.ControlPosition.TOP_RIGHT].push(
-      document.getElementById('floating-panel'));
+    document.getElementById('floating-panel'));
 
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
-      document.getElementById('search-reports'));
+    document.getElementById('search-reports'));
   var autocomplete = new google.maps.places.Autocomplete(
-      document.getElementById('searchBox-input'));
+    document.getElementById('searchBox-input'));
 
   /**
      Bind the map's bounds property to the autocomplete object, so that the
@@ -96,7 +96,10 @@ function postMarker(lat, lng, type, date, time, address, description) {
   params.append('address', address);
   params.append('description', description);
 
-  fetch('/markers', {method: 'POST', body: params}).catch((error) => {
+  fetch('/markers', {
+    method: 'POST',
+    body: params
+  }).catch((error) => {
     console.error(error);
   });
 }
@@ -108,11 +111,19 @@ function createMarkerForEdit(lat, lng) {
     editMarker.setMap(null);
   }
 
-  editMarker = new google.maps.Marker(
-      {position: {lat: lat, lng: lng}, map: map, draggable: true});
+  editMarker = new google.maps.Marker({
+    position: {
+      lat: lat,
+      lng: lng
+    },
+    map: map,
+    draggable: true
+  });
 
   let infoWindow =
-      new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
+    new google.maps.InfoWindow({
+      content: buildInfoWindow(lat, lng)
+    });
 
   /** When the user closes the editable info window, remove the marker. */
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -136,11 +147,11 @@ function buildInfoWindow(lat, lng) {
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element) {
   postMarker(
-      markerLat, markerLng, getRadioValueCrimes(),
-      document.getElementById('date').value,
-      document.getElementById('time').value,
-      document.getElementById('address').value,
-      document.getElementById('description').value);
+    markerLat, markerLng, getRadioValueCrimes(),
+    document.getElementById('date').value,
+    document.getElementById('time').value,
+    document.getElementById('address').value,
+    document.getElementById('description').value);
   editMarker.setMap(null);
 }
 
@@ -171,19 +182,22 @@ function getUserLocation() {
   // Try HTML5 geolocation.
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
-        function(position) {
-          userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          var marker = new google.maps.Marker(
-              {position: userLocation, map: map, title: 'User location'});
-          marker.setMap(map);
-          map.setCenter(userLocation);
-        },
-        function() {
-          handleLocationError(true, infoWindow, map.getCenter());
+      function(position) {
+        userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        var marker = new google.maps.Marker({
+          position: userLocation,
+          map: map,
+          title: 'User location'
         });
+        marker.setMap(map);
+        map.setCenter(userLocation);
+      },
+      function() {
+        handleLocationError(true, infoWindow, map.getCenter());
+      });
   } else {
     // Browser doesn't support Geolocation
     handleLocationError(false, infoWindow, map.getCenter());
@@ -194,9 +208,9 @@ function getUserLocation() {
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
   infoWindow.setPosition(pos);
   infoWindow.setContent(
-      browserHasGeolocation ?
-          'Error: The Geolocation service failed.' :
-          'Error: Your browser doesn\'t support geolocation.');
+    browserHasGeolocation ?
+    'Error: The Geolocation service failed.' :
+    'Error: Your browser doesn\'t support geolocation.');
   infoWindow.open(map);
 }
 
@@ -204,9 +218,13 @@ function handleLocationError(browserHasGeolocation, infoWindow, pos) {
 Show/Hide Heatmap
  */
 var heatmap;
+
 function initHeatMap() {
   heatmap =
-      new google.maps.visualization.HeatmapLayer({data: getPoints(), map: map});
+    new google.maps.visualization.HeatmapLayer({
+      data: getPoints(),
+      map: map
+    });
 }
 
 function toggleHeatmap() {
@@ -217,16 +235,16 @@ function getPoints() {
   var heatPoints = [];
   var individualPoint;
   fetch('/markers')
-      .then(response => response.json())
-      .then((markers) => {
-        markers.forEach((marker) => {
-          individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
-          heatPoints.push(individualPoint);
-        });
-      })
-      .catch((error) => {
-        console.error(error);
+    .then(response => response.json())
+    .then((markers) => {
+      markers.forEach((marker) => {
+        individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
+        heatPoints.push(individualPoint);
       });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
   return heatPoints;
 }
 
@@ -239,19 +257,16 @@ var span = document.getElementsByClassName('close')[0];
 var apply = document.getElementById('apply');
 
 // When the user clicks the button, open the modal
-filters.onclick =
-    function() {
+filters.onclick = function() {
   reportsSideBar.style.display = 'block';
 }
 
-    // When the user clicks on <span> (x), close the modal
-    span.onclick =
-        function() {
+// When the user clicks on <span> (x), close the modal
+span.onclick = function() {
   reportsSideBar.style.display = 'none';
 }
 
-        apply.onclick =
-            function() {
+apply.onclick = function() {
   reportsSideBar.style.display = 'none';
 }
 
@@ -276,21 +291,21 @@ function
 fetchReportMarkers() {
   var markerReport;
   fetch('/markers')
-      .then(response => response.json())
-      .then((markers) => {
-        markers.forEach((marker) => {
-          markerReport = new google.maps.Marker({
-            position: new google.maps.LatLng(marker.lat, marker.lng),
-            map: map
-          });
-          fetchedMarkers.push(markerReport);
-          reportsForMarkers.push(marker);
-          markerReport.setMap(map);
+    .then(response => response.json())
+    .then((markers) => {
+      markers.forEach((marker) => {
+        markerReport = new google.maps.Marker({
+          position: new google.maps.LatLng(marker.lat, marker.lng),
+          map: map
         });
-      })
-      .catch((error) => {
-        console.error(error);
+        fetchedMarkers.push(markerReport);
+        reportsForMarkers.push(marker);
+        markerReport.setMap(map);
       });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 }
 
 function
@@ -305,7 +320,10 @@ route() {
     travelMode: 'DRIVING'
   }
 
-  let markerTry = new google.maps.LatLng({lat: 31.761679, lng: -106.491667});
+  let markerTry = new google.maps.LatLng({
+    lat: 31.761679,
+    lng: -106.491667
+  });
 
   directionsDisplay.setMap(map);
   directionsService.route(request, function(result, status) {
@@ -342,19 +360,19 @@ route() {
           var routeArray = new google.maps.Polyline({
             path: [
               new google.maps.LatLng(
-                  route.legs[0].steps[j].start_location.lat(),
-                  route.legs[0].steps[j].start_location.lng()),
+                route.legs[0].steps[j].start_location.lat(),
+                route.legs[0].steps[j].start_location.lng()),
               new google.maps.LatLng(
-                  route.legs[0].steps[j].end_location.lat(),
-                  route.legs[0].steps[j].end_location.lng())
+                route.legs[0].steps[j].end_location.lat(),
+                route.legs[0].steps[j].end_location.lng())
             ]
           });
           for (var l = 0; l < markers.length; l++) {
             var myPosition = new google.maps.LatLng(
-                markers[l].getPosition().lat(), markers[l].getPosition().lng());
+              markers[l].getPosition().lat(), markers[l].getPosition().lng());
 
             if (google.maps.geometry.poly.isLocationOnEdge(
-                    myPosition, routeArray, 0.0005)) {
+                myPosition, routeArray, 0.0005)) {
               console.log('Relocate!');
               console.log(l);
               console.log(route.legs[0].steps[j].end_location.lat());
@@ -374,8 +392,11 @@ route() {
 
       console.log(routeIndex);
 
-      new google.maps.DirectionsRenderer(
-          {map: map, directions: result, routeIndex: routeIndex});
+      new google.maps.DirectionsRenderer({
+        map: map,
+        directions: result,
+        routeIndex: routeIndex
+      });
     }
   });
   console.log('2222222');
