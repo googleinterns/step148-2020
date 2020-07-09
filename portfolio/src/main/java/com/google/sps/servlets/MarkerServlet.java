@@ -45,6 +45,12 @@ public class MarkerServlet extends HttpServlet {
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException{
         double lat = Double.parseDouble(request.getParameter("lat"));
         double lng = Double.parseDouble(request.getParameter("lng"));
+        
+        /** Checks for valid coordinates (limited area covered) */
+        if((lat < 31.738327 || lat > 31.747216) || (lng < -106.491492 || lng > -106.478373)){
+            System.out.println("Not valid coordinates, cannot store");
+            return;
+        }
 
         /** Use to ensure that end-user provided HTML contains only elements and attributes that you 
             are expecting; no junk */
