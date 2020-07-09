@@ -16,11 +16,11 @@ let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
 let userLocation;
-let reports;
 let markers = [];
 let fetchedMarkers = [];
 let markerLat;
 let markerLng;
+let reportsForMarkers = [];
 
 /** Creates a map and adds it to the page. */
 function createMap(){
@@ -161,7 +161,6 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
-        initHeatMap();
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -197,15 +196,20 @@ function toggleHeatmap() {
 }
       
 function getPoints() {
-    return [
-          /*new google.maps.LatLng(reports[0][1], reports[0][2]),
-          new google.maps.LatLng(reports[1][1], reports[1][2]),
-          new google.maps.LatLng(reports[2][1], reports[2][2]),
-          new google.maps.LatLng(reports[3][1], reports[3][2]),
-          new google.maps.LatLng(reports[4][1], reports[4][2]),
-          new google.maps.LatLng(reports[5][1], reports[5][2])*/
-          
-    ];
+    var heatPoints = [];
+    var individualPoint;
+        fetch('/markers')
+        .then(response => response.json())
+        .then((markers) => {
+        markers.forEach((marker) => {
+            individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
+            heatPoints.push(individualPoint);
+        });
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+    return heatPoints;
 }
 
 var reportsSideBar = document.getElementById("sideBar");
@@ -235,18 +239,17 @@ Hide and show markers of reports
  */
 function showMarkers(){
    // Shows any markers currently in the array.
-    fetchReportMarkers(map);
+    fetchReportMarkers();
 }
 
 function hideMarkers(){
     //Hides any markers currently in the array.
   for (var i = 0; i < fetchedMarkers.length; i++) {
-      
       fetchedMarkers[i].setMap(null);
   } 
 }
 
-function fetchReportMarkers(mapVariable){
+function fetchReportMarkers(){
     var markerReport;
     fetch('/markers').then(response => response.json()).then((markers) => {
         markers.forEach((marker) => {
@@ -255,8 +258,12 @@ function fetchReportMarkers(mapVariable){
             map: map
             }); 
             fetchedMarkers.push(markerReport);
-            markerReport.setMap(mapVariable);
+            reportsForMarkers.push(marker);
+            markerReport.setMap(map);
         });
+    })
+    .catch((error) => {
+        console.error(error);
     });
 }
 
