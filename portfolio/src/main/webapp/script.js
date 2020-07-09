@@ -186,11 +186,16 @@ function toggleHeatmap() {
 function getPoints() {
     var heatPoints = [];
     var individualPoint;
-        fetch('/markers').then(response => response.json()).then((markers) => {
+        fetch('/markers')
+        .then(response => response.json())
+        .then((markers) => {
         markers.forEach((marker) => {
             individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
             heatPoints.push(individualPoint);
         });
+    })
+    .catch((error) => {
+        console.error(error);
     });
     return heatPoints;
 }
@@ -244,6 +249,9 @@ function fetchReportMarkers(){
             reportsForMarkers.push(marker);
             markerReport.setMap(map);
         });
+    })
+    .catch((error) => {
+        console.error(error);
     });
 }
 
