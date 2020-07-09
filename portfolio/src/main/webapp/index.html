@@ -33,17 +33,8 @@
         <div class="col">
             <div id="map"></div>
             <div class="container" id="floating-panel">
-<<<<<<< HEAD
-                <div id="directionsUI">
-                    <textarea name="text-comment">Type destination here...</textarea>
-                    <button onclick="route()">GO!</button>
-                </div>
-                <input onclick="toggleMarkers(map);" type="button" value="Show Reports"/>
-                <input onclick="toggleMarkers();" type="button" value="Hide Reports" />
-=======
                 <input onclick="showMarkers();" type="button" value="Show Reports"/>
                 <input onclick="hideMarkers();" type="button" value="Hide Reports" />
->>>>>>> 4ae6d6d47a3d41fc66c8f71a79cddb77ed223fe1
                 <button onclick="toggleHeatmap()">Heatmap</button>
             </div>
         </div>
@@ -162,6 +153,24 @@
             <input id="searchBox-input" type="text" placeholder="Enter a location"/>
         </div>
     </div>
+
+    <div class="search-route" id="search-route">
+        <div id="b">Directions API</div>
+            <select id "travel" size = "3">
+                <option>DRIVING</option>
+                <option>WALKING</option>
+                <option>BICYCLING</option>
+            </select>
+        
+        <div id="originRoute">
+            <input id="e" type="text" placeholder="Enter origin"/>
+        </div>
+        <div id="destinationRoute">
+            <input id="d" type="text" placeholder="Enter destination"/>
+        </div>
+        <button onclick="route()">GO SAFE!</button>
+    </div>
+
     <footer>
         <p>Contact us</p>
     </footer>
