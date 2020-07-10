@@ -5,7 +5,7 @@
     <title>Capstone Project</title>
     <link rel="stylesheet" href="style.css">
     <script src="script.js" defer></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDG5Dd_pEnT848pwjltGYB73ixTpbruh6s&libraries=visualization"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDG5Dd_pEnT848pwjltGYB73ixTpbruh6s&libraries=visualization&libraries=places"></script>
   </head>
 
   <body onload="createMap();">
@@ -148,6 +148,20 @@
     </form>
     </div>
 
+    <div class="search-reports" id="search-reports">
+        <div id="search-title">Report's Address</div>
+        <div id="search-filter" class="search-filter">
+            <input type="radio" name="search" id="type-all" checked="checked"/>
+            <label for="type-all">All</label>
+            <input type="radio" name="search" id="type-address">
+            <label for="type-address">Addresses</label>
+            <input type="radio" name="search" id="type-establishment">
+            <label for="type-establishment">Establishments</label>
+        </div>
+        <div id="searchBox">
+            <input id="searchBox-input" type="text" placeholder="Enter a location"/>
+        </div>
+    </div>
     <footer>
         <p>Contact us</p>
     </footer>
