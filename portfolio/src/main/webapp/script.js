@@ -21,6 +21,7 @@ let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 let reportsForMarkers = [];
+var autocomplete;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -56,18 +57,10 @@ function createMap() {
 
   map.controls[google.maps.ControlPosition.TOP_RIGHT].push(
     document.getElementById('floating-panel'));
-
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-reports'));
-  var autocomplete = new google.maps.places.Autocomplete(
+  autocomplete = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
-
-  /**
-     Bind the map's bounds property to the autocomplete object, so that the
-     autocomplete requests use the current map bounds for the bounds for the
-     option in the request.
-   */
-  autocomplete.bindTo('bounds', map);
 
   /**
    * Listens for the event fired when the user selects a prediction. The
@@ -204,6 +197,10 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
+
+        var circle = new google.maps.Circle(
+          {center: userLocation, radius: 5000});
+        autocomplete.setBounds(circle.getBounds());
       },
       function() {
         handleLocationError(true, infoWindow, map.getCenter());
