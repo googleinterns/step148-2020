@@ -117,6 +117,22 @@ function buildInfoWindow(lat,lng){
     return clone;
 }
 
+function clickInfoWindow(markerReport, crimeType, date, time, address, description){
+    const text = 
+      '<h1>'+crimeType+'</h1>'+
+      '<div id="bodyContent">'+
+      '<p>'+ date +'-' + time +'</p>'+
+      '<p>'+ address +'</p>'+
+      '<p>Description: ' + description;
+    var infowindow = new google.maps.InfoWindow({
+        content: text
+    });
+
+    markerReport.addListener('click', function() {
+        infowindow.open(map, markerReport);
+    });
+}
+
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element){
     postMarker(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
@@ -161,8 +177,9 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
+        console.log("init heatmap here!");
         initHeatMap();
-        console.log(userLocation.lat);
+        //console.log(userLocation.lat);
         }, 
         function() {
             handleLocationError(true, infoWindow, map.getCenter());
@@ -187,10 +204,12 @@ Show/Hide Heatmap
  */
 var heatmap;
 function initHeatMap() {
+    console.log("inside method");
     heatmap = new google.maps.visualization.HeatmapLayer({
     data: getPoints(),
     map: map
     });
+    console.log("new heatmap");
 }
 
 function toggleHeatmap() {
@@ -198,10 +217,11 @@ function toggleHeatmap() {
 }
       
 function getPoints() {
+    console.log("inside get points");
     var heatPoints = [];
     var individualPoint;
     var locationOfUser = locationToArray();
-    fetch("/markersByArea?location=" + locationOfUser)
+    fetch("/markers?location=" + locationOfUser)
     .then(response => response.json())
     .then((markers) => {
         markers.forEach((marker) => {
@@ -255,7 +275,7 @@ function hideMarkers(){
 function fetchReportMarkers(){
     var markerReport;
     var locationOfUser = locationToArray();
-    fetch("/markersByArea?location=" + locationOfUser)
+    fetch("/markers?location=" + locationOfUser)
     .then(response => response.json())
     .then((markers) => {
         markers.forEach((marker) => {
@@ -266,6 +286,7 @@ function fetchReportMarkers(){
             fetchedMarkers.push(markerReport);
             reportsForMarkers.push(marker);
             markerReport.setMap(map);
+            clickInfoWindow(markerReport, marker.crimeType, marker.date, marker.time, marker.address, marker.description);
         });
     })
     .catch((error) => {

@@ -41,6 +41,12 @@
         <artifactId>jsoup</artifactId>
         <version>1.8.3</version>
     </dependency>
+
+    <dependency>
+        <groupId>org.apache.lucene</groupId>
+        <artifactId>lucene-spatial</artifactId>
+        <version>8.2.0</version>
+    </dependency>
   </dependencies>
 
   <build>
