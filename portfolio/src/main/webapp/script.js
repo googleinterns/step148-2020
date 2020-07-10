@@ -16,281 +16,324 @@ let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
 let userLocation;
-let reports;
 let markers = [];
 let fetchedMarkers = [];
 let markerLat;
 let markerLng;
+let reportsForMarkers = [];
 let destLat;
 let destLng;
 let orgLat;
 let orgLng;
 
 /** Creates a map and adds it to the page. */
-function createMap(){
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: getUserLocation(), 
-        zoom:15,
-        mapTypeControl: true,
-        mapTypeControlOptions: {
-        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-        mapTypeIds: ['roadmap', 'terrain','satellite'],
-        position: google.maps.ControlPosition.RIGHT_BOTTOM
-        }
+function createMap() {
+  map = new google.maps.Map(document.getElementById('map'), {
+    center: getUserLocation(),
+    zoom: 15,
+    mapTypeControl: true,
+    mapTypeControlOptions: {
+      style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+      mapTypeIds: ['roadmap', 'terrain', 'satellite'],
+      position: google.maps.ControlPosition.RIGHT_BOTTOM
+    }
+  });
+
+  /**
+   * When the user clicks on the map, show a marker with a form the user can
+   * edit.
+   */
+  map.addListener('click', (event) => {
+    markerLat = event.latLng.lat();
+    markerLng = event.latLng.lng();
+    createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
+  });
+
+  map.controls[google.maps.ControlPosition.TOP_RIGHT].push(
+    document.getElementById('floating-panel'));
+
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(
+    document.getElementById('search-reports'));
+
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(
+    document.getElementById('search-route'));
+  
+  var autocomplete = new google.maps.places.Autocomplete(
+    document.getElementById('searchBox-input'));
+
+  var autocomplete2 = new google.maps.places.Autocomplete(
+    document.getElementById('d'));
+
+  var autocomplete3 = new google.maps.places.Autocomplete(
+    document.getElementById('e'));
+  /**
+     Bind the map's bounds property to the autocomplete object, so that the
+     autocomplete requests use the current map bounds for the bounds for the
+     option in the request.
+   */
+  autocomplete.bindTo('bounds', map);
+  autocomplete2.bindTo('bounds', map);
+  autocomplete3.bindTo('bounds', map);
+
+  /**
+   * Listens for the event fired when the user selects a prediction. The
+   * report's form pops up.
+   */
+  autocomplete.addListener('place_changed', function() {
+    var place = autocomplete.getPlace();
+    markerLat = place.geometry.location.lat();
+    markerLng = place.geometry.location.lng();
+    createMarkerForEdit(markerLat, markerLng);
+  });
+
+  function typeOfSearch(id, type) {
+    var radioButton = document.getElementById(id);
+
+    radioButton.addEventListener('click', function() {
+      autocomplete.setTypes(type);
     });
-        
-    /** When the user clicks on the map, show a marker with a form the user can edit. */ 
-    map.addListener('click', (event) => {
-        markerLat = event.latLng.lat();
-        markerLng = event.latLng.lng();
-        createMarkerForEdit(event.latLng.lat(), event.latLng.lng());
-    });
+  }
 
-    var controlDiv = document.getElementById('floating-panel');
-    map.controls[google.maps.ControlPosition.TOP_RIGHT].push(controlDiv);
-
-    var card = document.getElementById('search-reports');
-    var card2 = document.getElementById('search-route');
-    var input = document.getElementById('searchBox-input');
-    var input2 = document.getElementById('d');
-    var input3 = document.getElementById('e');
-
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(card2);
-    var autocomplete = new google.maps.places.Autocomplete(input);
-    var autocomplete2 = new google.maps.places.Autocomplete(input2);
-    var autocomplete3 = new google.maps.places.Autocomplete(input3);
-
-    /** Bind the map's bounds property to the autocomplete object, so that
-        the autocomplete requests use the current map bounds for the bounds
-        for the option in the request. */
-    autocomplete.bindTo('bounds', map);
-    autocomplete2.bindTo('bounds', map);
-    autocomplete3.bindTo('bounds', map);
-
-    fetchMarkers();
-}
-
-/** Fetches markers from the backend and adds them to the map. */
-function fetchMarkers(){
-    fetch('/markers').then(response => response.json()).then((markers) => {
-        markers.forEach((marker) => {
-            createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.description);
-        });
-    });
-}
-
-/** Creates a marker that shows a read-only info window when clicked. */
-function createMarkerForDisplay(lat, lng, crimeType, date, time, address, description){
-    const marker = new google.maps.Marker({position: {lat: lat, lng: lng, map: map}});
-
-    var infoWindow = new google.maps.InfoWindow({content: crimeType, date, time, address, description});
-
-    marker.addListener('click', () => {
-        infoWindow.open(map, marker);
-    });
+  typeOfSearch('type-all', []);
+  typeOfSearch('type-address', ['address']);
+  typeOfSearch('type-establishment', ['establishment']);
 }
 
 /** Sends a marker to the backend for saving. */
-function postMarker(lat, lng, type, date, time, address, description){
-    const params = new URLSearchParams();
+function postMarker(lat, lng, type, date, time, address, description) {
+  const params = new URLSearchParams();
 
-    params.append('lat', lat);
-    params.append('lng', lng);
-    params.append('crimeType', type);
-    params.append('date', date);
-    params.append('time', time);
-    params.append('address', address);
-    params.append('description', description);
+  params.append('lat', lat);
+  params.append('lng', lng);
+  params.append('crimeType', type);
+  params.append('date', date);
+  params.append('time', time);
+  params.append('address', address);
+  params.append('description', description);
 
-    fetch('/markers', {method: 'POST', body: params})
-    .catch((error) => {
-        console.error(error);
-    });
+  fetch('/markers', {
+    method: 'POST',
+    body: params
+  }).catch((error) => {
+    console.error(error);
+  });
 }
 
 /** Creates a marker that shows a textbox the user can edit. */
-function createMarkerForEdit(lat, lng){
-    /** If we are already showing an editable marker, then remove it. */
-    if(editMarker){
-        editMarker.setMap(null);
-    }
+function createMarkerForEdit(lat, lng) {
+  /** If we are already showing an editable marker, then remove it. */
+  if (editMarker) {
+    editMarker.setMap(null);
+  }
 
-    editMarker = new google.maps.Marker({position: {lat: lat, lng: lng}, map: map});
+  editMarker = new google.maps.Marker({
+    position: {
+      lat: lat,
+      lng: lng
+    },
+    map: map,
+    draggable: true
+  });
 
-    let infoWindow = new google.maps.InfoWindow({content: buildInfoWindow(lat, lng)});
-
-    /** When the user closes the editable info window, remove the marker. */
-    google.maps.event.addListener(infoWindow, 'closeclick', () => {
-        editMarker.setMap(null);
+  let infoWindow =
+    new google.maps.InfoWindow({
+      content: buildInfoWindow(lat, lng)
     });
 
-    infoWindow.open(map, editMarker);
+  /** When the user closes the editable info window, remove the marker. */
+  google.maps.event.addListener(infoWindow, 'closeclick', () => {
+    editMarker.setMap(null);
+  });
+
+  infoWindow.open(map, editMarker);
 }
 
-/** Builds and returns HTML elements that show an editable textbox and submit button. */
-function buildInfoWindow(lat,lng){
-    const clone = document.getElementById('reportsForm').cloneNode(true);
-    clone.id = "";
-    clone.style.display = 'block';
-    return clone;
+/**
+ * Builds and returns HTML elements that show an editable textbox and submit
+ * button.
+ */
+function buildInfoWindow(lat, lng) {
+  const clone = document.getElementById('reportsForm').cloneNode(true);
+  clone.id = '';
+  clone.style.display = 'block';
+  return clone;
 }
 
 /** Manages the data of the report once the info window pops up. */
-function submitFormData(element){
-    postMarker(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-    createMarkerForDisplay(markerLat, markerLng, getRadioValueCrimes(), document.getElementById('date').value, document.getElementById('time').value, document.getElementById('address').value, document.getElementById('description').value);
-    editMarker.setMap(null);
+function submitFormData(element) {
+  postMarker(
+    markerLat, markerLng, getRadioValueCrimes(),
+    document.getElementById('date').value,
+    document.getElementById('time').value,
+    document.getElementById('address').value,
+    document.getElementById('description').value);
+  editMarker.setMap(null);
 }
 
 /** Looks for the value checked in the type of crime report's section. */
-function getRadioValueCrimes(){
-    if(document.getElementById('homicide').checked) {
-        return document.getElementById('homicide').value;
-    }else if(document.getElementById('sexualAssault').checked) {
-        return document.getElementById('sexualAssault').value;
-    }else if(document.getElementById('robbery').checked) {
-        return document.getElementById('robbery').value;
-    }else if(document.getElementById('harassment').checked) {
-        return document.getElementById('harassment').value;
-    }else if(document.getElementById('kidnapping').checked) {
-        return document.getElementById('kidnapping').value;
-    }else if(document.getElementById('drugs').checked) {
-        return document.getElementById('drugs').value;
-    }else{
-        return document.getElementById('other').value;
-    }
+function getRadioValueCrimes() {
+  if (document.getElementById('homicide').checked) {
+    return document.getElementById('homicide').value;
+  } else if (document.getElementById('sexualAssault').checked) {
+    return document.getElementById('sexualAssault').value;
+  } else if (document.getElementById('robbery').checked) {
+    return document.getElementById('robbery').value;
+  } else if (document.getElementById('harassment').checked) {
+    return document.getElementById('harassment').value;
+  } else if (document.getElementById('kidnapping').checked) {
+    return document.getElementById('kidnapping').value;
+  } else if (document.getElementById('drugs').checked) {
+    return document.getElementById('drugs').value;
+  } else {
+    return document.getElementById('other').value;
+  }
 }
 
 /**
 Puts a marker on the user's location
  */
 function getUserLocation() {
-    var infoWindow = new google.maps.InfoWindow;
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
+  var infoWindow = new google.maps.InfoWindow;
+  // Try HTML5 geolocation.
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
         userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
         };
         var marker = new google.maps.Marker({
-            position: userLocation,
-            map: map,
-            title: 'User location'
+          position: userLocation,
+          map: map,
+          title: 'User location'
         });
         marker.setMap(map);
         map.setCenter(userLocation);
-        initHeatMap();
-        }, 
-        function() {
-            handleLocationError(true, infoWindow, map.getCenter());
-        });
-    } else {
-          // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
-    }
-    return userLocation;
+      },
+      function() {
+        handleLocationError(true, infoWindow, map.getCenter());
+      });
+  } else {
+    // Browser doesn't support Geolocation
+    handleLocationError(false, infoWindow, map.getCenter());
+  }
+  return userLocation;
 }
 
 function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-    infoWindow.setPosition(pos);
-    infoWindow.setContent(browserHasGeolocation ?
-        'Error: The Geolocation service failed.' :
-        'Error: Your browser doesn\'t support geolocation.');
-    infoWindow.open(map);
+  infoWindow.setPosition(pos);
+  infoWindow.setContent(
+    browserHasGeolocation ?
+    'Error: The Geolocation service failed.' :
+    'Error: Your browser doesn\'t support geolocation.');
+  infoWindow.open(map);
 }
 
 /**
 Show/Hide Heatmap
  */
 var heatmap;
+
 function initHeatMap() {
-    heatmap = new google.maps.visualization.HeatmapLayer({
-    data: getPoints(),
-    map: map
+  heatmap =
+    new google.maps.visualization.HeatmapLayer({
+      data: getPoints(),
+      map: map
     });
 }
 
 function toggleHeatmap() {
-    heatmap.setMap(heatmap.getMap() ? null : map);
+  heatmap.setMap(heatmap.getMap() ? null : map);
 }
-      
+
 function getPoints() {
-    return [
-          /*new google.maps.LatLng(reports[0][1], reports[0][2]),
-          new google.maps.LatLng(reports[1][1], reports[1][2]),
-          new google.maps.LatLng(reports[2][1], reports[2][2]),
-          new google.maps.LatLng(reports[3][1], reports[3][2]),
-          new google.maps.LatLng(reports[4][1], reports[4][2]),
-          new google.maps.LatLng(reports[5][1], reports[5][2])*/
-          
-    ];
+  var heatPoints = [];
+  var individualPoint;
+  fetch('/markers')
+    .then(response => response.json())
+    .then((markers) => {
+      markers.forEach((marker) => {
+        individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
+        heatPoints.push(individualPoint);
+      });
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  return heatPoints;
 }
 
-var reportsSideBar = document.getElementById("sideBar");
+var reportsSideBar = document.getElementById('sideBar');
 
-var filters = document.getElementById("filters");
+var filters = document.getElementById('filters');
 
-var span = document.getElementsByClassName("close")[0];
+var span = document.getElementsByClassName('close')[0];
 
-var apply = document.getElementById("apply");
+var apply = document.getElementById('apply');
 
-// When the user clicks the button, open the modal 
+// When the user clicks the button, open the modal
 filters.onclick = function() {
-  reportsSideBar.style.display = "block";
+  reportsSideBar.style.display = 'block';
 }
 
 // When the user clicks on <span> (x), close the modal
 span.onclick = function() {
-  reportsSideBar.style.display = "none";
+  reportsSideBar.style.display = 'none';
 }
 
-apply.onclick = function(){
-  reportsSideBar.style.display = "none";
+apply.onclick = function() {
+  reportsSideBar.style.display = 'none';
 }
 
-/** 
+/**
 Hide and show markers of reports
  */
-function showMarkers(){
-   // Shows any markers currently in the array.
-    fetchReportMarkers(map);
+function
+showMarkers() {
+  // Shows any markers currently in the array.
+  fetchReportMarkers();
 }
 
-function hideMarkers(){
-    //Hides any markers currently in the array.
+function
+hideMarkers() {
+  // Hides any markers currently in the array.
   for (var i = 0; i < fetchedMarkers.length; i++) {
-      
-      fetchedMarkers[i].setMap(null);
-  } 
+    fetchedMarkers[i].setMap(null);
+  }
 }
 
-function fetchReportMarkers(mapVariable){
-    var markerReport;
-    fetch('/markers').then(response => response.json()).then((markers) => {
-        markers.forEach((marker) => {
-            markerReport =new google.maps.Marker({
-            position: new google.maps.LatLng(marker.lat, marker.lng),
-            map: map
-            }); 
-            fetchedMarkers.push(markerReport);
-            markerReport.setMap(mapVariable);
+function
+fetchReportMarkers() {
+  var markerReport;
+  fetch('/markers')
+    .then(response => response.json())
+    .then((markers) => {
+      markers.forEach((marker) => {
+        markerReport = new google.maps.Marker({
+          position: new google.maps.LatLng(marker.lat, marker.lng),
+          map: map
         });
+        fetchedMarkers.push(markerReport);
+        reportsForMarkers.push(marker);
+        markerReport.setMap(map);
+      });
+    })
+    .catch((error) => {
+      console.error(error);
     });
 }
 
 function route() {
-
+ 
     var address = document.getElementById('d').value;
     console.log(address);
-
+ 
     var address2 = document.getElementById('e').value;
     console.log(address2);
-
+ 
     var geocoder = new google.maps.Geocoder();
     var geocoder2 = new google.maps.Geocoder();
-
+ 
     geocoder.geocode({ address: address }, function(results, status) {
       if (status === "OK") {
         console.log(results[0].geometry.location.lat());
@@ -300,7 +343,7 @@ function route() {
           alert("Geocode was not successful for the following reason: " + status);
       } 
     });
-
+ 
     geocoder2.geocode({ address: address2 }, function(results, status) {
       if (status === "OK") {
         console.log(results[0].geometry.location.lat());
@@ -310,7 +353,7 @@ function route() {
           alert("Geocode was not successful for the following reason: " + status);
       } 
     });
-
+ 
     let directionsService = new google.maps.DirectionsService(); 
     let directionsDisplay = new google.maps.DirectionsRenderer(); 
         directionsDisplay.setMap(null);
@@ -320,19 +363,19 @@ function route() {
         provideRouteAlternatives: true,
         travelMode: 'DRIVING'
     }
-
+ 
     directionsDisplay.setMap(map);
     directionsService.route(request, function(result, status) {
         if (status === 'OK') {
             console.log(result.routes.length);
-
+ 
             var counter = 0;
             var routeIndex = 0;
             var lessCrimesInRoute = 1000;
-
+ 
             for (var r=0; r < result.routes.length; r++){
             var route = result.routes[r];
-
+ 
                 for (var j=0; j < route.legs[0].steps.length; j++){
                     var routeArray = new google.maps.Polyline({
                     path: [
@@ -362,10 +405,10 @@ function route() {
                 }
                 counter = 0;
             }
-
+ 
             console.log(routeIndex);
             /*directionsDisplay.setDirections(result);*/
-
+ 
             new google.maps.DirectionsRenderer ({
                 map: map,
                 directions: result,
@@ -374,9 +417,9 @@ function route() {
             }
     });
 }
-
+ 
 function rateCrime(crime){
-    console.log(crime)
+    console.log(crime);
     console.log("whats up");
     if (crime == "Homicide") return 6;
     else if (crime === "Sexual Assault") return 5;
@@ -385,3 +428,4 @@ function rateCrime(crime){
     else if (crime === "Drug Related") return 2;
     else if (crime === "Harassment") return 1;
 }
+

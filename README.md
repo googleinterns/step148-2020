@@ -6,7 +6,7 @@ This work is based on the [Google Software Product Sprint](https://g.co/software
 To get started:
 
 - Login to [Google Cloud Shell](https://ssh.cloud.google.com/cloudshell/editor)
-- Clone this repo: `cd; git clone https://github.com/googleinterns/step.git`
+- Clone this repo: `cd; git clone https://github.com/googleinterns/step148-2020.git`
 - Open the GitHub setup walkthrough: `teachme ~/step/walkthroughs/week-1-setup/github-setup-walkthrough.md`
   - If the tutorial panel does not open or display the walkthrough contents, try refreshing the page.
 
