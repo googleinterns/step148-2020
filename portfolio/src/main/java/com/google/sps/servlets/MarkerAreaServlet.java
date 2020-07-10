@@ -5,6 +5,7 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.sps.data.Location;
 import com.google.sps.data.Marker;
 import com.google.gson.Gson;
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class MarkerAreaServlet extends HttpServlet {
 
     /** Responds with JSON array containing marker data. */
     @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{ //add parameter(userLcoation)
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{ //add parameter(userLocation)
         List<Marker> markers = getMarkersByArea(request);
         String json = gson.toJson(markers);
         response.setContentType("application/json");
@@ -45,52 +46,43 @@ public class MarkerAreaServlet extends HttpServlet {
         List<Marker> markers = new ArrayList<>();
         Query query = new Query(ENTITY_TITLE);
         PreparedQuery results = datastore.prepare(query);
-        double[] location = getArrayLocation(request);
+        Location location = getUserLocation(request);
 
         for(Entity entity: results.asIterable()){
-                double lat = (double) entity.getProperty("lat");
-                double lng = (double) entity.getProperty("lng");
-                String crime = (String) entity.getProperty("crimeType");
-                String date = (String) entity.getProperty("date");
-                String time = (String) entity.getProperty("time");
-                String address = (String) entity.getProperty("address");
-                String description = (String) entity.getProperty("description");
+            double lat = (double) entity.getProperty("lat");
+            double lng = (double) entity.getProperty("lng");
+            String crime = (String) entity.getProperty("crimeType");
+            String date = (String) entity.getProperty("date");
+            String time = (String) entity.getProperty("time");
+            String address = (String) entity.getProperty("address");
+            String description = (String) entity.getProperty("description");
             //fetches markers olny if they are inside the wanted area
             if(inArea(location, lat, lng)){ 
                 Marker marker = new Marker(lat, lng, crime, date, time, address, description);
                 markers.add(marker);
-            }else{
-                //error handling
             }
         }
         return markers;
     }
 
-    public double[] getArrayLocation(HttpServletRequest request){
+    public Location getUserLocation(HttpServletRequest request){
         String locationStr = request.getParameter("location");
         String[] locationArrStr = locationStr.split(",", 2);
         double lat = Double.parseDouble(locationArrStr[0]);
         double lng = Double.parseDouble(locationArrStr[1]);
-        double[] locationArray = {lat, lng};
-        return locationArray;
+        Location userLocation = new Location(lat, lng);
+        return userLocation;
 
     }
 
-    public boolean inArea(double[] location, double markerLat, double markerLng){
-        if(haversineDistance(location,markerLat, markerLng) <= 1){ //return markers that are within 1 mile away from user
-            return true;
-        }
-        return false;
+    public boolean inArea(Location location, double markerLat, double markerLng){
+        return haversineDistance(location, markerLat, markerLng) <= 1609.34; //return markers that are within 1 mile (1609 meters) away from user
     }
 
-    public double haversineDistance(double[] location, double markerLat, double markerLng) {
-      double R = 3958.8; // Radius of the Earth in miles
-      double rlat1 = location[0] * (Math.PI/180); // Convert degrees to radians
-      double rlat2 = markerLat * (Math.PI/180); // Convert degrees to radians
-      double difflat = rlat2-rlat1; // Radian difference (latitudes)
-      double difflon = (markerLng-location[1]) * (Math.PI/180); // Radian difference (longitudes)
-
-      double distance = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
-      return distance;
+    /* Returns distance between user location and a report (in meters).*/
+    public double haversineDistance(Location location, double markerLat, double markerLng) {
+        double distance = org.apache.lucene.util.SloppyMath.haversinMeters(location.getLatitude(), location.getLongitude(), markerLat, markerLng);
+        System.out.println("distance of this marker is: " + distance);
+        return distance;
     }
 }
