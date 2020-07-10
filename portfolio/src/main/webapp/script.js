@@ -21,20 +21,30 @@ let markers = [];
 let fetchedMarkers = [];
 let markerLat;
 let markerLng;
+var autocomplete;
 
 /** Creates a map and adds it to the page. */
 function createMap(){
     map = new google.maps.Map(document.getElementById('map'), {
         center: getUserLocation(), 
-        zoom:15,
+        zoom: 14,
         mapTypeControl: true,
         mapTypeControlOptions: {
-        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-        mapTypeIds: ['roadmap', 'terrain','satellite'],
-        position: google.maps.ControlPosition.RIGHT_BOTTOM
+            style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
+            mapTypeIds: ['roadmap', 'terrain','satellite'],
+            position: google.maps.ControlPosition.RIGHT_BOTTOM
+        },
+        restriction: {
+            latLngBounds: {
+                north: 31.747628,
+                south: 31.730684,
+                west: -106.494043,
+                east: -106.473825
+            },
+            strictBounds: false
         }
     });
-        
+
     /** When the user clicks on the map, show a marker with a form the user can edit. */ 
     map.addListener('click', (event) => {
         markerLat = event.latLng.lat();
@@ -45,7 +55,7 @@ function createMap(){
     map.controls[google.maps.ControlPosition.TOP_RIGHT].push(document.getElementById('floating-panel'));
 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(document.getElementById('search-reports'));
-    var autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox-input'));
+    autocomplete = new google.maps.places.Autocomplete(document.getElementById('searchBox-input'));
 
     /** Bind the map's bounds property to the autocomplete object, so that the autocomplete requests 
         use the current map bounds for the bounds for the option in the request. */

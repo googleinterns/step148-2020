@@ -47,7 +47,7 @@ public class MarkerServlet extends HttpServlet {
         double lng = Double.parseDouble(request.getParameter("lng"));
         
         /** Checks for valid coordinates (limited area covered) */
-        if((lat < 31.738327 || lat > 31.747216) || (lng < -106.491492 || lng > -106.478373)){
+        if((lat < 31.730684 || lat > 31.747628) || (lng < -106.494043|| lng > -106.473825)){
             System.out.println("Not valid coordinates, cannot store");
             return;
         }
