@@ -183,10 +183,14 @@ body {font-family: Arial, Helvetica, sans-serif;}
     font-family: Roboto;
 }
 
-#originRoute, destinationRoute {
+#originRoute {
     padding-top: 12px;
     padding-bottom: 12px;
     margin-right: 12px;
+    margin-left: 12px;
+}
+
+#destinationRoute {
     margin-left: 12px;
 }
 

@@ -23,6 +23,8 @@ let markerLat;
 let markerLng;
 let destLat;
 let destLng;
+let orgLat;
+let orgLng;
 
 /** Creates a map and adds it to the page. */
 function createMap(){
@@ -51,17 +53,20 @@ function createMap(){
     var card2 = document.getElementById('search-route');
     var input = document.getElementById('searchBox-input');
     var input2 = document.getElementById('d');
+    var input3 = document.getElementById('e');
 
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(card);
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(card2);
     var autocomplete = new google.maps.places.Autocomplete(input);
     var autocomplete2 = new google.maps.places.Autocomplete(input2);
+    var autocomplete3 = new google.maps.places.Autocomplete(input3);
 
     /** Bind the map's bounds property to the autocomplete object, so that
         the autocomplete requests use the current map bounds for the bounds
         for the option in the request. */
     autocomplete.bindTo('bounds', map);
     autocomplete2.bindTo('bounds', map);
+    autocomplete3.bindTo('bounds', map);
 
     fetchMarkers();
 }
@@ -275,15 +280,15 @@ function fetchReportMarkers(mapVariable){
     });
 }
 
-var destLat;
-var destLng;
-
-function route() { 
-
+function route() {
     var address = document.getElementById('d').value;
     console.log(address);
 
+    var address2 = document.getElementById('e').value;
+    console.log(address2);
+
     var geocoder = new google.maps.Geocoder();
+    var geocoder2 = new google.maps.Geocoder();
 
     geocoder.geocode({ address: address }, function(results, status) {
       if (status === "OK") {
@@ -301,93 +306,86 @@ function route() {
       } 
     });
 
+    geocoder2.geocode({ address: address2 }, function(results, status) {
+      if (status === "OK") {
+        console.log(results[0].geometry.location.lat());
+        orgLat = results[0].geometry.location.lat();
+        orgLng = results[0].geometry.location.lng();
+      } else {
+          alert("Geocode was not successful for the following reason: " + status);
+      } 
+    });
+
     let directionsService = new google.maps.DirectionsService(); 
     let directionsDisplay = new google.maps.DirectionsRenderer(); 
     let request = {
-        origin: new google.maps.LatLng(31.635106, -106.402459),
+        origin: new google.maps.LatLng(orgLat, orgLng),
         destination: new google.maps.LatLng(destLat, destLng),
         provideRouteAlternatives: true,
-        travelMode: 'BICYCLING'
+        travelMode: 'DRIVING'
     }
 
     directionsDisplay.setMap(map);
     directionsService.route(request, function(result, status) {
         if (status === 'OK') {
             console.log(result.routes.length);
-            
-            /*for (var i =0; i < result.routes.length; i++) {
-                new google.maps.DirectionsRenderer({
-                map: map,
-                directions: result,
-                routeIndex: i
-                });
-            }*/
 
             var counter = 0;
-
-            /*console.log(route.legs[0].steps.length);
-            console.log("Here we go again");
-            console.log(route.legs[0].steps[0].start_location.lat());
-            console.log(route.legs[0].steps[0].start_location.lng());
-            console.log(route.legs[0].steps[0].end_location.lat());
-            console.log(route.legs[0].steps[0].end_location.lng());
-            console.log(route.legs[0].steps[0].distance);*/
-            /*superMath(route.legs[0].steps[0].start_location, markerTry ,route.legs[0].steps[0].end_location);*/
-
             var routeIndex = 0;
             var lessCrimesInRoute = 1000;
 
-        for (var r=0; r < result.routes.length; r++){
+            for (var r=0; r < result.routes.length; r++){
             var route = result.routes[r];
 
-            for (var j=0; j < route.legs[0].steps.length; j++){
-                var routeArray = new google.maps.Polyline({
-                path: [
-                    new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
-                    new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
-                ]
-                });
-                for (var l=0; l < markers.length; l++){
-                    var myPosition = new google.maps.LatLng(markers[l].getPosition().lat(), markers[l].getPosition().lng());
-
-                    if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0005)) {
-                        console.log("Relocate!");
-                        counter++;
-                    }
-                }
-                fetch('/markers').then(response => response.json()).then((markers) => {
-                markers.forEach((marker) => {
+                for (var j=0; j < route.legs[0].steps.length; j++){
+                    var routeArray = new google.maps.Polyline({
+                    path: [
+                        new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
+                        new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
+                    ]
+                    });
+                    fetch('/markers').then(response => response.json()).then((markers) => {
+                    markers.forEach((marker) => {
                     createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.description);
-                    var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
-                    if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0005)) {
-                        console.log("Relocate!");
-                        counter += rateCrime(marker.crimeType);
-                    }
-                });
-    });     
+                        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
+                        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
+                            console.log("Crime!");
+                            var a = rateCrime(marker.crimeType);
+                            console.log(a);
+                            counter += a;
+                            console.log(counter);
+                        }
+                        });
+                    });  
+                }
+                console.log(counter);
+                if (counter < lessCrimesInRoute) {
+                    lessCrimesInRoute = counter;
+                    routeIndex = r;
+                    console.log(r);
+                }
+                counter = 0;
             }
-            console.log(counter);
-            if (counter < lessCrimesInRoute) {
-                lessCrimesInRoute = counter;
-                routeIndex = r;
-                console.log(r);
-            }
-            counter = 0;
-        }
 
-        console.log(routeIndex);
+            console.log(routeIndex);
+            /*directionsDisplay.setDirections(result);*/
 
-                new google.maps.DirectionsRenderer({
+            new google.maps.DirectionsRenderer ({
                 map: map,
                 directions: result,
                 routeIndex: routeIndex
                 });
-        }
+            }
     });
-    console.log("2222222");
 }
 
 function rateCrime(crime){
+    console.log(crime)
+    console.log("whats up");
     if (crime == "Homicide") return 6;
-    else if (crime == "Sexual Assault") return 5;
+    else if (crime === "Sexual Assault") return 5;
+    else if (crime === "Kidnapping") return 4;
+    else if (crime === "Robbery") return 3;
+    else if (crime === "Drug Related") return 2;
+    else if (crime === "Harassment") return 1;
 }
