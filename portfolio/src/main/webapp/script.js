@@ -281,6 +281,7 @@ function fetchReportMarkers(mapVariable){
 }
 
 function route() {
+
     var address = document.getElementById('d').value;
     console.log(address);
 
@@ -292,12 +293,6 @@ function route() {
 
     geocoder.geocode({ address: address }, function(results, status) {
       if (status === "OK") {
-        /*marker = new google.maps.Marker({
-        map: map,
-        position: results[0].geometry.location
-        });
-        console.log(marker.getPosition().lat());
-        console.log(marker.getPosition().lng());*/
         console.log(results[0].geometry.location.lat());
         destLat = results[0].geometry.location.lat();
         destLng = results[0].geometry.location.lng();
@@ -318,6 +313,7 @@ function route() {
 
     let directionsService = new google.maps.DirectionsService(); 
     let directionsDisplay = new google.maps.DirectionsRenderer(); 
+        directionsDisplay.setMap(null);
     let request = {
         origin: new google.maps.LatLng(orgLat, orgLng),
         destination: new google.maps.LatLng(destLat, destLng),
