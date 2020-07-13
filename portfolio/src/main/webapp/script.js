@@ -58,28 +58,28 @@ function createMap() {
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
   
-  var autocomplete = new google.maps.places.Autocomplete(
+  var reportLocationInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
 
-  var autocomplete2 = new google.maps.places.Autocomplete(
-    document.getElementById('d'));
+  var originInput = new google.maps.places.Autocomplete(
+    document.getElementById('origin-location'));
 
-  var autocomplete3 = new google.maps.places.Autocomplete(
-    document.getElementById('e'));
+  var destinationInput = new google.maps.places.Autocomplete(
+    document.getElementById('destination-location'));
   /**
      Bind the map's bounds property to the autocomplete object, so that the
      autocomplete requests use the current map bounds for the bounds for the
      option in the request.
    */
-  autocomplete.bindTo('bounds', map);
-  autocomplete2.bindTo('bounds', map);
-  autocomplete3.bindTo('bounds', map);
+  reportLocationInput.bindTo('bounds', map);
+  originInput.bindTo('bounds', map);
+  destinationInput.bindTo('bounds', map);
 
   /**
    * Listens for the event fired when the user selects a prediction. The
    * report's form pops up.
    */
-  autocomplete.addListener('place_changed', function() {
+  reportLocationInput.addListener('place_changed', function() {
     var place = autocomplete.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
@@ -90,7 +90,7 @@ function createMap() {
     var radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
-      autocomplete.setTypes(type);
+      reportLocationInput.setTypes(type);
     });
   }
 
@@ -324,108 +324,133 @@ fetchReportMarkers() {
 }
 
 function route() {
- 
-    var address = document.getElementById('d').value;
-    console.log(address);
- 
-    var address2 = document.getElementById('e').value;
-    console.log(address2);
- 
-    var geocoder = new google.maps.Geocoder();
-    var geocoder2 = new google.maps.Geocoder();
- 
-    geocoder.geocode({ address: address }, function(results, status) {
-      if (status === "OK") {
-        console.log(results[0].geometry.location.lat());
-        destLat = results[0].geometry.location.lat();
-        destLng = results[0].geometry.location.lng();
-      } else {
-          alert("Geocode was not successful for the following reason: " + status);
-      } 
-    });
- 
-    geocoder2.geocode({ address: address2 }, function(results, status) {
-      if (status === "OK") {
-        console.log(results[0].geometry.location.lat());
-        orgLat = results[0].geometry.location.lat();
-        orgLng = results[0].geometry.location.lng();
-      } else {
-          alert("Geocode was not successful for the following reason: " + status);
-      } 
-    });
- 
-    let directionsService = new google.maps.DirectionsService(); 
-    let directionsDisplay = new google.maps.DirectionsRenderer(); 
-        directionsDisplay.setMap(null);
-    let request = {
-        origin: new google.maps.LatLng(orgLat, orgLng),
-        destination: new google.maps.LatLng(destLat, destLng),
-        provideRouteAlternatives: true,
-        travelMode: 'DRIVING'
+  var addressOrigin = document.getElementById('origin-location').value;
+  console.log("Origin address: " + addressOrigin);
+
+  var addressDestination = document.getElementById('destination-location').value;
+  console.log("Destination address: " + addressDestination);
+
+  var geocoderDestination = new google.maps.Geocoder();
+  var geocoderOrigin = new google.maps.Geocoder();
+
+  geocoderOrigin.geocode({
+    address: addressOrigin
+  }, function(results, status) {
+    if (status === "OK") {
+      orgLat = results[0].geometry.location.lat();
+      orgLng = results[0].geometry.location.lng();
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
     }
- 
-    directionsDisplay.setMap(map);
-    directionsService.route(request, function(result, status) {
-        if (status === 'OK') {
-            console.log(result.routes.length);
- 
-            var counter = 0;
-            var routeIndex = 0;
-            var lessCrimesInRoute = 1000;
- 
-            for (var r=0; r < result.routes.length; r++){
-            var route = result.routes[r];
- 
-                for (var j=0; j < route.legs[0].steps.length; j++){
-                    var routeArray = new google.maps.Polyline({
-                    path: [
-                        new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
-                        new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
-                    ]
-                    });
-                    fetch('/markers').then(response => response.json()).then((markers) => {
-                    markers.forEach((marker) => {
-                    createMarkerForDisplay(marker.lat, marker.lng, marker.crimeType, marker.date, marker.time, marker.description);
-                        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
-                        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
-                            console.log("Crime!");
-                            var a = rateCrime(marker.crimeType);
-                            console.log(a);
-                            counter += a;
-                            console.log(counter);
-                        }
-                        });
-                    });  
-                }
-                console.log(counter);
-                if (counter < lessCrimesInRoute) {
-                    lessCrimesInRoute = counter;
-                    routeIndex = r;
-                    console.log(r);
-                }
-                counter = 0;
-            }
- 
-            console.log(routeIndex);
-            /*directionsDisplay.setDirections(result);*/
- 
-            new google.maps.DirectionsRenderer ({
-                map: map,
-                directions: result,
-                routeIndex: routeIndex
-                });
-            }
-    });
-}
- 
-function rateCrime(crime){
-    console.log(crime);
-    console.log("whats up");
-    if (crime == "Homicide") return 6;
-    else if (crime === "Sexual Assault") return 5;
-    else if (crime === "Kidnapping") return 4;
-    else if (crime === "Robbery") return 3;
-    else if (crime === "Drug Related") return 2;
-    else if (crime === "Harassment") return 1;
+  });
+
+  geocoderDestination.geocode({
+    address: addressDestination
+  }, function(results, status) {
+    if (status === "OK") {
+      destLat = results[0].geometry.location.lat();
+      destLng = results[0].geometry.location.lng();
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    provideRouteAlternatives: true,
+    travelMode: document.getElementById('travel').value
+  }
+
+  directionsDisplay.setMap(map);
+  directionsService.route(request, function(result, status) {
+    if (status === 'OK') {
+      console.log("Number of alternative routes: " + result.routes.length);
+
+      var counter = 0;
+      var routeIndex = 0;
+      var lessCrimesInRoute = 1000;
+
+      for (var r = 0; r < result.routes.length; r++) {
+        var route = result.routes[r];
+
+        for (var j = 0; j < route.legs[0].steps.length; j++) {
+          var routeArray = new google.maps.Polyline({
+            path: [
+              new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
+              new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
+            ]
+          });
+          fetch('/markers').then(response => response.json()).then((markers) => {
+            markers.forEach((marker) => {
+              var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
+              if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
+                counter += rateCrime(marker.crimeType);
+                console.log("Raring" + counter);
+                console.log(marker.lat);
+                console.log(marker.lng);
+              }
+            });
+          });
+        }
+        console.log("Rating" + counter);
+        if (counter < lessCrimesInRoute) {
+          lessCrimesInRoute = counter;
+          routeIndex = r;
+          console.log("" + r);
+        }
+        counter = 0;
+      }
+
+      console.log("Chosen route index: " + routeIndex);
+      /*directionsDisplay.setDirections(result);*/
+
+      new google.maps.DirectionsRenderer({
+        map: map,
+        directions: result,
+        routeIndex: routeIndex
+      });
+    }
+  });
 }
 
+function rateCrime(crime) {
+  console.log("Crime along the route: " + crime);
+  if (crime === "Homicide") return 6;
+  else if (crime === "Sexual Assault") return 5;
+  else if (crime === "Kidnapping") return 4;
+  else if (crime === "Robbery") return 3;
+  else if (crime === "Drug Related") return 2;
+  else if (crime === "Harassment") return 1;
+  else {
+    console.error('Unsupported crime type: ' + crime);
+  }
+}
+
+function displayDirectionsAPI() {
+  let d1 = document.getElementById('search-reports');
+  let d2 = document.getElementById('search-route');
+  if (d2.style.display == "none") {
+    d1.style.display = "none";
+    d2.style.display = "block";
+  } else {
+    d1.style.display = "block";
+    d2.style.display = "none";
+  }
+}
+
+/*
+function repeatMarkers() {
+    fetch('/markers').then(response => response.json()).then((markers) => {
+    markers.forEach((marker) => {
+        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
+        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
+            
+        }
+        });
+    });
+}
+*/
