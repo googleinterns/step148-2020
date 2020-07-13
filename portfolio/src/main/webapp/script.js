@@ -117,6 +117,8 @@ function createMarkerForEdit(lat, lng) {
     new google.maps.InfoWindow({
       content: buildInfoWindow(lat, lng)
     });
+  
+  map.setCenter(new google.maps.LatLng(lat, lng));
 
   /** When the user closes the editable info window, remove the marker. */
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
