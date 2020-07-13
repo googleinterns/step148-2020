@@ -16,49 +16,56 @@ package com.google.sps.data;
 
 /** Represents a marker on the map */
 public class Marker {
-    private final double lat;
-    private final double lng;
-    private final String crimeType;
-    private final String date;
-    private final String time;
-    private final String address;
-    private final String description;
+  private final double lat;
+  private final double lng;
+  private final String crimeType;
+  private final String date;
+  private final String time;
+  private final String address;
+  private final String description;
 
-    public Marker(double lat, double lng, String crimeType, String date, String time, String address, String description){
-        this.lat = lat;
-        this.lng = lng;
-        this.crimeType = crimeType;
-        this.date = date;
-        this.time = time;
-        this.address = address;
-        this.description = description;
-    }
+  public Marker(
+      double lat,
+      double lng,
+      String crimeType,
+      String date,
+      String time,
+      String address,
+      String description) {
+    this.lat = lat;
+    this.lng = lng;
+    this.crimeType = crimeType;
+    this.date = date;
+    this.time = time;
+    this.address = address;
+    this.description = description;
+  }
 
-    public double getLat(){
-        return lat;
-    }
+  public double getLat() {
+    return lat;
+  }
 
-    public double getLng(){
-        return lng;
-    }
+  public double getLng() {
+    return lng;
+  }
 
-    public String getCrimeType(){
-        return crimeType;
-    }
+  public String getCrimeType() {
+    return crimeType;
+  }
 
-    public String getDate(){
-        return date;
-    }
+  public String getDate() {
+    return date;
+  }
 
-    public String getTime(){
-        return time;
-    }
-    
-    public String getAddress(){
-        return address;
-    }
+  public String getTime() {
+    return time;
+  }
 
-    public String getDescription(){
-        return description;
-    }
+  public String getAddress() {
+    return address;
+  }
+
+  public String getDescription() {
+    return description;
+  }
 }
