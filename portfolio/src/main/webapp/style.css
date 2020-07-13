@@ -156,6 +156,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     background-color: #fff;
     font-family: Roboto;
+    display: block;
 }
 
 #searchBox {
@@ -166,6 +167,35 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 
 #search-title {
+    color: #fff;
+    background-color: #4d90fe;
+    font-size: 25px;
+    font-weight: 500;
+    padding: 6px 12px;
+}
+
+.search-route {
+    margin: 10px 10px 0 0;
+    border-radius: 2px 0 0 2px;
+    box-sizing: border-box;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    background-color: #fff;
+    font-family: Roboto;
+}
+
+#originRoute {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    margin-right: 12px;
+    margin-left: 12px;
+}
+
+#destinationRoute {
+    margin-left: 12px;
+}
+
+#search-route-title {
     color: #fff;
     background-color: #4d90fe;
     font-size: 25px;

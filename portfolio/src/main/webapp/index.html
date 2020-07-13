@@ -36,7 +36,6 @@
                 <input onclick="showMarkers();" type="button" value="Show Reports"/>
                 <input onclick="hideMarkers();" type="button" value="Hide Reports" />
                 <button onclick="toggleHeatmap()">Heatmap</button>
-                <button onclick="route()">TRYING</button>
             </div>
         </div>
         <div class="col2" style="background-color:#F5A21B">
@@ -148,7 +147,7 @@
     </form>
     </div>
 
-    <div class="search-reports" id="search-reports">
+    <div class="search-reports" id="search-reports" style="display:block">
         <div id="search-title">Report's Address</div>
         <div id="search-filter" class="search-filter">
             <input type="radio" name="search" id="type-all" checked="checked"/>
@@ -161,7 +160,26 @@
         <div id="searchBox">
             <input id="searchBox-input" type="text" placeholder="Enter a location"/>
         </div>
+        <button onclick="displayDirectionsAPI()">DIRECTIONS API!</button>
     </div>
+
+    <div class="search-route" id="search-route" style="display:none">
+        <div id="search-route-title">Directions API</div>
+            <select id="travel" size = "3">
+                <option selected>DRIVING</option>
+                <option>WALKING</option>
+                <option>BICYCLING</option>
+            </select>
+        
+        <div id="originRoute">
+            <input id="origin-location" type="text" placeholder="Enter origin"/>
+        </div>
+        <div id="destinationRoute">
+            <input id="destination-location" type="text" placeholder="Enter destination"/>
+        </div>
+        <button onclick="route()">GO SAFE!</button>
+    </div>
+
     <footer>
         <p>Contact us</p>
     </footer>
