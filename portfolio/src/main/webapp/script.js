@@ -21,6 +21,10 @@ let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 let reportsForMarkers = [];
+let destLat;
+let destLng;
+let orgLat;
+let orgLng;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -50,21 +54,32 @@ function createMap() {
 
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-reports'));
-  var autocomplete = new google.maps.places.Autocomplete(
+
+  map.controls[google.maps.ControlPosition.TOP_LEFT].push(
+    document.getElementById('search-route'));
+  
+  var reportLocationInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
 
+  var originInput = new google.maps.places.Autocomplete(
+    document.getElementById('origin-location'));
+
+  var destinationInput = new google.maps.places.Autocomplete(
+    document.getElementById('destination-location'));
   /**
      Bind the map's bounds property to the autocomplete object, so that the
      autocomplete requests use the current map bounds for the bounds for the
      option in the request.
    */
-  autocomplete.bindTo('bounds', map);
+  reportLocationInput.bindTo('bounds', map);
+  originInput.bindTo('bounds', map);
+  destinationInput.bindTo('bounds', map);
 
   /**
    * Listens for the event fired when the user selects a prediction. The
    * report's form pops up.
    */
-  autocomplete.addListener('place_changed', function() {
+  reportLocationInput.addListener('place_changed', function() {
     var place = autocomplete.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
@@ -75,7 +90,7 @@ function createMap() {
     var radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
-      autocomplete.setTypes(type);
+      reportLocationInput.setTypes(type);
     });
   }
 
@@ -308,48 +323,54 @@ fetchReportMarkers() {
     });
 }
 
-function
-route() {
-  console.log('HEYYYYYY');
+function route() {
+  var addressOrigin = document.getElementById('origin-location').value;
+  console.log("Origin address: " + addressOrigin);
+
+  var addressDestination = document.getElementById('destination-location').value;
+  console.log("Destination address: " + addressDestination);
+
+  var geocoderDestination = new google.maps.Geocoder();
+  var geocoderOrigin = new google.maps.Geocoder();
+
+  geocoderOrigin.geocode({
+    address: addressOrigin
+  }, function(results, status) {
+    if (status === "OK") {
+      orgLat = results[0].geometry.location.lat();
+      orgLng = results[0].geometry.location.lng();
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+
+  geocoderDestination.geocode({
+    address: addressDestination
+  }, function(results, status) {
+    if (status === "OK") {
+      destLat = results[0].geometry.location.lat();
+      destLng = results[0].geometry.location.lng();
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+
   let directionsService = new google.maps.DirectionsService();
   let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
   let request = {
-    origin: new google.maps.LatLng(31.742485, -106.485468),
-    destination: new google.maps.LatLng(31.774414, -106.501199),
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
     provideRouteAlternatives: true,
-    travelMode: 'DRIVING'
+    travelMode: document.getElementById('travel').value
   }
-
-  let markerTry = new google.maps.LatLng({
-    lat: 31.761679,
-    lng: -106.491667
-  });
 
   directionsDisplay.setMap(map);
   directionsService.route(request, function(result, status) {
     if (status === 'OK') {
-      console.log(result.routes.length);
-
-      /*for (var i =0; i < result.routes.length; i++) {
-          new google.maps.DirectionsRenderer({
-          map: map,
-          directions: result,
-          routeIndex: i
-          });
-      }*/
+      console.log("Number of alternative routes: " + result.routes.length);
 
       var counter = 0;
-
-      /*console.log(route.legs[0].steps.length);
-      console.log("Here we go again");
-      console.log(route.legs[0].steps[0].start_location.lat());
-      console.log(route.legs[0].steps[0].start_location.lng());
-      console.log(route.legs[0].steps[0].end_location.lat());
-      console.log(route.legs[0].steps[0].end_location.lng());
-      console.log(route.legs[0].steps[0].distance);*/
-      /*superMath(route.legs[0].steps[0].start_location, markerTry
-       * ,route.legs[0].steps[0].end_location);*/
-
       var routeIndex = 0;
       var lessCrimesInRoute = 1000;
 
@@ -359,38 +380,33 @@ route() {
         for (var j = 0; j < route.legs[0].steps.length; j++) {
           var routeArray = new google.maps.Polyline({
             path: [
-              new google.maps.LatLng(
-                route.legs[0].steps[j].start_location.lat(),
-                route.legs[0].steps[j].start_location.lng()),
-              new google.maps.LatLng(
-                route.legs[0].steps[j].end_location.lat(),
-                route.legs[0].steps[j].end_location.lng())
+              new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
+              new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
             ]
           });
-          for (var l = 0; l < markers.length; l++) {
-            var myPosition = new google.maps.LatLng(
-              markers[l].getPosition().lat(), markers[l].getPosition().lng());
-
-            if (google.maps.geometry.poly.isLocationOnEdge(
-                myPosition, routeArray, 0.0005)) {
-              console.log('Relocate!');
-              console.log(l);
-              console.log(route.legs[0].steps[j].end_location.lat());
-              console.log(route.legs[0].steps[j].end_location.lng());
-              counter++;
-            }
-          }
+          fetch('/markers').then(response => response.json()).then((markers) => {
+            markers.forEach((marker) => {
+              var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
+              if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
+                counter += rateCrime(marker.crimeType);
+                console.log("Raring" + counter);
+                console.log(marker.lat);
+                console.log(marker.lng);
+              }
+            });
+          });
         }
-
+        console.log("Rating" + counter);
         if (counter < lessCrimesInRoute) {
           lessCrimesInRoute = counter;
           routeIndex = r;
-          console.log(r);
+          console.log("" + r);
         }
         counter = 0;
       }
 
-      console.log(routeIndex);
+      console.log("Chosen route index: " + routeIndex);
+      /*directionsDisplay.setDirections(result);*/
 
       new google.maps.DirectionsRenderer({
         map: map,
@@ -399,22 +415,42 @@ route() {
       });
     }
   });
-  console.log('2222222');
 }
 
-function superMath(point1, point2, point3) {
-  console.log(point1.lat());
-  console.log(point1.lng());
-  console.log(point2.lat());
-  console.log(point2.lng());
-  console.log(point3.lat());
-  console.log(point3.lng());
-
-  var a = (point1.lat() - point3.lat()) * (point1.lat() - point3.lat());
-
-  var b = (point1.lng() - point3.lng()) * (point1.lng() - point3.lng());
-
-  var c = Math.sqrt(a + b);
-
-  console.log(c);
+function rateCrime(crime) {
+  console.log("Crime along the route: " + crime);
+  if (crime === "Homicide") return 6;
+  else if (crime === "Sexual Assault") return 5;
+  else if (crime === "Kidnapping") return 4;
+  else if (crime === "Robbery") return 3;
+  else if (crime === "Drug Related") return 2;
+  else if (crime === "Harassment") return 1;
+  else {
+    console.error('Unsupported crime type: ' + crime);
+  }
 }
+
+function displayDirectionsAPI() {
+  let d1 = document.getElementById('search-reports');
+  let d2 = document.getElementById('search-route');
+  if (d2.style.display == "none") {
+    d1.style.display = "none";
+    d2.style.display = "block";
+  } else {
+    d1.style.display = "block";
+    d2.style.display = "none";
+  }
+}
+
+/*
+function repeatMarkers() {
+    fetch('/markers').then(response => response.json()).then((markers) => {
+    markers.forEach((marker) => {
+        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
+        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
+            
+        }
+        });
+    });
+}
+*/
