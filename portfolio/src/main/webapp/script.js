@@ -34,15 +34,6 @@ function createMap() {
       mapTypeIds: ['roadmap', 'terrain', 'satellite'],
       position: google.maps.ControlPosition.RIGHT_BOTTOM
     },
-    restriction: {
-        latLngBounds: {
-            north: 31.747628,
-            south: 31.730684,
-            west: -106.494043,
-            east: -106.473825
-        },
-        strictBounds: false
-    }
   });
 
   /**
