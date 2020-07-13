@@ -140,7 +140,6 @@ function buildInfoWindow(lat, lng) {
 }
 
 /** Manages the data of the report once the info window pops up. */
-
 function submitFormData(element) {
   postMarker(
     markerLat, markerLng, getRadioValueCrimes(),
