@@ -33,7 +33,7 @@ function createMap() {
       style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
       mapTypeIds: ['roadmap', 'terrain', 'satellite'],
       position: google.maps.ControlPosition.RIGHT_BOTTOM
-    },
+    }
   });
 
   /**
