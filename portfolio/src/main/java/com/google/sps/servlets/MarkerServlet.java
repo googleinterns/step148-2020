@@ -33,13 +33,13 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
   private static final double metersInAMile = 1609.34;
 
-    @Override
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
-        List<Marker> markers = getMarkers(request);
-        String json = gson.toJson(markers);
-        response.setContentType("application/json");
-        response.getWriter().println(json);
-    }
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    List<Marker> markers = getMarkers(request);
+    String json = gson.toJson(markers);
+    response.setContentType("application/json");
+    response.getWriter().println(json);
+  }
 
   /** Accepts a POST request containing a new marker. */
   @Override
@@ -66,29 +66,29 @@ public class MarkerServlet extends HttpServlet {
     }
   }
 
-    /** Fetches markers from Datastore. */
-    private List<Marker> getMarkers(HttpServletRequest request){
-        List<Marker> markers = new ArrayList<>();
-        Query query = new Query(ENTITY_TITLE);
-        PreparedQuery results = datastore.prepare(query);
-        Location location = getUserLocation(request);
+  /** Fetches markers from Datastore. */
+  private List<Marker> getMarkers(HttpServletRequest request){
+    List<Marker> markers = new ArrayList<>();
+    Query query = new Query(ENTITY_TITLE);
+    PreparedQuery results = datastore.prepare(query);
+    Location location = getUserLocation(request);
 
-        for(Entity entity: results.asIterable()){
-            double lat = (double) entity.getProperty("lat");
-            double lng = (double) entity.getProperty("lng");
-            String crime = (String) entity.getProperty("crimeType");
-            String date = (String) entity.getProperty("date");
-            String time = (String) entity.getProperty("time");
-            String address = (String) entity.getProperty("address");
-            String description = (String) entity.getProperty("description");
-            //fetches markers olny if they are inside the wanted area
-            if(haversineDistance(location, lat, lng) <= metersInAMile){ 
-                Marker marker = new Marker(lat, lng, crime, date, time, address, description);
-                markers.add(marker);
-            }
+    for(Entity entity: results.asIterable()){
+        double lat = (double) entity.getProperty("lat");
+        double lng = (double) entity.getProperty("lng");
+        String crime = (String) entity.getProperty("crimeType");
+        String date = (String) entity.getProperty("date");
+        String time = (String) entity.getProperty("time");
+        String address = (String) entity.getProperty("address");
+        String description = (String) entity.getProperty("description");
+        //fetches markers olny if they are inside the wanted area
+        if(haversineDistance(location, lat, lng) <= metersInAMile){ 
+            Marker marker = new Marker(lat, lng, crime, date, time, address, description);
+            markers.add(marker);
         }
-        return markers;
     }
+    return markers;
+  }
 
   /** Stores a marker in Datastore. */
   public void storeMarker(Marker marker) {
@@ -103,19 +103,19 @@ public class MarkerServlet extends HttpServlet {
     datastore.put(markerEntity);
     }
 
-    public Location getUserLocation(HttpServletRequest request){
-        String locationStr = request.getParameter("location");
-        String[] locationArrStr = locationStr.split(",", 2);
-        double lat = Double.parseDouble(locationArrStr[0]);
-        double lng = Double.parseDouble(locationArrStr[1]);
-        Location userLocation = new Location(lat, lng);
-        return userLocation;
-    }
+  public Location getUserLocation(HttpServletRequest request){
+    String locationStr = request.getParameter("location");
+    String[] locationArrStr = locationStr.split(",", 2);
+    double lat = Double.parseDouble(locationArrStr[0]);
+    double lng = Double.parseDouble(locationArrStr[1]);
+    Location userLocation = new Location(lat, lng);
+    return userLocation;
+  }
 
-    /* Returns distance between user location and a report (in meters).*/
-    public double haversineDistance(Location location, double markerLat, double markerLng) {
-        double distance = org.apache.lucene.util.SloppyMath.haversinMeters(location.getLatitude(), location.getLongitude(), markerLat, markerLng);
-        System.out.println("distance of this marker is: " + distance);
-        return distance;
-    }
+  /* Returns distance between user location and a report (in meters).*/
+  public double haversineDistance(Location location, double markerLat, double markerLng) {
+    double distance = org.apache.lucene.util.SloppyMath.haversinMeters(location.getLatitude(), location.getLongitude(), markerLat, markerLng);
+    System.out.println("distance of this marker is: " + distance);
+    return distance;
+  }
 }

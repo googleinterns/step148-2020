@@ -15,21 +15,21 @@
 package com.google.sps.data;
 
 public class Location{
-    private double latitude;
-    private double longitude;
+  private double latitude;
+  private double longitude;
 
-    public Location(){}
+  public Location(){}
 
-    public Location(double latitude, double longitude) {
-        this.latitude  = latitude;
-        this.longitude = longitude;
-    }
+  public Location(double latitude, double longitude) {
+    this.latitude  = latitude;
+    this.longitude = longitude;
+  }
 
-    public double getLatitude() {
-        return latitude; 
-    }
+  public double getLatitude() {
+    return latitude; 
+  }
 
-    public double getLongitude() { 
-        return longitude;
-    }
+  public double getLongitude() { 
+    return longitude;
+  }
 }
