@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+const LOCATION_LIMIT_METERS = 5000;
+
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
@@ -21,7 +24,6 @@ let markerLat;
 let markerLng;
 let reportsForMarkers = [];
 let addressInput;
-const LOCATION_LIMIT_METERS = 5000;
 let destLat;
 let destLng;
 let orgLat;
