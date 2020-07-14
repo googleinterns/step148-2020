@@ -11,9 +11,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-const LOCATION_LIMIT_METERS = 5000;
-
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
@@ -24,6 +21,7 @@ let markerLat;
 let markerLng;
 let reportsForMarkers = [];
 let addressInput;
+const LOCATION_LIMIT_METERS = 5000;
 let destLat;
 let destLng;
 let orgLat;
@@ -59,7 +57,7 @@ function createMap() {
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
   
-  var reportLocationInput = new google.maps.places.Autocomplete(
+  addressInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
 
   var originInput = new google.maps.places.Autocomplete(
@@ -68,12 +66,6 @@ function createMap() {
   var destinationInput = new google.maps.places.Autocomplete(
     document.getElementById('destination-location'));
 
-  /**
-     Bind the map's bounds property to the autocomplete object, so that the
-     autocomplete requests use the current map bounds for the bounds for the
-     option in the request.
-   */
-  reportLocationInput.bindTo('bounds', map);
   originInput.bindTo('bounds', map);
   destinationInput.bindTo('bounds', map);
 
@@ -81,7 +73,7 @@ function createMap() {
    * Listens for the event fired when the user selects a prediction. The
    * report's form pops up.
    */
-  reportLocationInput.addListener('place_changed', function() {
+  addressInput.addListener('place_changed', function() {
     let place = reportLocationInput.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
