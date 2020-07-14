@@ -22,6 +22,7 @@ let markerLat;
 let markerLng;
 let reportsForMarkers = [];
 let addressInput;
+const LOCATION_LIMIT_METERS = 5000;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -191,8 +192,9 @@ function getUserLocation() {
         map.setCenter(userLocation);
 
         let locationLimitCircle = new google.maps.Circle(
-          {center: userLocation, radius: 5000});
+          {center: userLocation, radius: LOCATION_LIMIT_METERS});
         addressInput.setBounds(locationLimitCircle.getBounds());
+        addressInput.setOptions({strictBounds: true});
       },
       function() {
         handleLocationError(true, infoWindow, map.getCenter());
