@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const LOCATION_LIMIT_METERS = 5000;
+
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
@@ -21,6 +23,7 @@ let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 let reportsForMarkers = [];
+let addressInput;
 let destLat;
 let destLng;
 let orgLat;
@@ -51,14 +54,12 @@ function createMap() {
 
   map.controls[google.maps.ControlPosition.TOP_RIGHT].push(
     document.getElementById('floating-panel'));
-
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-reports'));
-
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
   
-  var reportLocationInput = new google.maps.places.Autocomplete(
+  addressInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
 
   var originInput = new google.maps.places.Autocomplete(
@@ -66,12 +67,7 @@ function createMap() {
 
   var destinationInput = new google.maps.places.Autocomplete(
     document.getElementById('destination-location'));
-  /**
-     Bind the map's bounds property to the autocomplete object, so that the
-     autocomplete requests use the current map bounds for the bounds for the
-     option in the request.
-   */
-  reportLocationInput.bindTo('bounds', map);
+
   originInput.bindTo('bounds', map);
   destinationInput.bindTo('bounds', map);
 
@@ -79,15 +75,15 @@ function createMap() {
    * Listens for the event fired when the user selects a prediction. The
    * report's form pops up.
    */
-  reportLocationInput.addListener('place_changed', function() {
-    var place = autocomplete.getPlace();
+  addressInput.addListener('place_changed', function() {
+    let place = reportLocationInput.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
     createMarkerForEdit(markerLat, markerLng);
   });
 
   function typeOfSearch(id, type) {
-    var radioButton = document.getElementById(id);
+    let radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
       reportLocationInput.setTypes(type);
@@ -139,6 +135,8 @@ function createMarkerForEdit(lat, lng) {
     new google.maps.InfoWindow({
       content: buildInfoWindow(lat, lng)
     });
+  
+  map.setCenter(new google.maps.LatLng(lat, lng));
 
   /** When the user closes the editable info window, remove the marker. */
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -227,6 +225,10 @@ function getUserLocation() {
         marker.setMap(map);
         map.setCenter(userLocation);
         initHeatMap();
+        let locationLimitCircle = new google.maps.Circle(
+          {center: userLocation, radius: LOCATION_LIMIT_METERS});
+        addressInput.setBounds(locationLimitCircle.getBounds());
+        addressInput.setOptions({strictBounds: true});
       },
       function() {
         handleLocationError(true, infoWindow, map.getCenter());
