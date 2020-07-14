@@ -21,7 +21,7 @@ let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 let reportsForMarkers = [];
-let autocomplete;
+let addressInput;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -50,25 +50,25 @@ function createMap() {
     document.getElementById('floating-panel'));
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-reports'));
-  autocomplete = new google.maps.places.Autocomplete(
+  addressInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
 
   /**
    * Listens for the event fired when the user selects a prediction. The
    * report's form pops up.
    */
-  autocomplete.addListener('place_changed', function() {
-    var place = autocomplete.getPlace();
+  addressInput.addListener('place_changed', function() {
+    let place = addressInput.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
     createMarkerForEdit(markerLat, markerLng);
   });
 
   function typeOfSearch(id, type) {
-    var radioButton = document.getElementById(id);
+    let radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
-      autocomplete.setTypes(type);
+      addressInput.setTypes(type);
     });
   }
 
@@ -190,9 +190,9 @@ function getUserLocation() {
         marker.setMap(map);
         map.setCenter(userLocation);
 
-        var circle = new google.maps.Circle(
+        let locationLimitCircle = new google.maps.Circle(
           {center: userLocation, radius: 5000});
-        autocomplete.setBounds(circle.getBounds());
+        addressInput.setBounds(locationLimitCircle.getBounds());
       },
       function() {
         handleLocationError(true, infoWindow, map.getCenter());
