@@ -5,9 +5,9 @@ import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
+import com.google.gson.Gson;
 import com.google.sps.data.Location;
 import com.google.sps.data.Marker;
-import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
+import static org.apache.lucene.util.SloppyMath.haversinMeters;
 
 /** Handles fetching and saving markers data. */
 @WebServlet("/markers")
@@ -31,15 +32,12 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_5 = "time";
   private static final String ENTITY_PROPERTY_KEY_6 = "address";
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
-<<<<<<< HEAD
-  private static final double metersInAMile = 1609.34;
-=======
+  private static final double METERS_IN_A_MILE = 1609.34;
   private static final Double LAT_NORTH_LIMIT = 31.747628;
   private static final Double LAT_SOUTH_LIMIT = 31.730684;
   private static final Double LNG_WEST_LIMIT = -106.494043;
   private static final Double LNG_EAST_LIMIT = -106.473825;
 
->>>>>>> d50de2c9e5adf6e7bde26b261f18bf633feec4b9
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -52,8 +50,8 @@ public class MarkerServlet extends HttpServlet {
   /** Accepts a POST request containing a new marker. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    double lat = Double.parseDouble(request.getParameter("lat"));
-    double lng = Double.parseDouble(request.getParameter("lng"));
+    double lat = Double.parseDouble(request.getParameter(ENTITY_PROPERTY_KEY_1));
+    double lng = Double.parseDouble(request.getParameter(ENTITY_PROPERTY_KEY_2));
 
     /** Checks for valid coordinates (limited area covered). */
     if((lat < LAT_SOUTH_LIMIT || lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT || lng > LNG_EAST_LIMIT)){
@@ -96,7 +94,7 @@ public class MarkerServlet extends HttpServlet {
         String address = (String) entity.getProperty("address");
         String description = (String) entity.getProperty("description");
         //fetches markers olny if they are inside the wanted area
-        if(haversineDistance(location, lat, lng) <= metersInAMile){ 
+        if(haversinMeters(location.getLatitude(), location.getLongitude(), lat, lng) <= METERS_IN_A_MILE){ 
             Marker marker = new Marker(lat, lng, crime, date, time, address, description);
             markers.add(marker);
         }
@@ -124,12 +122,5 @@ public class MarkerServlet extends HttpServlet {
     double lng = Double.parseDouble(locationArrStr[1]);
     Location userLocation = new Location(lat, lng);
     return userLocation;
-  }
-
-  /* Returns distance between user location and a report (in meters).*/
-  public double haversineDistance(Location location, double markerLat, double markerLng) {
-    double distance = org.apache.lucene.util.SloppyMath.haversinMeters(location.getLatitude(), location.getLongitude(), markerLat, markerLng);
-    System.out.println("distance of this marker is: " + distance);
-    return distance;
   }
 }

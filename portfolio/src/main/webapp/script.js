@@ -276,10 +276,10 @@ function getPoints() {
         individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
         heatPoints.push(individualPoint);
       });
-    });
-    /*.catch((error) => {
+    })
+    .catch((error) => {
       console.error(error);
-    });*/
+    });
   return heatPoints;
 }
 
