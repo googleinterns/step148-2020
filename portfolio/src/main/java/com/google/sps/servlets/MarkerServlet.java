@@ -30,10 +30,10 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_5 = "time";
   private static final String ENTITY_PROPERTY_KEY_6 = "address";
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
-  private static final Double LAT_NORTH = 31.747628;
-  private static final Double LAT_SOUTH = 31.730684;
-  private static final Double LNG_WEST = -106.494043;
-  private static final Double LNG_EAST = -106.473825;
+  private static final Double LAT_NORTH_LIMIT = 31.747628;
+  private static final Double LAT_SOUTH_LIMIT = 31.730684;
+  private static final Double LNG_WEST_LIMIT = -106.494043;
+  private static final Double LNG_EAST_LIMIT = -106.473825;
 
 
   /** Responds with JSON array containing marker data. */
@@ -52,7 +52,7 @@ public class MarkerServlet extends HttpServlet {
     double lng = Double.parseDouble(request.getParameter("lng"));
 
     /** Checks for valid coordinates (limited area covered). */
-    if((lat < LAT_SOUTH|| lat > LAT_NORTH) || (lng < LNG_WEST|| lng > LNG_EAST)){
+    if((lat < LAT_SOUTH_LIMIT|| lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT|| lng > LNG_EAST_LIMIT)){
         return;
     }
 

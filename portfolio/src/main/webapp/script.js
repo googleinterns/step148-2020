@@ -21,7 +21,7 @@ let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 let reportsForMarkers = [];
-var autocomplete;
+let autocomplete;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
