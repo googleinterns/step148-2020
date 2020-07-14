@@ -52,8 +52,9 @@ public class MarkerServlet extends HttpServlet {
     double lng = Double.parseDouble(request.getParameter("lng"));
 
     /** Checks for valid coordinates (limited area covered). */
-    if((lat < LAT_SOUTH_LIMIT|| lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT|| lng > LNG_EAST_LIMIT)){
-        return;
+    if((lat < LAT_SOUTH_LIMIT || lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT || lng > LNG_EAST_LIMIT)){
+      System.out.println("Coordinates outside of bounds");
+      return;
     }
 
     /**
