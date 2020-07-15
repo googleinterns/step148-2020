@@ -1,5 +1,6 @@
 package com.google.sps.servlets;
 
+import static org.apache.lucene.util.SloppyMath.haversinMeters;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
@@ -17,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
-import static org.apache.lucene.util.SloppyMath.haversinMeters;
 
 /** Handles fetching and saving markers data. */
 @WebServlet("/markers")
@@ -50,8 +50,8 @@ public class MarkerServlet extends HttpServlet {
   /** Accepts a POST request containing a new marker. */
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    double lat = Double.parseDouble(request.getParameter(ENTITY_PROPERTY_KEY_1));
-    double lng = Double.parseDouble(request.getParameter(ENTITY_PROPERTY_KEY_2));
+    double lat = Double.parseDouble(request.getParameter("lat"));
+    double lng = Double.parseDouble(request.getParameter("lng"));
 
     /** Checks for valid coordinates (limited area covered). */
     if((lat < LAT_SOUTH_LIMIT || lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT || lng > LNG_EAST_LIMIT)){
@@ -86,8 +86,8 @@ public class MarkerServlet extends HttpServlet {
     Location location = getUserLocation(request);
 
     for(Entity entity: results.asIterable()){
-        double lat = (double) entity.getProperty("lat");
-        double lng = (double) entity.getProperty("lng");
+        double lat = (double) entity.getProperty(ENTITY_PROPERTY_KEY_1);
+        double lng = (double) entity.getProperty(ENTITY_PROPERTY_KEY_2);
         String crime = (String) entity.getProperty("crimeType");
         String date = (String) entity.getProperty("date");
         String time = (String) entity.getProperty("time");

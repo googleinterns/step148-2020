@@ -269,8 +269,9 @@ function toggleHeatmap() {
 function getPoints() {
   var heatPoints = [];
   var individualPoint;
-  fetch('/markers')
-    .then(response => response.json())
+  var locationOfUser = locationToArray();
+  fetch("/markers?location=" + locationOfUser)
+    .then(response => response.json)
     .then((markers) => {
       markers.forEach((marker) => {
         individualPoint = new google.maps.LatLng(marker.lat, marker.lng);
