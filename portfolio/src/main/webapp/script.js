@@ -157,6 +157,23 @@ function buildInfoWindow(lat, lng) {
   return clone;
 }
 
+function clickInfoWindow(markerReport, crimeType, date, time, address, description){
+    const text = 
+      '<h1>'+crimeType+'</h1>'+
+      '<div id="bodyContent">'+
+      '<p>'+ date +'-' + time +'</p>'+
+      '<p>'+ address +'</p>'+
+      '<p>Description: ' + description + '</p>' +
+      '</div>';
+    var infowindow = new google.maps.InfoWindow({
+        content: text
+    });
+
+    markerReport.addListener('click', function() {
+        infowindow.open(map, markerReport);
+    });
+}
+
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element) {
   postMarker(
@@ -207,7 +224,7 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
-
+        initHeatMap();
         let locationLimitCircle = new google.maps.Circle(
           {center: userLocation, radius: LOCATION_LIMIT_METERS});
         addressInput.setBounds(locationLimitCircle.getBounds());
@@ -252,7 +269,8 @@ function toggleHeatmap() {
 function getPoints() {
   var heatPoints = [];
   var individualPoint;
-  fetch('/markers')
+  var locationOfUser = locationToArray();
+  fetch("/markers?location=" + locationOfUser)
     .then(response => response.json())
     .then((markers) => {
       markers.forEach((marker) => {
@@ -305,20 +323,21 @@ hideMarkers() {
   }
 }
 
-function
-fetchReportMarkers() {
-  var markerReport;
-  fetch('/markers')
+function fetchReportMarkers(){
+    var markerReport;
+    var locationOfUser = locationToArray();
+    fetch("/markers?location=" + locationOfUser)
     .then(response => response.json())
     .then((markers) => {
-      markers.forEach((marker) => {
-        markerReport = new google.maps.Marker({
-          position: new google.maps.LatLng(marker.lat, marker.lng),
-          map: map
-        });
-        fetchedMarkers.push(markerReport);
-        reportsForMarkers.push(marker);
-        markerReport.setMap(map);
+        markers.forEach((marker) => {
+            markerReport =new google.maps.Marker({
+            position: new google.maps.LatLng(marker.lat, marker.lng),
+            map: map
+            }); 
+            fetchedMarkers.push(markerReport);
+            reportsForMarkers.push(marker);
+            markerReport.setMap(map);
+            clickInfoWindow(markerReport, marker.crimeType, marker.date, marker.time, marker.address, marker.description);
       });
     })
     .catch((error) => {
@@ -455,5 +474,12 @@ function repeatMarkers() {
         }
         });
     });
+}*/
+
+function locationToArray(){
+    var locArray = [];
+    locArray[0] = userLocation.lat;
+    locArray[1] = userLocation.lng;
+    console.log(locArray[0]);
+    return locArray;
 }
-*/
