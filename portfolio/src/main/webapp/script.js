@@ -57,6 +57,9 @@ function createMap() {
 
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
+
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(
+    document.getElementById('repeatedMarkerUI'));
   
   var reportLocationInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
@@ -161,13 +164,25 @@ function buildInfoWindow(lat, lng) {
 
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element) {
-  postMarker(
-    markerLat, markerLng, getRadioValueCrimes(),
-    document.getElementById('date').value,
-    document.getElementById('time').value,
-    document.getElementById('address').value,
-    document.getElementById('description').value);
-  editMarker.setMap(null);
+if (false){
+  /*if (repeatMarkers(markerLat, markerLng, document.getElementById('date').value, 
+     document.getElementById('time').value, getRadioValueCrimes())) {*/
+    
+
+    postMarker(
+      markerLat, markerLng, getRadioValueCrimes(),
+      document.getElementById('date').value,
+      document.getElementById('time').value,
+      document.getElementById('address').value,
+      document.getElementById('description').value);
+    editMarker.setMap(null);
+
+
+  }
+  else {
+    repeatedMarkersUI();
+  }
+
 }
 
 /** Looks for the value checked in the type of crime report's section. */
@@ -389,7 +404,7 @@ function route() {
               var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
               if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
                 counter += rateCrime(marker.crimeType);
-                console.log("Raring" + counter);
+                console.log("Rating" + counter);
                 console.log(marker.lat);
                 console.log(marker.lng);
               }
@@ -400,7 +415,6 @@ function route() {
         if (counter < lessCrimesInRoute) {
           lessCrimesInRoute = counter;
           routeIndex = r;
-          console.log("" + r);
         }
         counter = 0;
       }
@@ -442,15 +456,72 @@ function displayDirectionsAPI() {
   }
 }
 
-/*
-function repeatMarkers() {
-    fetch('/markers').then(response => response.json()).then((markers) => {
-    markers.forEach((marker) => {
-        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
-        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
-            
-        }
-        });
-    });
+function repeatedMarkersUI() {
+    console.log("HEYYYYY");
+  document.getElementById('repeatedMarkerUI').style.display = "block";
+  setTimeout(hidePopup, 3000);
 }
-*/
+
+function hidePopup() {
+  console.log("@22222222222");
+  document.getElementById('repeatedMarkerUI').style.display = "none";
+  /*console.log("wait 3 minutes then show popup again");
+  setTimeout(popup, 3 * 60 * 1000);*/
+}
+
+
+function repeatMarkers(reportLat, reportLng, reportDate, reportTime, reportCrime) {
+  fetch('/markers').then(response => response.json()).then((markers) => {
+  markers.forEach((marker) => {
+    if (sameLocation(marker.lat, marker.lng, reportLat, reportLng)) 
+      if (sameDate(reportDate, marker.date)) 
+        if (sameTime(reportTime, marker.time)) 
+          if (sameCrime(reportCrime, marker.crimeType))
+            return true; 
+    });
+  });
+  return false;
+}
+
+function sameDate(date1, date2) {
+    return date1 === date2;
+}
+
+function sameTime(time1, time2) {
+  if (time1 == undefined || time2 == undefined){
+    return false;
+  }
+  else {
+    var minutes1 = 600 * time1.charAt(0);
+    minutes1 += 60 * time1.charAt(1);
+    minutes1 += 10 * time1.charAt(3);
+    minutes1 +=  1 * time1.charAt(4);
+
+    var minutes2 = 600 * time2.charAt(0);
+    minutes2 += 60 * time2.charAt(1);
+    minutes2 += 10 * time2.charAt(3);
+    minutes2 +=  1 * time2.charAt(4);
+
+    /* 20 minutes or less in difference between times */
+    return Math.abs(minutes1 - minutes2) < 20;
+  }
+}
+
+function sameCrime(crime1, crime2){
+  if (crime1 == undefined || crime2 == undefined){
+    return false;
+  }
+  return crime1 === crime2;
+}
+
+function sameLocation(markerLat, markerLng, reportLat, reportLng) {
+  var R = 6371.0710; // Radius of the Earth in kilometers
+  var rlat1 = markerLat * (Math.PI/180); // Convert degrees to radians
+  var rlat2 = reportLat * (Math.PI/180); // Convert degrees to radians
+  var difflat = rlat2-rlat1; // Radian difference (latitudes)
+  var difflon = (reportLng-markerLng) * (Math.PI/180); // Radian difference (longitudes)
+
+  var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
+  /* If distance is less than 10 meters */
+  return d < 0.01;
+}
