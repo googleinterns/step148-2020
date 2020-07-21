@@ -94,20 +94,20 @@ function createMap() {
   typeOfSearch('type-address', ['address']);
   typeOfSearch('type-establishment', ['establishment']);
 
-  let limitedArea = new google.maps.Rectangle({
-    strokeColor: "#FF0000",
-    strokeOpacity: 0.8,
-    strokeWeight: 2,
-    fillColor: "#FF0000",
-    fillOpacity: 0.35,
-    map: map,
-    bounds: {
-      north: 31.676131,
-      south: 31.665916,
-      east: -106.424213,
-      west: -106.441602
-    }
-  });
+//   let limitedArea = new google.maps.Rectangle({
+//     strokeColor: "#FF0000",
+//     strokeOpacity: 0.8,
+//     strokeWeight: 2,
+//     fillColor: "#FF0000",
+//     fillOpacity: 0.35,
+//     map: map,
+//     bounds: {
+//       north: 31.676131,
+//       south: 31.665916,
+//       east: -106.424213,
+//       west: -106.441602
+//     }
+//   });
 }
 
 /** Sends a marker to the backend for saving. */
