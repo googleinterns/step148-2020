@@ -15,21 +15,21 @@
 package com.google.sps.data;
 
 public class Waypoint {
-  private final double xCoordinate;
-  private final String yCoordinate;
+  private final double lat;
+  private final double lng;
 
   public Waypoint(
-      double xCoordinate,
-      double yCoordinate){
-    this.xCoordinate = xCoordinate;
-    this.yCoordinate = yCoordinate;
+      double lat,
+      double lng){
+    this.lat = lat;
+    this.lng = lng;
   }
 
-  public double getXCoordinate(){
-      return xCoordinate;
+  public double getLat(){
+      return lat;
   }
 
-  public double getYCoordinate(){
-      return yCoordinate;
+  public double getLng(){
+      return lng;
   }
 }
