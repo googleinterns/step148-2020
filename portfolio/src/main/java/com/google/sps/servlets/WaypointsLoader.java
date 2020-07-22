@@ -11,12 +11,12 @@ public class WaypointsLoader {
     BufferedReader waypointsReader = new BufferedReader(
         new FileReader("/waypoints.txt"));
     String coordinate;
+    
       while((coordinate = waypointsReader.readLine()) != null){
         String[] coordinateWaypoint = coordinate.split(",");
-        double lat = Double.parseDouble(coordinateWaypoint[0].trim());
-        double lng = Double.parseDouble(coordinateWaypoint[1].trim());
-        System.out.println("LAT: " lat + " LNG: " + lng);
-        Waypoint waypoint = new Waypoint(lat, lng);
+        Waypoint waypoint = new Waypoint(
+            Double.parseDouble(coordinateWaypoint[0].trim()), 
+            Double.parseDouble(coordinateWaypoint[1].trim()));
       }
   }
 }
