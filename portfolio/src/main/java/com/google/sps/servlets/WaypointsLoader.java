@@ -20,7 +20,7 @@ public class WaypointsLoader {
     int gridCol = 0;
     
     BufferedReader waypointsReader = new BufferedReader(
-        new FileReader("/home/dpvalles/step148-2020/portfolio/waypoints.txt"));
+        new FileReader("waypoints.txt"));
     String coordinate;
     
       while((coordinate = waypointsReader.readLine()) != null){
