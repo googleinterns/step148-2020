@@ -1,7 +1,7 @@
 package com.google.sps.servlets;
 
 import com.google.sps.data.Grid;
-import com.google.sps.data.Waypoint;
+import com.google.sps.data.Location;
 import java.io.FileReader;
 import java.io.BufferedReader; 
 import java.util.HashMap;
@@ -10,11 +10,12 @@ import java.io.IOException;
 public class WaypointsLoader {
   private static final int NUM_GRIDS_ROWS = 6;
   private static final int NUM_GRIDS_COLS = 16;  
-  private static final HashMap<Grid, Waypoint> map = readWaypoints();
+  private static final HashMap<Grid, Location> MAP = readWaypoints();
   
-  public static HashMap<Grid,Waypoint> readWaypoints(){
+  public static HashMap<Grid,Location> readWaypoints(){
+    HashMap<Grid,Location> map = new HashMap<>();
+
     try{
-    HashMap<Grid,Waypoint> map = new HashMap<>();
     int gridRow = 0;
     int gridCol = 0;
     
@@ -24,7 +25,7 @@ public class WaypointsLoader {
     
       while((coordinate = waypointsReader.readLine()) != null){
         String[] coordinateWaypoint = coordinate.split(",");
-        Waypoint waypoint = new Waypoint(
+        Location waypoint = new Location(
             Double.parseDouble(coordinateWaypoint[0].trim()), 
             Double.parseDouble(coordinateWaypoint[1].trim()));
 

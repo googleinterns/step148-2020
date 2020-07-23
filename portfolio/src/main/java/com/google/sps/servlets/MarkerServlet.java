@@ -9,7 +9,6 @@ import com.google.appengine.api.datastore.Query;
 import com.google.gson.Gson;
 import com.google.sps.data.Location;
 import com.google.sps.data.Marker;
-import com.google.sps.data.Waypoint;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
