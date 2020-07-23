@@ -209,7 +209,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 
 #repeatedMarkerUI {
-  display: block;
+  display: none;
   background-color: #fefefe;
   margin: auto;
   padding: 20px;

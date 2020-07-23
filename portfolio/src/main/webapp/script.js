@@ -117,9 +117,24 @@ function postMarker(lat, lng, type, date, time, address, description) {
   fetch('/markers', {
     method: 'POST',
     body: params
-  }).catch((error) => {
+  }).then(response => response.json())
+  .then(result => { 
+
+    if (result.status != 'SUCCESS') {
+      displayRepeatedMarkerUI();
+      
+      var textError = (result.failure == 'REPEAT') ? "Repeated crimes" : "Unknown failure";
+
+      document.getElementById('unsuccessfulReport').innerHTML = textError;
+    } else {
+      location.reload();
+    }
+
+  })
+  .catch((error) => {
     console.error(error);
   });
+
 }
 
 /** Creates a marker that shows a textbox the user can edit. */
@@ -164,11 +179,6 @@ function buildInfoWindow(lat, lng) {
 
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element) {
-if (false){
-  /*if (repeatMarkers(markerLat, markerLng, document.getElementById('date').value, 
-     document.getElementById('time').value, getRadioValueCrimes())) {*/
-    
-
     postMarker(
       markerLat, markerLng, getRadioValueCrimes(),
       document.getElementById('date').value,
@@ -176,13 +186,6 @@ if (false){
       document.getElementById('address').value,
       document.getElementById('description').value);
     editMarker.setMap(null);
-
-
-  }
-  else {
-    repeatedMarkersUI();
-  }
-
 }
 
 /** Looks for the value checked in the type of crime report's section. */
@@ -456,19 +459,13 @@ function displayDirectionsAPI() {
   }
 }
 
-function repeatedMarkersUI() {
-    console.log("HEYYYYY");
+function displayRepeatedMarkerUI() {
   document.getElementById('repeatedMarkerUI').style.display = "block";
-  setTimeout(hidePopup, 3000);
 }
 
-function hidePopup() {
-  console.log("@22222222222");
+function hideRepeatedMarkerPopup() {
   document.getElementById('repeatedMarkerUI').style.display = "none";
-  /*console.log("wait 3 minutes then show popup again");
-  setTimeout(popup, 3 * 60 * 1000);*/
 }
-
 
 function repeatMarkers(reportLat, reportLng, reportDate, reportTime, reportCrime) {
   fetch('/markers').then(response => response.json()).then((markers) => {
