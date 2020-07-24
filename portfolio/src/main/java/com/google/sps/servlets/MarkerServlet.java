@@ -38,19 +38,6 @@ public class MarkerServlet extends HttpServlet {
   private static final Double LNG_WEST_LIMIT = -106.441602;
   private static final Double LNG_EAST_LIMIT = -106.424213;
 
-  class Result {
-    public StoreStatus status;
-    public StoreFailureType failure; 
-
-    public void setStatus(StoreStatus status) {
-      this.status = status;
-    }
-
-    public void setFailureType(StoreFailureType failure) {
-      this.failure = failure;
-    }
-  }
-
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
     List<Marker> markers = getMarkers(request);
@@ -162,23 +149,14 @@ public class MarkerServlet extends HttpServlet {
       String date = (String) entity.getProperty("date");
       String time = (String) entity.getProperty("time");
 
-      if (sameLocation(lat, lng, reportLat, reportLng) && sameDate(reportDate, date) 
-          && sameTime(reportTime, time) && sameCrime(reportCrime, crime)) 
-            return false;
+      return !(sameLocation(lat, lng, reportLat, reportLng) && sameDate(reportDate, date) 
+          && sameTime(reportTime, time) && sameCrime(reportCrime, crime));
     }
     return true;
   }
 
   private boolean sameLocation(double markerLat, double markerLng, double reportLat, double reportLng) {
-    double R = 6371.0710; // Radius of the Earth in kilometers
-    double rlat1 = markerLat * (Math.PI/180); // Convert degrees to radians
-    double rlat2 = reportLat * (Math.PI/180); // Convert degrees to radians
-    double difflat = rlat2-rlat1; // Radian difference (latitudes)
-    double difflon = (reportLng-markerLng) * (Math.PI/180); // Radian difference (longitudes)
-
-    double d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
-    /* If distance is less than 10 meters */
-    return d < 0.01;
+    return haversinMeters(markerLat, markerLng, reportLat, reportLng) < 0.01;
   }
 
   private boolean sameDate(String date1, String date2) {
@@ -214,14 +192,27 @@ public class MarkerServlet extends HttpServlet {
     }
     return crime1.equals(crime2);
   }
-}
 
-enum StoreStatus {
-  SUCCESS,
-  FAILURE  
-}
+  static class Result {
+    public StoreStatus status;
+    public StoreFailureType failure; 
 
-enum StoreFailureType {
-  UNKNOWN,
-  REPEAT
+    public void setStatus(StoreStatus status) {
+      this.status = status;
+    }
+
+    public void setFailureType(StoreFailureType failure) {
+      this.failure = failure;
+    }
+  }
+
+  enum StoreStatus {
+    SUCCESS,
+    FAILURE  
+  }
+
+  enum StoreFailureType {
+    UNKNOWN,
+    REPEAT
+  }
 }
