@@ -1,11 +1,13 @@
 package com.google.sps.servlets;
 
+import static org.apache.lucene.util.SloppyMath.haversinMeters;
 import com.google.appengine.api.datastore.DatastoreService;
 import com.google.appengine.api.datastore.DatastoreServiceFactory;
 import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.gson.Gson;
+import com.google.sps.data.Location;
 import com.google.sps.data.Marker;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -30,6 +32,11 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_5 = "time";
   private static final String ENTITY_PROPERTY_KEY_6 = "address";
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
+  private static final double METERS_IN_A_MILE = 1609.34;
+  private static final Double LAT_NORTH_LIMIT = 31.676131;
+  private static final Double LAT_SOUTH_LIMIT = 31.665916;
+  private static final Double LNG_WEST_LIMIT = -106.441602;
+  private static final Double LNG_EAST_LIMIT = -106.424213;
 
   class Result {
     private StoreStatus status;
@@ -60,6 +67,13 @@ public class MarkerServlet extends HttpServlet {
     double lng = Double.parseDouble(request.getParameter("lng"));
 
     Result resultEnum = new Result();
+
+    /** Checks for valid coordinates (limited area covered). */
+    if((lat < LAT_SOUTH_LIMIT || lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT || lng > LNG_EAST_LIMIT)){
+      System.out.println("Coordinates outside of bounds");
+      return;
+    }
+
     /**
      * Use to ensure that end-user provided HTML contains only elements and attributes that you are
      * expecting; no junk
@@ -71,7 +85,7 @@ public class MarkerServlet extends HttpServlet {
       String crimeAddress = Jsoup.clean(request.getParameter("address"), Whitelist.none());
       String crimeDescription = Jsoup.clean(request.getParameter("description"), Whitelist.none());
 
-      if (repeatMarkers(lat, lng, crimeDate, crimeTime, crime)) {
+      if (!validateMarker(lat, lng, crimeDate, crimeTime, crime)) {
         resultEnum.setStatus(StoreStatus.FAILURE);
         resultEnum.setFailureType(StoreFailureType.REPEAT);
       }
@@ -87,8 +101,8 @@ public class MarkerServlet extends HttpServlet {
         resultEnum.setFailureType(StoreFailureType.UNKNOWN);
       System.out.println(error);
     }
-    String statusEnum = gson.toJson(resultEnum);
-    response.getWriter().println(statusEnum);
+    //String statusEnum = gson.toJson(resultEnum);
+    response.getWriter().println(gson.toJson(resultEnum));
   }
 
   /** Fetches markers from Datastore. */
@@ -105,15 +119,18 @@ public class MarkerServlet extends HttpServlet {
       String time = (String) entity.getProperty("time");
       String address = (String) entity.getProperty("address");
       String description = (String) entity.getProperty("description");
-
-      Marker marker = new Marker(lat, lng, crime, date, time, address, description);
-      markers.add(marker);
+    
+      //fetches markers olny if they are inside the wanted area
+      if(haversinMeters(location.lat, location.lng, lat, lng) <= METERS_IN_A_MILE){ 
+        Marker marker = new Marker(lat, lng, crime, date, time, address, description);
+        markers.add(marker);
+      }
     }
     return markers;
   }
 
   /** Stores a marker in Datastore. */
-  public void storeMarker(Marker marker) {
+  private void storeMarker(Marker marker) {
     Entity markerEntity = new Entity(ENTITY_TITLE);
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_1, marker.getLat());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_2, marker.getLng());
@@ -126,7 +143,7 @@ public class MarkerServlet extends HttpServlet {
     datastore.put(markerEntity);
   }
 
-  public boolean repeatMarkers(double reportLat, double reportLng, String reportDate,
+  private boolean validateMarker(double reportLat, double reportLng, String reportDate,
    String reportTime, String reportCrime) {
     Query query = new Query(ENTITY_TITLE);
     PreparedQuery results = datastore.prepare(query);
@@ -138,16 +155,14 @@ public class MarkerServlet extends HttpServlet {
       String date = (String) entity.getProperty("date");
       String time = (String) entity.getProperty("time");
 
-      if (sameLocation(lat, lng, reportLat, reportLng)) 
-        if (sameDate(reportDate, date)) 
-          if (sameTime(reportTime, time)) 
-            if (sameCrime(reportCrime, crime))
-              return true;
+      if (sameLocation(lat, lng, reportLat, reportLng) && sameDate(reportDate, date) 
+          && sameTime(reportTime, time) && sameCrime(reportCrime, crime)) 
+            return false;
     }
-    return false;
+    return true;
   }
 
-  public boolean sameLocation(double markerLat, double markerLng, double reportLat, double reportLng) {
+  private boolean sameLocation(double markerLat, double markerLng, double reportLat, double reportLng) {
     double R = 6371.0710; // Radius of the Earth in kilometers
     double rlat1 = markerLat * (Math.PI/180); // Convert degrees to radians
     double rlat2 = reportLat * (Math.PI/180); // Convert degrees to radians
@@ -159,11 +174,14 @@ public class MarkerServlet extends HttpServlet {
     return d < 0.01;
   }
 
-  public boolean sameDate(String date1, String date2) {
+  private boolean sameDate(String date1, String date2) {
+    if (date1 == null || date2 == null){
+      return false;
+    }
     return date1.equals(date2);
   }
 
-  public boolean sameTime(String time1, String time2) {
+  private boolean sameTime(String time1, String time2) {
     if (time1 == null || time2 == null){
       return false;
     }
@@ -183,13 +201,12 @@ public class MarkerServlet extends HttpServlet {
     }
   }
 
-  public boolean sameCrime(String crime1, String crime2){
+  private boolean sameCrime(String crime1, String crime2){
     if (crime1 == null|| crime2 == null){
       return false;
     }
     return crime1.equals(crime2);
   }
-
 }
 
 enum StoreStatus {

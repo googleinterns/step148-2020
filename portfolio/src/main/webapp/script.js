@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+const LOCATION_LIMIT_METERS = 5000;
+
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
@@ -21,6 +23,7 @@ let fetchedMarkers = [];
 let markerLat;
 let markerLng;
 let reportsForMarkers = [];
+let addressInput;
 let destLat;
 let destLng;
 let orgLat;
@@ -123,7 +126,7 @@ function postMarker(lat, lng, type, date, time, address, description) {
     if (result.status != 'SUCCESS') {
       displayRepeatedMarkerUI();
       
-      var textError = (result.failure == 'REPEAT') ? "Repeated crimes" : "Unknown failure";
+      var textError = (result.failure == 'REPEAT') ? "The crime entered was already reported." : "Unknown failure";
       
       document.getElementById('unsuccessfulReport').innerHTML = textError;
     } else {
@@ -465,4 +468,12 @@ function displayRepeatedMarkerUI() {
 
 function hideRepeatedMarkerPopup() {
   document.getElementById('repeatedMarkerUI').style.display = "none";
+}
+
+function locationToArray(){
+    var locArray = [];
+    locArray[0] = userLocation.lat;
+    locArray[1] = userLocation.lng;
+    console.log(locArray[0]);
+    return locArray;
 }
