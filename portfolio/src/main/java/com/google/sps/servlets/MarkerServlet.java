@@ -33,10 +33,10 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_6 = "address";
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
   private static final double METERS_IN_A_MILE = 1609.34;
-  private static final Double LAT_NORTH_LIMIT = 31.747628;
-  private static final Double LAT_SOUTH_LIMIT = 31.730684;
-  private static final Double LNG_WEST_LIMIT = -106.494043;
-  private static final Double LNG_EAST_LIMIT = -106.473825;
+  private static final Double LAT_NORTH_LIMIT = 31.676131;
+  private static final Double LAT_SOUTH_LIMIT = 31.665916;
+  private static final Double LNG_WEST_LIMIT = -106.441602;
+  private static final Double LNG_EAST_LIMIT = -106.424213;
 
 
   @Override
@@ -94,7 +94,7 @@ public class MarkerServlet extends HttpServlet {
         String address = (String) entity.getProperty("address");
         String description = (String) entity.getProperty("description");
         //fetches markers olny if they are inside the wanted area
-        if(haversinMeters(location.getLatitude(), location.getLongitude(), lat, lng) <= METERS_IN_A_MILE){ 
+        if(haversinMeters(location.lat, location.lng, lat, lng) <= METERS_IN_A_MILE){ 
             Marker marker = new Marker(lat, lng, crime, date, time, address, description);
             markers.add(marker);
         }

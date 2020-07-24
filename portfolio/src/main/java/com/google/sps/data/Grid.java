@@ -14,12 +14,29 @@
 
 package com.google.sps.data;
 
-public class Location{
-  public final double lat;
-  public final double lng;
+import java.util.Objects;
 
-  public Location(double lat, double lng) {
-    this.lat  = lat;
-    this.lng = lng;
+public class Grid {
+  public final int row;
+  public final int col;
+
+  public Grid(int row, int col){
+      this.row = row;
+      this.col = col;
+  }
+
+  @Override
+  public int hashCode(){
+    return Objects.hash(new Integer(row), new Integer(col));
+  }
+
+  @Override
+  public boolean equals(Object other){
+    if(other == null || !(other instanceof Grid)){
+      return false;
+    }
+
+    Grid otherGrid = (Grid) other;
+    return this.row == otherGrid.row && this.col == otherGrid.col;
   }
 }

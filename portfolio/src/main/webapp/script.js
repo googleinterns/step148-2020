@@ -76,7 +76,7 @@ function createMap() {
    * report's form pops up.
    */
   addressInput.addListener('place_changed', function() {
-    let place = reportLocationInput.getPlace();
+    let place = addressInput.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
     createMarkerForEdit(markerLat, markerLng);
@@ -86,7 +86,7 @@ function createMap() {
     let radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
-      reportLocationInput.setTypes(type);
+      addressInput.setTypes(type);
     });
   }
 
