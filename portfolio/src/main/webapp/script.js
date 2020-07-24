@@ -119,12 +119,12 @@ function postMarker(lat, lng, type, date, time, address, description) {
     body: params
   }).then(response => response.json())
   .then(result => { 
-
+    
     if (result.status != 'SUCCESS') {
       displayRepeatedMarkerUI();
       
       var textError = (result.failure == 'REPEAT') ? "Repeated crimes" : "Unknown failure";
-
+      
       document.getElementById('unsuccessfulReport').innerHTML = textError;
     } else {
       location.reload();
@@ -465,60 +465,4 @@ function displayRepeatedMarkerUI() {
 
 function hideRepeatedMarkerPopup() {
   document.getElementById('repeatedMarkerUI').style.display = "none";
-}
-
-function repeatMarkers(reportLat, reportLng, reportDate, reportTime, reportCrime) {
-  fetch('/markers').then(response => response.json()).then((markers) => {
-  markers.forEach((marker) => {
-    if (sameLocation(marker.lat, marker.lng, reportLat, reportLng)) 
-      if (sameDate(reportDate, marker.date)) 
-        if (sameTime(reportTime, marker.time)) 
-          if (sameCrime(reportCrime, marker.crimeType))
-            return true; 
-    });
-  });
-  return false;
-}
-
-function sameDate(date1, date2) {
-    return date1 === date2;
-}
-
-function sameTime(time1, time2) {
-  if (time1 == undefined || time2 == undefined){
-    return false;
-  }
-  else {
-    var minutes1 = 600 * time1.charAt(0);
-    minutes1 += 60 * time1.charAt(1);
-    minutes1 += 10 * time1.charAt(3);
-    minutes1 +=  1 * time1.charAt(4);
-
-    var minutes2 = 600 * time2.charAt(0);
-    minutes2 += 60 * time2.charAt(1);
-    minutes2 += 10 * time2.charAt(3);
-    minutes2 +=  1 * time2.charAt(4);
-
-    /* 20 minutes or less in difference between times */
-    return Math.abs(minutes1 - minutes2) < 20;
-  }
-}
-
-function sameCrime(crime1, crime2){
-  if (crime1 == undefined || crime2 == undefined){
-    return false;
-  }
-  return crime1 === crime2;
-}
-
-function sameLocation(markerLat, markerLng, reportLat, reportLng) {
-  var R = 6371.0710; // Radius of the Earth in kilometers
-  var rlat1 = markerLat * (Math.PI/180); // Convert degrees to radians
-  var rlat2 = reportLat * (Math.PI/180); // Convert degrees to radians
-  var difflat = rlat2-rlat1; // Radian difference (latitudes)
-  var difflon = (reportLng-markerLng) * (Math.PI/180); // Radian difference (longitudes)
-
-  var d = 2 * R * Math.asin(Math.sqrt(Math.sin(difflat/2)*Math.sin(difflat/2)+Math.cos(rlat1)*Math.cos(rlat2)*Math.sin(difflon/2)*Math.sin(difflon/2)));
-  /* If distance is less than 10 meters */
-  return d < 0.01;
 }
