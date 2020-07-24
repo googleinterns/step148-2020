@@ -58,6 +58,9 @@ function createMap() {
     document.getElementById('search-reports'));
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
+
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(
+    document.getElementById('repeatedMarkerUI'));
   
   addressInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
@@ -110,9 +113,24 @@ function postMarker(lat, lng, type, date, time, address, description) {
   fetch('/markers', {
     method: 'POST',
     body: params
-  }).catch((error) => {
+  }).then(response => response.json())
+  .then(result => { 
+    
+    if (result.status != 'SUCCESS') {
+      displayRepeatedMarkerUI();
+      
+      var textError = (result.failure == 'REPEAT') ? "The crime entered was already reported." : "Unknown failure";
+      
+      document.getElementById('unsuccessfulReport').innerHTML = textError;
+    } else {
+      location.reload();
+    }
+
+  })
+  .catch((error) => {
     console.error(error);
   });
+
 }
 
 /** Creates a marker that shows a textbox the user can edit. */
@@ -411,7 +429,7 @@ function route() {
               var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
               if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
                 counter += rateCrime(marker.crimeType);
-                console.log("Raring" + counter);
+                console.log("Rating" + counter);
                 console.log(marker.lat);
                 console.log(marker.lng);
               }
@@ -422,7 +440,6 @@ function route() {
         if (counter < lessCrimesInRoute) {
           lessCrimesInRoute = counter;
           routeIndex = r;
-          console.log("" + r);
         }
         counter = 0;
       }
@@ -464,17 +481,13 @@ function displayDirectionsAPI() {
   }
 }
 
-/*
-function repeatMarkers() {
-    fetch('/markers').then(response => response.json()).then((markers) => {
-    markers.forEach((marker) => {
-        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
-        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
-            
-        }
-        });
-    });
-}*/
+function displayRepeatedMarkerUI() {
+  document.getElementById('repeatedMarkerUI').style.display = "block";
+}
+
+function hideRepeatedMarkerPopup() {
+  document.getElementById('repeatedMarkerUI').style.display = "none";
+}
 
 function locationToArray(){
     var locArray = [];
