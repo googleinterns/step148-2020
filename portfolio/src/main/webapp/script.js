@@ -179,13 +179,13 @@ function buildInfoWindow(lat, lng) {
 
 /** Manages the data of the report once the info window pops up. */
 function submitFormData(element) {
-    postMarker(
-      markerLat, markerLng, getRadioValueCrimes(),
-      document.getElementById('date').value,
-      document.getElementById('time').value,
-      document.getElementById('address').value,
-      document.getElementById('description').value);
-    editMarker.setMap(null);
+  postMarker(
+    markerLat, markerLng, getRadioValueCrimes(),
+    document.getElementById('date').value,
+    document.getElementById('time').value,
+    document.getElementById('address').value,
+    document.getElementById('description').value);
+  editMarker.setMap(null);
 }
 
 /** Looks for the value checked in the type of crime report's section. */

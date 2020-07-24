@@ -71,14 +71,11 @@ public class MarkerServlet extends HttpServlet {
       String crimeAddress = Jsoup.clean(request.getParameter("address"), Whitelist.none());
       String crimeDescription = Jsoup.clean(request.getParameter("description"), Whitelist.none());
 
-      //ADDED
       if (repeatMarkers(lat, lng, crimeDate, crimeTime, crime)) {
-          //ADDED
         resultEnum.setStatus(StoreStatus.FAILURE);
         resultEnum.setFailureType(StoreFailureType.REPEAT);
       }
       else {
-          //ADDED
         resultEnum.setStatus(StoreStatus.SUCCESS);
         Marker marker =
             new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription);
@@ -90,8 +87,6 @@ public class MarkerServlet extends HttpServlet {
         resultEnum.setFailureType(StoreFailureType.UNKNOWN);
       System.out.println(error);
     }
-
-    //ADDED
     String statusEnum = gson.toJson(resultEnum);
     response.getWriter().println(statusEnum);
   }
