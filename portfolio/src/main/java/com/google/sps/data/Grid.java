@@ -15,19 +15,11 @@
 package com.google.sps.data;
 
 public class Grid {
-  private final int row;
-  private final int col;
+  public final int row;
+  public final int col;
 
   public Grid(int row, int col){
       this.row = row;
       this.col = col;
-  }
-
-  public double getRow(){
-      return row;
-  }
-
-  public double getCol(){
-      return col;
   }
 }

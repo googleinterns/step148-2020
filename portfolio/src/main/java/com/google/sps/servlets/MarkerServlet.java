@@ -94,7 +94,7 @@ public class MarkerServlet extends HttpServlet {
         String address = (String) entity.getProperty("address");
         String description = (String) entity.getProperty("description");
         //fetches markers olny if they are inside the wanted area
-        if(haversinMeters(location.getLatitude(), location.getLongitude(), lat, lng) <= METERS_IN_A_MILE){ 
+        if(haversinMeters(location.lat, location.lng, lat, lng) <= METERS_IN_A_MILE){ 
             Marker marker = new Marker(lat, lng, crime, date, time, address, description);
             markers.add(marker);
         }
