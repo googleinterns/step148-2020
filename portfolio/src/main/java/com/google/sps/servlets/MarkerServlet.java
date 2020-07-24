@@ -39,8 +39,8 @@ public class MarkerServlet extends HttpServlet {
   private static final Double LNG_EAST_LIMIT = -106.424213;
 
   class Result {
-    private StoreStatus status;
-    private StoreFailureType failure; 
+    public StoreStatus status;
+    public StoreFailureType failure; 
 
     public void setStatus(StoreStatus status) {
       this.status = status;
@@ -51,10 +51,9 @@ public class MarkerServlet extends HttpServlet {
     }
   }
 
-  /** Responds with JSON array containing marker data. */
   @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    List<Marker> markers = getMarkers();
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    List<Marker> markers = getMarkers(request);
     String json = gson.toJson(markers);
     response.setContentType("application/json");
     response.getWriter().println(json);
@@ -101,15 +100,16 @@ public class MarkerServlet extends HttpServlet {
         resultEnum.setFailureType(StoreFailureType.UNKNOWN);
       System.out.println(error);
     }
-    //String statusEnum = gson.toJson(resultEnum);
+
     response.getWriter().println(gson.toJson(resultEnum));
   }
 
   /** Fetches markers from Datastore. */
-  private List<Marker> getMarkers() {
+  private List<Marker> getMarkers(HttpServletRequest request){
     List<Marker> markers = new ArrayList<>();
     Query query = new Query(ENTITY_TITLE);
     PreparedQuery results = datastore.prepare(query);
+    Location location = getUserLocation(request);
 
     for (Entity entity : results.asIterable()) {
       double lat = (double) entity.getProperty("lat");
@@ -138,8 +138,16 @@ public class MarkerServlet extends HttpServlet {
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_5, marker.getTime());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_6, marker.getAddress());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_7, marker.getDescription());
-
     datastore.put(markerEntity);
+    }
+
+  public Location getUserLocation(HttpServletRequest request){
+    String locationStr = request.getParameter("location");
+    String[] locationArrStr = locationStr.split(",", 2);
+    double lat = Double.parseDouble(locationArrStr[0]);
+    double lng = Double.parseDouble(locationArrStr[1]);
+    Location userLocation = new Location(lat, lng);
+    return userLocation;
   }
 
   private boolean validateMarker(double reportLat, double reportLng, String reportDate,

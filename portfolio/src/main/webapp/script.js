@@ -54,17 +54,15 @@ function createMap() {
 
   map.controls[google.maps.ControlPosition.TOP_RIGHT].push(
     document.getElementById('floating-panel'));
-
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-reports'));
-
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
 
   map.controls[google.maps.ControlPosition.TOP_CENTER].push(
     document.getElementById('repeatedMarkerUI'));
   
-  var reportLocationInput = new google.maps.places.Autocomplete(
+  addressInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
 
   var originInput = new google.maps.places.Autocomplete(
@@ -72,12 +70,7 @@ function createMap() {
 
   var destinationInput = new google.maps.places.Autocomplete(
     document.getElementById('destination-location'));
-  /**
-     Bind the map's bounds property to the autocomplete object, so that the
-     autocomplete requests use the current map bounds for the bounds for the
-     option in the request.
-   */
-  reportLocationInput.bindTo('bounds', map);
+
   originInput.bindTo('bounds', map);
   destinationInput.bindTo('bounds', map);
 
@@ -85,18 +78,18 @@ function createMap() {
    * Listens for the event fired when the user selects a prediction. The
    * report's form pops up.
    */
-  reportLocationInput.addListener('place_changed', function() {
-    var place = autocomplete.getPlace();
+  addressInput.addListener('place_changed', function() {
+    let place = addressInput.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
     createMarkerForEdit(markerLat, markerLng);
   });
 
   function typeOfSearch(id, type) {
-    var radioButton = document.getElementById(id);
+    let radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
-      reportLocationInput.setTypes(type);
+      addressInput.setTypes(type);
     });
   }
 
@@ -160,6 +153,8 @@ function createMarkerForEdit(lat, lng) {
     new google.maps.InfoWindow({
       content: buildInfoWindow(lat, lng)
     });
+  
+  map.setCenter(new google.maps.LatLng(lat, lng));
 
   /** When the user closes the editable info window, remove the marker. */
   google.maps.event.addListener(infoWindow, 'closeclick', () => {
@@ -178,6 +173,23 @@ function buildInfoWindow(lat, lng) {
   clone.id = '';
   clone.style.display = 'block';
   return clone;
+}
+
+function clickInfoWindow(markerReport, crimeType, date, time, address, description){
+    const text = 
+      '<h1>'+crimeType+'</h1>'+
+      '<div id="bodyContent">'+
+      '<p>'+ date +'-' + time +'</p>'+
+      '<p>'+ address +'</p>'+
+      '<p>Description: ' + description + '</p>' +
+      '</div>';
+    var infowindow = new google.maps.InfoWindow({
+        content: text
+    });
+
+    markerReport.addListener('click', function() {
+        infowindow.open(map, markerReport);
+    });
 }
 
 /** Manages the data of the report once the info window pops up. */
@@ -230,6 +242,11 @@ function getUserLocation() {
         });
         marker.setMap(map);
         map.setCenter(userLocation);
+        initHeatMap();
+        let locationLimitCircle = new google.maps.Circle(
+          {center: userLocation, radius: LOCATION_LIMIT_METERS});
+        addressInput.setBounds(locationLimitCircle.getBounds());
+        addressInput.setOptions({strictBounds: true});
       },
       function() {
         handleLocationError(true, infoWindow, map.getCenter());
@@ -270,7 +287,8 @@ function toggleHeatmap() {
 function getPoints() {
   var heatPoints = [];
   var individualPoint;
-  fetch('/markers')
+  var locationOfUser = locationToArray();
+  fetch("/markers?location=" + locationOfUser)
     .then(response => response.json())
     .then((markers) => {
       markers.forEach((marker) => {
@@ -323,20 +341,21 @@ hideMarkers() {
   }
 }
 
-function
-fetchReportMarkers() {
-  var markerReport;
-  fetch('/markers')
+function fetchReportMarkers(){
+    var markerReport;
+    var locationOfUser = locationToArray();
+    fetch("/markers?location=" + locationOfUser)
     .then(response => response.json())
     .then((markers) => {
-      markers.forEach((marker) => {
-        markerReport = new google.maps.Marker({
-          position: new google.maps.LatLng(marker.lat, marker.lng),
-          map: map
-        });
-        fetchedMarkers.push(markerReport);
-        reportsForMarkers.push(marker);
-        markerReport.setMap(map);
+        markers.forEach((marker) => {
+            markerReport =new google.maps.Marker({
+            position: new google.maps.LatLng(marker.lat, marker.lng),
+            map: map
+            }); 
+            fetchedMarkers.push(markerReport);
+            reportsForMarkers.push(marker);
+            markerReport.setMap(map);
+            clickInfoWindow(markerReport, marker.crimeType, marker.date, marker.time, marker.address, marker.description);
       });
     })
     .catch((error) => {
@@ -468,6 +487,14 @@ function displayRepeatedMarkerUI() {
 
 function hideRepeatedMarkerPopup() {
   document.getElementById('repeatedMarkerUI').style.display = "none";
+}
+
+function locationToArray(){
+    var locArray = [];
+    locArray[0] = userLocation.lat;
+    locArray[1] = userLocation.lng;
+    console.log(locArray[0]);
+    return locArray;
 }
 
 function locationToArray(){
