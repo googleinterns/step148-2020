@@ -112,8 +112,8 @@ public class MarkerServlet extends HttpServlet {
     Location location = getUserLocation(request);
 
     for (Entity entity : results.asIterable()) {
-      double lat = (double) entity.getProperty("lat");
-      double lng = (double) entity.getProperty("lng");
+      double lat = (double) entity.getProperty(ENTITY_PROPERTY_KEY_1);
+      double lng = (double) entity.getProperty(ENTITY_PROPERTY_KEY_2);
       String crime = (String) entity.getProperty("crimeType");
       String date = (String) entity.getProperty("date");
       String time = (String) entity.getProperty("time");
