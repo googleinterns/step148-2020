@@ -496,11 +496,3 @@ function locationToArray(){
     console.log(locArray[0]);
     return locArray;
 }
-
-function locationToArray(){
-    var locArray = [];
-    locArray[0] = userLocation.lat;
-    locArray[1] = userLocation.lng;
-    console.log(locArray[0]);
-    return locArray;
-}
