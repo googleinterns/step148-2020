@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.gson.Gson;
+import com.google.sps.data.Grid;
 import com.google.sps.data.Location;
 import com.google.sps.data.Marker;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import org.jsoup.safety.Whitelist;
 /** Handles fetching and saving markers data. */
 @WebServlet("/markers")
 public class MarkerServlet extends HttpServlet {
+  private static Grid grid;
   private static final Gson gson = new Gson();
   private static final DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
   private static final String ENTITY_TITLE = "Marker";
@@ -32,11 +34,15 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_5 = "time";
   private static final String ENTITY_PROPERTY_KEY_6 = "address";
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
+  private static final String ENTITY_PROPERTY_KEY_8 = "row";
+  private static final String ENTITY_PROPERTY_KEY_9 = "col";
   private static final double METERS_IN_A_MILE = 1609.34;
-  private static final Double LAT_NORTH_LIMIT = 31.747628;
-  private static final Double LAT_SOUTH_LIMIT = 31.730684;
-  private static final Double LNG_WEST_LIMIT = -106.494043;
-  private static final Double LNG_EAST_LIMIT = -106.473825;
+  private static final Double LAT_NORTH_LIMIT = 31.676131;
+  private static final Double LAT_SOUTH_LIMIT = 31.668060999999998;
+  private static final Double LNG_WEST_LIMIT = -106.441602;
+  private static final Double LNG_EAST_LIMIT = -106.42384200000005;
+  private static int gridRow;
+  private static int gridCol;
 
 
   @Override
@@ -52,6 +58,10 @@ public class MarkerServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     double lat = Double.parseDouble(request.getParameter("lat"));
     double lng = Double.parseDouble(request.getParameter("lng"));
+    grid = new Grid(lat, lng);
+    int[] position = grid.createFromLatLng();
+    gridRow = position[0];
+    gridCol = position[1];
 
     /** Checks for valid coordinates (limited area covered). */
     if((lat < LAT_SOUTH_LIMIT || lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT || lng > LNG_EAST_LIMIT)){
@@ -71,7 +81,7 @@ public class MarkerServlet extends HttpServlet {
       String crimeDescription = Jsoup.clean(request.getParameter("description"), Whitelist.none());
 
       Marker marker =
-          new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription);
+          new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription, gridRow, gridCol);
       storeMarker(marker);
     } catch (Error error) {
       System.out.println(error);
@@ -79,7 +89,7 @@ public class MarkerServlet extends HttpServlet {
   }
 
   /** Fetches markers from Datastore. */
-  private List<Marker> getMarkers(HttpServletRequest request){
+  public List<Marker> getMarkers(HttpServletRequest request){
     List<Marker> markers = new ArrayList<>();
     Query query = new Query(ENTITY_TITLE);
     PreparedQuery results = datastore.prepare(query);
@@ -93,9 +103,10 @@ public class MarkerServlet extends HttpServlet {
         String time = (String) entity.getProperty("time");
         String address = (String) entity.getProperty("address");
         String description = (String) entity.getProperty("description");
+
         //fetches markers olny if they are inside the wanted area
         if(haversinMeters(location.getLatitude(), location.getLongitude(), lat, lng) <= METERS_IN_A_MILE){ 
-            Marker marker = new Marker(lat, lng, crime, date, time, address, description);
+            Marker marker = new Marker(lat, lng, crime, date, time, address, description, gridRow, gridCol);
             markers.add(marker);
         }
     }
@@ -112,8 +123,11 @@ public class MarkerServlet extends HttpServlet {
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_5, marker.getTime());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_6, marker.getAddress());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_7, marker.getDescription());
+    markerEntity.setProperty(ENTITY_PROPERTY_KEY_8, marker.getGridRow());
+    markerEntity.setProperty(ENTITY_PROPERTY_KEY_9, marker.getGridCol());
+
     datastore.put(markerEntity);
-    }
+  }
 
   public Location getUserLocation(HttpServletRequest request){
     String locationStr = request.getParameter("location");
