@@ -1,18 +1,33 @@
 package com.google.sps.servlets;
 
+import com.google.gson.Gson;
 import com.google.sps.data.Grid;
 import com.google.sps.data.Location;
-import java.io.FileReader;
 import java.io.BufferedReader; 
+import java.io.FileReader;
 import java.util.HashMap;
 import java.io.IOException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-public class WaypointsLoader {
+/** Handles fetching and saving grids data. */
+@WebServlet("/grids")
+public class WaypointsLoader extends HttpServlet {
   private static final int NUM_GRIDS_ROWS = 6;
   private static final int NUM_GRIDS_COLS = 16;  
-  private static final HashMap<Grid, Location> MAP = readWaypoints();
+  private static final Gson gson = new Gson();
+
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    HashMap<Grid, Location> MAP = readWaypoints(request);
+    String json = gson.toJson(MAP);
+    response.setContentType("application/json");
+    response.getWriter().println(json);
+  }
   
-  public static HashMap<Grid,Location> readWaypoints(){
+  public static HashMap<Grid,Location> readWaypoints(HttpServletRequest request){
     HashMap<Grid,Location> map = new HashMap<>();
 
     try{
@@ -20,7 +35,7 @@ public class WaypointsLoader {
     int gridCol = 0;
     
     BufferedReader waypointsReader = new BufferedReader(
-        new FileReader("waypoints.txt"));
+        new FileReader("/home/dpvalles/step148-2020/portfolio/src/main/java/com/google/sps/data/waypoints.txt"));
     String coordinate;
     
       while((coordinate = waypointsReader.readLine()) != null){
