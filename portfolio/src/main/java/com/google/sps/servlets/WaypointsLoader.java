@@ -14,13 +14,13 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/grids")
 public class WaypointsLoader extends HttpServlet {
   private static final int NUM_GRIDS_ROWS = 6;
-  private static final int NUM_GRIDS_COLS = 16;  
-  private static final Gson gson = new Gson();
+  private static final int NUM_GRIDS_COLS = 16; 
+  private static final Gson GSON = new Gson();
+  private static final HashMap<Grid, Location> MAP = readWaypoints();
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
-    HashMap<Grid, Location> MAP = readWaypoints();
-    String json = gson.toJson(MAP);
+    String json = GSON.toJson(MAP);
     response.setContentType("application/json");
     response.getWriter().println(json);
   }
