@@ -28,6 +28,7 @@ let destLat;
 let destLng;
 let orgLat;
 let orgLng;
+var grid1;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -497,12 +498,16 @@ function locationToArray(){
     return locArray;
 }
 
-/** Hardcoded function to get the waypoint for a given grid */
-function getWaypointFromGrid() {
-    fetch('/grids?requestRow=0&requestCol=0')
-    .then(response => console.log(response.json()))
-    .then((waypoint) => {
-        console.log('Row 0 Col 0, waypoint: ' + waypoint);
+function getWaypointForGrid(grid) {
+  fetch('/grids?requestRow=' + grid.row + '&requestCol=' + grid.col)
+  .then(response => response.json())
+  .then((waypoint) => {
+    let waypointForGrid = {
+      location: new google.maps.LatLng(waypoint.lat, waypoint.lng),
+      stopover: true
+    }
+
+    return waypointForGrid;
     })
     .catch((error) => {
         console.error(error);
