@@ -509,6 +509,6 @@ function getWaypointForGrid(grid) {
   return waypointForGrid;
   })
   .catch((error) => {
-        console.error(error);
+    console.error(error);
   }); 
 }
