@@ -506,10 +506,10 @@ function getWaypointForGrid(grid) {
       location: new google.maps.LatLng(waypoint.lat, waypoint.lng),
       stopover: true
     }
-
-    return waypointForGrid;
-    })
-    .catch((error) => {
+    
+  return waypointForGrid;
+  })
+  .catch((error) => {
         console.error(error);
-    }); 
+  }); 
 }
