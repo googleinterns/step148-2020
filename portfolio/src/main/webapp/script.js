@@ -28,7 +28,6 @@ let destLat;
 let destLng;
 let orgLat;
 let orgLng;
-var grid1;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
