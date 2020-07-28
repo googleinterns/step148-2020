@@ -16,22 +16,9 @@ public class WaypointsLoader extends HttpServlet {
   private static final int NUM_GRIDS_ROWS = 6;
   private static final int NUM_GRIDS_COLS = 16; 
   private static final Gson GSON = new Gson();
-  private static final HashMap<Grid, Location> MAP = readWaypoints();
-  
-  @Override
-  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
-    String json = GSON.toJson(MAP.get(new Grid(
-        Integer.parseInt(request.getParameter("requestRow")), 
-        Integer.parseInt(request.getParameter("requestCol")))));
-    response.setContentType("application/json");
-    response.getWriter().println(json);
-  }
-  
-  public static HashMap<Grid,Location> readWaypoints(){
-    HashMap<Grid,Location> map = new HashMap<>();
-    double[] COORDINATES_WAYPOINT = {31.675332,-106.44099,
-                                     31.674918,-106.43949,
-                                     31.674867,-106.43856,
+  private static final double[] COORDINATES_WAYPOINT = {31.675332,-106.44099,
+                                                        31.674918,-106.43949,
+                                                        31.674867,-106.43856,
                                                         31.674849,-106.43732,
                                                         31.67483,-106.43669,
                                                         31.674782,-106.43546,
@@ -125,6 +112,19 @@ public class WaypointsLoader extends HttpServlet {
                                                         31.668237,-106.427179,
                                                         31.668572,-106.426026,
                                                         31.668158,-106.424301};
+  private static final HashMap<Grid, Location> MAP = readWaypoints();
+  
+  @Override
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+    String json = GSON.toJson(MAP.get(new Grid(
+        Integer.parseInt(request.getParameter("requestRow")), 
+        Integer.parseInt(request.getParameter("requestCol")))));
+    response.setContentType("application/json");
+    response.getWriter().println(json);
+  }
+  
+  public static HashMap<Grid,Location> readWaypoints(){
+    HashMap<Grid,Location> map = new HashMap<>();
 
     int gridRow = 0;
     int gridCol = 0;
