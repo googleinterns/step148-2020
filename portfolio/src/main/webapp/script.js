@@ -496,3 +496,15 @@ function locationToArray(){
     console.log(locArray[0]);
     return locArray;
 }
+
+/** Hardcoded function to get the waypoint for a given grid */
+function getWaypointFromGrid() {
+    fetch('/grids?requestRow=0&requestCol=0')
+    .then(response => console.log(response.json()))
+    .then((waypoint) => {
+        console.log('Row 0 Col 0, waypoint: ' + waypoint);
+    })
+    .catch((error) => {
+        console.error(error);
+    }); 
+}
