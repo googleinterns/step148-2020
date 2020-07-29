@@ -520,7 +520,7 @@ function getSafeNeighboringGrids(grid){
   let lowerGridRow = -1;
   let rightGridCol = -1;
   let leftGridCol = -1;
-  let safeGrid = -1;
+  let safeGrid;
 
   if(grid.row + 1 < 6){
     upperGridRow = grid.row + 1;
