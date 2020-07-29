@@ -14,43 +14,43 @@
 
 package com.google.sps.data;
 
+
 import java.lang.Math; 
+import java.util.Objects;
+import com.google.sps.servlets.MarkerServlet;
 
-public class Grid{
-  private final double LIMIT_NORTH = 31.676131;
-  private final double LIMIT_WEST = 106.441602;
-  private final double LAT_DIFF = 0.001345;
-  private final double LNG_DIFF = 0.00111;
-  private double lat;
-  private double lng;
-  private int numOfReports; 
+public class Grid {
+  private static final double LAT_DIFF = 0.001345;
+  private static final double LNG_DIFF = 0.00111;
+  public int numOfReports; 
+  public final int row;
+  public final int col;
 
-  public Grid(double lat, double lng) {
-    this.lat  = lat;
-    this.lng = lng;
+  public Grid(int row, int col){
+    this.row = row;
+    this.col = col;
   }
 
-  public double getLat() {
-    return lat; 
+  @Override
+  public int hashCode(){
+    return Objects.hash(new Integer(row), new Integer(col));
   }
 
-  public double getLng() { 
-    return lng;
+  @Override
+  public boolean equals(Object other){
+    if(other == null || !(other instanceof Grid)){
+      return false;
+    }
+
+    Grid otherGrid = (Grid) other;
+    return this.row == otherGrid.row && this.col == otherGrid.col;
   }
 
-  public int getNumOfReports(){
-    return numOfReports;
-  }
-
-  public void setNumOfReports(int increaseReports){
-    this.numOfReports += increaseReports;
-  }
-
-//Converts lat and lng of a point to the x and y coordinate of the grid
-  public int[] createFromLatLng(){
-    int row = (int)((LIMIT_NORTH - lat) / LAT_DIFF);
-    int col = (int)((LIMIT_WEST - Math.abs(lng)) / LNG_DIFF);
+  //Converts lat and lng of a point to the x and y coordinate of the grid
+  public static Grid createFromLatLng(double lat, double lng){
+    int row = (int)((MarkerServlet.LAT_NORTH_LIMIT - lat) / LAT_DIFF);
+    int col = (int)((Math.abs(MarkerServlet.LNG_WEST_LIMIT) - Math.abs(lng)) / LNG_DIFF);
     System.out.println("row is: " + row + " col is: " + col);
-    return new int[] {row,col}; 
+    return new Grid(row, col); 
   }
 }
