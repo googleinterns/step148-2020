@@ -164,33 +164,19 @@ function createMap() {
   typeOfSearch('type-establishment', ['establishment']);
 }
 
-//prints all element on the arraylist
-function getReports(){
-  fetch('/numberOfReports')
-  .then(response => response.json())
-  .then((numReports) => {
-    numReports.forEach((grid) => {
-      console.log("NumberOfReports of grid: ");
-      console.log(grid.numOfReports);
-    });
-   })
-  .catch((error) => {
-    console.error(error);
-  });
-}
-
 //prints only the number of reports of a specific grid
-/*function getReportsForGrid(){
-  fetch("/numberOfReports?row=3&col=11")
-  .then(response => console.log(response.json()))
-  .then((numReports) => {
-    console.log("Number of reports of this grid: ");
-    console.log(numReports);
+function getReports(){
+  fetch("/numberOfReports?row=0&col=0")
+  .then(response => response.json())
+  .then((reportsInGrid) => {
+    console.log("Number of reports in this grid: ");
+    console.log(reportsInGrid);
+    return reportsInGrid;
   })
   .catch((error) => {
     console.error(error);
   });
-}*/
+}
 
 /** Sends a marker to the backend for saving. */
 function postMarker(lat, lng, type, date, time, address, description) {
