@@ -592,3 +592,40 @@ function getWaypointFromGrid() {
         console.error(error);
     }); 
 }
+
+class Grid {
+  constructor(row, col) {
+    this.row = row;
+    this.col = col;
+  }
+  static convertToRowCol(lat, lng){
+    var row = Math.trunc(Number((31.676131 - lat) / 0.001345));
+    var col = Math.trunc(Number((106.441602 - Math.abs(lng)) / 0.00111));
+    console.log("row is: " + row + " col is: " + col);
+  }
+}
+ 
+function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
+  var grids = [];
+  var start_point = Grid.convertToRowCol(step.startLocation.lat, step.startLocation.lng); //start and end location are LatLng objects
+  var end_point = Grid.convertToRowCol(step.endLocation.lat, step.endLocation.lng);
+  var row1 = start_point.row;
+  var col1 = start_point.col;
+  var row2 = end_point.row;
+  var col2 = end_point.col;
+  var m_new = 2 * (row2 - row1); 
+  var slope_error_new = m_new - (col2 - col1);
+  for (col = col1, row = row1; col <= col2; col++){ 
+    console.log("(" + row + "," + col + ")"); 
+    grids.push(new Grid(row , col));
+    // Add slope to increment angle formed 
+    slope_error_new += m_new; 
+    // Slope error reached limit, time to 
+    // increment row and update slope error. 
+    if (slope_error_new >= 0){ 
+      row++; 
+      slope_error_new -= 2 * (col2 - col1);
+    } 
+  } 
+  return grids;
+}          
