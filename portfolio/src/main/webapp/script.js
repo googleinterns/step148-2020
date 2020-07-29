@@ -512,3 +512,82 @@ function getWaypointForGrid(grid) {
     console.error(error);
   }); 
 }
+
+/** Return the first safest neighboring grid found.
+    Assumption: at least one grid will be safe. */
+function getSafeNeighboringGrids(grid){
+  let upperGridRow = -1;
+  let lowerGridRow = -1;
+  let rightGridCol = -1;
+  let leftGridCol = -1;
+  let safeGrid = -1;
+
+  if(grid.row + 1 < 6){
+    upperGridRow = grid.row + 1;
+
+    // Might need to change the parameters once the class for the numberOfReports is merged.
+    fetch('/numberOfReports?row=' + upperGridRow + '&col=' + grid.col)
+    .then(response => response.json())
+    .then((reportsInGrid) => {
+        if(reportsInGrid == 0){
+        safeGrid.row = upperGridRow;
+        safeGrid.col = grid.col;
+        return safeGrid;
+        }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+  }
+  
+  if(grid.row - 1 > 0){
+    lowerGridRow = grid.row - 1;
+
+    fetch('/numberOfReports?row=' + lowerGridRow + '&col=' + grid.col)
+    .then(response => response.json())
+    .then((reportsInGrid) => {
+        if(reportsInGrid == 0){
+        safeGrid.row = lowerGridRow;
+        safeGrid.col = grid.col;
+        return safeGrid;
+        }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+  }
+
+  if(grid.col + 1 < 16){
+    rightGridCol = grid.col + 1;
+
+    fetch('/numberOfReports?row=' + grid.row + '&col=' + rightGridCol)
+    .then(response => response.json())
+    .then((reportsInGrid) => {
+        if(reportsInGrid == 0){
+        safeGrid.row = grid.row;
+        safeGrid.col = rightGridCol;
+        return safeGrid;
+        }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+  }
+
+  if(grid.col - 1 > 0){
+    leftGridCol = grid.col -1;
+
+    fetch('/numberOfReports?row=' + grid.row + '&col=' + leftGridCol)
+    .then(response => response.json())
+    .then((reportsInGrid) => {
+        if(reportsInGrid == 0){
+        safeGrid.row = grid.row;
+        safeGrid.col = leftGridCol;
+        return safeGrid;
+        }
+    })
+    .catch((error) => {
+        console.error(error);
+    });
+  }
+}
