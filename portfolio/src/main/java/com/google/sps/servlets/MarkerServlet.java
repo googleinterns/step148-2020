@@ -56,6 +56,8 @@ public class MarkerServlet extends HttpServlet {
     double lng = Double.parseDouble(request.getParameter("lng"));
     Grid grid = Grid.createFromLatLng(lat, lng);
 
+    Result resultEnum = new Result();
+
     /** Checks for valid coordinates (limited area covered). */
     if((lat < LAT_SOUTH_LIMIT || lat > LAT_NORTH_LIMIT) || (lng < LNG_WEST_LIMIT || lng > LNG_EAST_LIMIT)){
       System.out.println("Coordinates outside of bounds");
@@ -72,13 +74,23 @@ public class MarkerServlet extends HttpServlet {
       String crimeTime = Jsoup.clean(request.getParameter("time"), Whitelist.none());
       String crimeAddress = Jsoup.clean(request.getParameter("address"), Whitelist.none());
       String crimeDescription = Jsoup.clean(request.getParameter("description"), Whitelist.none());
-
-      Marker marker =
-          new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription, grid.row, grid.col);
-      storeMarker(marker);
+      if (!validateMarker(lat, lng, crimeDate, crimeTime, crime)) {
+        resultEnum.setStatus(StoreStatus.FAILURE);
+        resultEnum.setFailureType(StoreFailureType.REPEAT);
+      }
+      else {
+        resultEnum.setStatus(StoreStatus.SUCCESS);
+        Marker marker =
+            new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription, grid.row, grid.col);
+        storeMarker(marker);
+      }
     } catch (Error error) {
+        resultEnum.setStatus(StoreStatus.FAILURE);
+        resultEnum.setFailureType(StoreFailureType.UNKNOWN);
       System.out.println(error);
     }
+
+    response.getWriter().println(gson.toJson(resultEnum));
   }
 
   /** Fetches markers from Datastore. */
@@ -86,7 +98,7 @@ public class MarkerServlet extends HttpServlet {
     List<Marker> markers = new ArrayList<>();
     Query query = new Query(ENTITY_TITLE);
     PreparedQuery results = datastore.prepare(query);
-   
+
     for(Entity entity: results.asIterable()){
         double lat = (double) entity.getProperty(ENTITY_PROPERTY_KEY_1);
         double lng = (double) entity.getProperty(ENTITY_PROPERTY_KEY_2);
@@ -96,18 +108,16 @@ public class MarkerServlet extends HttpServlet {
         String address = (String) entity.getProperty("address");
         String description = (String) entity.getProperty("description");
         Grid grid = Grid.createFromLatLng(lat, lng);
-        //System.out.println("Row: " + grid.row + "and Col: " + grid.col);
 
         //fetching all of the markers
         Marker marker = new Marker(lat, lng, crime, date, time, address, description, grid.row, grid.col);
         markers.add(marker);
-
     }
     return markers;
   }
 
   /** Stores a marker in Datastore. */
-  public void storeMarker(Marker marker) {
+  private void storeMarker(Marker marker) {
     Entity markerEntity = new Entity(ENTITY_TITLE);
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_1, marker.getLat());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_2, marker.getLng());
@@ -129,5 +139,84 @@ public class MarkerServlet extends HttpServlet {
     double lng = Double.parseDouble(locationArrStr[1]);
     Location userLocation = new Location(lat, lng);
     return userLocation;
+  }
+
+  private boolean validateMarker(double reportLat, double reportLng, String reportDate,
+   String reportTime, String reportCrime) {
+    Query query = new Query(ENTITY_TITLE);
+    PreparedQuery results = datastore.prepare(query);
+
+    for (Entity entity : results.asIterable()) {
+      double lat = (double) entity.getProperty("lat");
+      double lng = (double) entity.getProperty("lng");
+      String crime = (String) entity.getProperty("crimeType");
+      String date = (String) entity.getProperty("date");
+      String time = (String) entity.getProperty("time");
+
+      return !(sameLocation(lat, lng, reportLat, reportLng) && sameDate(reportDate, date) 
+          && sameTime(reportTime, time) && sameCrime(reportCrime, crime));
+    }
+    return true;
+  }
+
+  private boolean sameLocation(double markerLat, double markerLng, double reportLat, double reportLng) {
+    return haversinMeters(markerLat, markerLng, reportLat, reportLng) < 0.01;
+  }
+
+  private boolean sameDate(String date1, String date2) {
+    if (date1 == null || date2 == null){
+      return false;
+    }
+    return date1.equals(date2);
+  }
+
+  private boolean sameTime(String time1, String time2) {
+    if (time1 == null || time2 == null){
+      return false;
+    }
+    else {
+      int minutes1 = 600 * time1.charAt(0);
+      minutes1 += 60 * time1.charAt(1);
+      minutes1 += 10 * time1.charAt(3);
+      minutes1 +=  1 * time1.charAt(4);
+
+      int minutes2 = 600 * time2.charAt(0);
+      minutes2 += 60 * time2.charAt(1);
+      minutes2 += 10 * time2.charAt(3);
+      minutes2 +=  1 * time2.charAt(4);
+
+      /* 20 minutes or less in difference between times */
+      return Math.abs(minutes1 - minutes2) < 20;
+    }
+  }
+
+  private boolean sameCrime(String crime1, String crime2){
+    if (crime1 == null|| crime2 == null){
+      return false;
+    }
+    return crime1.equals(crime2);
+  }
+
+  static class Result {
+    public StoreStatus status;
+    public StoreFailureType failure; 
+
+    public void setStatus(StoreStatus status) {
+      this.status = status;
+    }
+
+    public void setFailureType(StoreFailureType failure) {
+      this.failure = failure;
+    }
+  }
+
+  enum StoreStatus {
+    SUCCESS,
+    FAILURE  
+  }
+
+  enum StoreFailureType {
+    UNKNOWN,
+    REPEAT
   }
 }

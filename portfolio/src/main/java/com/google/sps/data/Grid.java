@@ -14,10 +14,9 @@
 
 package com.google.sps.data;
 
-
+import com.google.sps.servlets.MarkerServlet;
 import java.lang.Math; 
 import java.util.Objects;
-import com.google.sps.servlets.MarkerServlet;
 
 public class Grid {
   private static final double LAT_DIFF = 0.001345;

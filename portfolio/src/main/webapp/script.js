@@ -127,6 +127,9 @@ function createMap() {
     document.getElementById('search-reports'));
   map.controls[google.maps.ControlPosition.TOP_LEFT].push(
     document.getElementById('search-route'));
+
+  map.controls[google.maps.ControlPosition.TOP_CENTER].push(
+    document.getElementById('repeatedMarkerUI'));
   
   addressInput = new google.maps.places.Autocomplete(
     document.getElementById('searchBox-input'));
@@ -145,7 +148,7 @@ function createMap() {
    * report's form pops up.
    */
   addressInput.addListener('place_changed', function() {
-    let place = reportLocationInput.getPlace();
+    let place = addressInput.getPlace();
     markerLat = place.geometry.location.lat();
     markerLng = place.geometry.location.lng();
     createMarkerForEdit(markerLat, markerLng);
@@ -155,7 +158,7 @@ function createMap() {
     let radioButton = document.getElementById(id);
 
     radioButton.addEventListener('click', function() {
-      reportLocationInput.setTypes(type);
+      addressInput.setTypes(type);
     });
   }
 
@@ -193,9 +196,24 @@ function postMarker(lat, lng, type, date, time, address, description) {
   fetch('/markers', {
     method: 'POST',
     body: params
-  }).catch((error) => {
+  }).then(response => response.json())
+  .then(result => { 
+    
+    if (result.status != 'SUCCESS') {
+      displayRepeatedMarkerUI();
+      
+      var textError = (result.failure == 'REPEAT') ? "The crime entered was already reported." : "Unknown failure";
+      
+      document.getElementById('unsuccessfulReport').innerHTML = textError;
+    } else {
+      location.reload();
+    }
+
+  })
+  .catch((error) => {
     console.error(error);
   });
+
 }
 
 /** Creates a marker that shows a textbox the user can edit. */
@@ -496,7 +514,7 @@ function route() {
               var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
               if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
                 counter += rateCrime(marker.crimeType);
-                console.log("Raring" + counter);
+                console.log("Rating" + counter);
                 console.log(marker.lat);
                 console.log(marker.lng);
               }
@@ -507,7 +525,6 @@ function route() {
         if (counter < lessCrimesInRoute) {
           lessCrimesInRoute = counter;
           routeIndex = r;
-          console.log("" + r);
         }
         counter = 0;
       }
@@ -549,21 +566,29 @@ function displayDirectionsAPI() {
   }
 }
 
-/*
-function repeatMarkers() {
-    fetch('/markers').then(response => response.json()).then((markers) => {
-    markers.forEach((marker) => {
-        var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
-        if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
-            
-        }
-        });
-    });
-}*/
+function displayRepeatedMarkerUI() {
+  document.getElementById('repeatedMarkerUI').style.display = "block";
+}
+
+function hideRepeatedMarkerPopup() {
+  document.getElementById('repeatedMarkerUI').style.display = "none";
+}
 
 function locationToArray(){
   var locArray = [];
   locArray[0] = userLocation.lat;
   locArray[1] = userLocation.lng;
   return locArray;
+}
+
+/** Hardcoded function to get the waypoint for a given grid */
+function getWaypointFromGrid() {
+    fetch('/grids?requestRow=0&requestCol=0')
+    .then(response => console.log(response.json()))
+    .then((waypoint) => {
+        console.log('Row 0 Col 0, waypoint: ' + waypoint);
+    })
+    .catch((error) => {
+        console.error(error);
+    }); 
 }
