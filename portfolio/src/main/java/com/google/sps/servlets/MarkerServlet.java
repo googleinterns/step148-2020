@@ -7,6 +7,7 @@ import com.google.appengine.api.datastore.Entity;
 import com.google.appengine.api.datastore.PreparedQuery;
 import com.google.appengine.api.datastore.Query;
 import com.google.gson.Gson;
+import com.google.sps.data.Grid;
 import com.google.sps.data.Location;
 import com.google.sps.data.Marker;
 import java.io.IOException;
@@ -32,11 +33,13 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_5 = "time";
   private static final String ENTITY_PROPERTY_KEY_6 = "address";
   private static final String ENTITY_PROPERTY_KEY_7 = "description";
+  private static final String ENTITY_PROPERTY_KEY_8 = "row";
+  private static final String ENTITY_PROPERTY_KEY_9 = "col";
   private static final double METERS_IN_A_MILE = 1609.34;
-  private static final Double LAT_NORTH_LIMIT = 31.676131;
-  private static final Double LAT_SOUTH_LIMIT = 31.665916;
-  private static final Double LNG_WEST_LIMIT = -106.441602;
-  private static final Double LNG_EAST_LIMIT = -106.424213;
+  public static final Double LAT_NORTH_LIMIT = 31.676131;
+  private static final Double LAT_SOUTH_LIMIT = 31.668060999999998;
+  public static final Double LNG_WEST_LIMIT = -106.441602;
+  private static final Double LNG_EAST_LIMIT = -106.42384200000005;
 
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -51,6 +54,7 @@ public class MarkerServlet extends HttpServlet {
   public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
     double lat = Double.parseDouble(request.getParameter("lat"));
     double lng = Double.parseDouble(request.getParameter("lng"));
+    Grid grid = Grid.createFromLatLng(lat, lng);
 
     Result resultEnum = new Result();
 
@@ -70,7 +74,6 @@ public class MarkerServlet extends HttpServlet {
       String crimeTime = Jsoup.clean(request.getParameter("time"), Whitelist.none());
       String crimeAddress = Jsoup.clean(request.getParameter("address"), Whitelist.none());
       String crimeDescription = Jsoup.clean(request.getParameter("description"), Whitelist.none());
-
       if (!validateMarker(lat, lng, crimeDate, crimeTime, crime)) {
         resultEnum.setStatus(StoreStatus.FAILURE);
         resultEnum.setFailureType(StoreFailureType.REPEAT);
@@ -78,10 +81,9 @@ public class MarkerServlet extends HttpServlet {
       else {
         resultEnum.setStatus(StoreStatus.SUCCESS);
         Marker marker =
-            new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription);
+            new Marker(lat, lng, crime, crimeDate, crimeTime, crimeAddress, crimeDescription, grid.row, grid.col);
         storeMarker(marker);
       }
-
     } catch (Error error) {
         resultEnum.setStatus(StoreStatus.FAILURE);
         resultEnum.setFailureType(StoreFailureType.UNKNOWN);
@@ -92,25 +94,24 @@ public class MarkerServlet extends HttpServlet {
   }
 
   /** Fetches markers from Datastore. */
-  private List<Marker> getMarkers(HttpServletRequest request){
+  public static List<Marker> getMarkers(HttpServletRequest request){
     List<Marker> markers = new ArrayList<>();
     Query query = new Query(ENTITY_TITLE);
     PreparedQuery results = datastore.prepare(query);
-    Location location = getUserLocation(request);
 
-    for (Entity entity : results.asIterable()) {
-      double lat = (double) entity.getProperty(ENTITY_PROPERTY_KEY_1);
-      double lng = (double) entity.getProperty(ENTITY_PROPERTY_KEY_2);
-      String crime = (String) entity.getProperty("crimeType");
-      String date = (String) entity.getProperty("date");
-      String time = (String) entity.getProperty("time");
-      String address = (String) entity.getProperty("address");
-      String description = (String) entity.getProperty("description");
-      //fetches markers olny if they are inside the wanted area
-      if(haversinMeters(location.lat, location.lng, lat, lng) <= METERS_IN_A_MILE){ 
-        Marker marker = new Marker(lat, lng, crime, date, time, address, description);
+    for(Entity entity: results.asIterable()){
+        double lat = (double) entity.getProperty(ENTITY_PROPERTY_KEY_1);
+        double lng = (double) entity.getProperty(ENTITY_PROPERTY_KEY_2);
+        String crime = (String) entity.getProperty("crimeType");
+        String date = (String) entity.getProperty("date");
+        String time = (String) entity.getProperty("time");
+        String address = (String) entity.getProperty("address");
+        String description = (String) entity.getProperty("description");
+        Grid grid = Grid.createFromLatLng(lat, lng);
+
+        //fetching all of the markers
+        Marker marker = new Marker(lat, lng, crime, date, time, address, description, grid.row, grid.col);
         markers.add(marker);
-      }
     }
     return markers;
   }
@@ -125,10 +126,13 @@ public class MarkerServlet extends HttpServlet {
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_5, marker.getTime());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_6, marker.getAddress());
     markerEntity.setProperty(ENTITY_PROPERTY_KEY_7, marker.getDescription());
-    datastore.put(markerEntity);
-    }
+    markerEntity.setProperty(ENTITY_PROPERTY_KEY_8, marker.getGridRow());
+    markerEntity.setProperty(ENTITY_PROPERTY_KEY_9, marker.getGridCol());
 
-  public Location getUserLocation(HttpServletRequest request){
+    datastore.put(markerEntity);
+  }
+
+  public static Location getUserLocation(HttpServletRequest request){
     String locationStr = request.getParameter("location");
     String[] locationArrStr = locationStr.split(",", 2);
     double lat = Double.parseDouble(locationArrStr[0]);

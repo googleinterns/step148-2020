@@ -22,12 +22,12 @@ let markers = [];
 let fetchedMarkers = [];
 let markerLat;
 let markerLng;
-let reportsForMarkers = [];
 let addressInput;
 let destLat;
 let destLng;
 let orgLat;
 let orgLng;
+let routeArray;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -41,6 +41,75 @@ function createMap() {
       position: google.maps.ControlPosition.RIGHT_BOTTOM
     }
   });
+
+  ///grid on map
+  const grid = [
+      //corners
+    { lat: 31.676131, lng:-106.441602},
+    { lat: 31.668060999999998, lng:-106.441602},
+    { lat: 31.668060999999998 , lng:-106.42384200000005},
+    { lat: 31.676131, lng:-106.42384200000005},
+    { lat: 31.676131, lng:-106.441602},
+    // //rows
+    { lat: 31.676131, lng:-106.441602},
+    { lat: 31.674786, lng:-106.441602},
+    { lat: 31.674786, lng:-106.42384200000005},
+    { lat: 31.673441, lng:-106.42384200000005},
+    { lat: 31.673441, lng:-106.441602},
+    { lat: 31.672096, lng:-106.441602},
+    { lat: 31.672096, lng:-106.42384200000005},
+    { lat: 31.670751, lng:-106.42384200000005},
+    { lat: 31.670751, lng:-106.441602},
+    { lat: 31.669406, lng:-106.441602},
+    { lat: 31.669406, lng:-106.42384200000005},
+    { lat: 31.668060999999998, lng:-106.42384200000005},
+    { lat: 31.668060999999998, lng:-106.441602}, 
+
+    // //cols
+    { lat: 31.676131, lng:-106.441602},
+    { lat: 31.676131, lng:-106.440492},
+    { lat: 31.668060999999998, lng:-106.440492},
+    { lat: 31.668060999999998, lng:-106.43938200000001},
+    { lat: 31.676131, lng:-106.43938200000001},
+    { lat: 31.676131, lng:-106.43938200000001},
+    { lat: 31.668060999999998, lng:-106.43938200000001},
+    { lat: 31.668060999999998, lng:-106.43716200000001},
+    { lat: 31.676131, lng:-106.43716200000001},
+    { lat: 31.676131, lng:-106.43605200000002},
+    { lat: 31.668060999999998, lng:-106.43605200000002},
+    { lat: 31.668060999999998, lng:-106.43494200000002},
+    { lat: 31.676131, lng:-106.43494200000002},
+    { lat: 31.676131, lng:-106.43383200000002},
+    { lat: 31.668060999999998, lng:-106.43383200000002},
+    { lat: 31.668060999999998, lng:-106.43272200000003},
+    { lat: 31.676131, lng:-106.43272200000003},
+    { lat: 31.676131, lng:-106.43161200000003},
+    { lat: 31.668060999999998, lng:-106.43161200000003},
+    { lat: 31.668060999999998, lng:-106.43050200000003},
+    { lat: 31.676131, lng:-106.43050200000003},
+    { lat: 31.676131, lng:-106.42939200000004},
+    { lat: 31.668060999999998, lng:-106.42939200000004},
+    { lat: 31.668060999999998, lng:-106.42828200000004},
+    { lat: 31.676131, lng:-106.42828200000004},
+    { lat: 31.676131, lng:-106.42717200000004},
+    { lat: 31.668060999999998, lng:-106.42717200000004},
+    { lat: 31.668060999999998, lng:-106.42606200000004},
+    { lat: 31.676131, lng:-106.42606200000004},
+    { lat: 31.676131, lng:-106.42495200000005},
+    { lat: 31.668060999999998, lng:-106.42495200000005},
+    { lat: 31.668060999999998, lng:-106.42384200000005},
+    { lat: 31.676131, lng:-106.42384200000005},
+    { lat: 31.676131, lng:-106.43827200000001},
+    { lat: 31.668060999999998, lng:-106.43827200000001}
+  ];
+  const gridPath = new google.maps.Polyline({
+    path: grid,
+    geodesic: true,
+    strokeColor: "#FF0000",
+    strokeOpacity: 1.0,
+    strokeWeight: 2
+  });
+  gridPath.setMap(map);
 
   /**
    * When the user clicks on the map, show a marker with a form the user can
@@ -96,6 +165,20 @@ function createMap() {
   typeOfSearch('type-all', []);
   typeOfSearch('type-address', ['address']);
   typeOfSearch('type-establishment', ['establishment']);
+}
+
+//prints only the number of reports of a specific grid
+function getReports(){
+  fetch("/numberOfReports?row=0&col=0")
+  .then(response => response.json())
+  .then((reportsInGrid) => {
+    console.log("Number of reports in this grid: ");
+    console.log(reportsInGrid);
+    return reportsInGrid;
+  })
+  .catch((error) => {
+    console.error(error);
+  });
 }
 
 /** Sends a marker to the backend for saving. */
@@ -243,6 +326,9 @@ function getUserLocation() {
         marker.setMap(map);
         map.setCenter(userLocation);
         initHeatMap();
+        console.log("Getting reports");
+        getReports();
+        //getReportsForGrid();
         let locationLimitCircle = new google.maps.Circle(
           {center: userLocation, radius: LOCATION_LIMIT_METERS});
         addressInput.setBounds(locationLimitCircle.getBounds());
@@ -353,7 +439,6 @@ function fetchReportMarkers(){
             map: map
             }); 
             fetchedMarkers.push(markerReport);
-            reportsForMarkers.push(marker);
             markerReport.setMap(map);
             clickInfoWindow(markerReport, marker.crimeType, marker.date, marker.time, marker.address, marker.description);
       });
@@ -418,7 +503,7 @@ function route() {
         var route = result.routes[r];
 
         for (var j = 0; j < route.legs[0].steps.length; j++) {
-          var routeArray = new google.maps.Polyline({
+          routeArray = new google.maps.Polyline({
             path: [
               new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
               new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
@@ -490,11 +575,10 @@ function hideRepeatedMarkerPopup() {
 }
 
 function locationToArray(){
-    var locArray = [];
-    locArray[0] = userLocation.lat;
-    locArray[1] = userLocation.lng;
-    console.log(locArray[0]);
-    return locArray;
+  var locArray = [];
+  locArray[0] = userLocation.lat;
+  locArray[1] = userLocation.lng;
+  return locArray;
 }
 
 /** Hardcoded function to get the waypoint for a given grid */
