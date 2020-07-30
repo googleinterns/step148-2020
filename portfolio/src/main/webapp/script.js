@@ -45,62 +45,64 @@ function createMap() {
   ///grid on map
   const grid = [
       //corners
-    { lat: 31.676131, lng:-106.441602},
-    { lat: 31.668060999999998, lng:-106.441602},
-    { lat: 31.668060999999998 , lng:-106.42384200000005},
-    { lat: 31.676131, lng:-106.42384200000005},
-    { lat: 31.676131, lng:-106.441602},
+    {lat: 31.676131, lng: -106.441602},
+    {lat: 31.676131, lng:-106.42384200000005},
+    {lat: 31.668360999999997, lng:-106.42384200000005},
+    {lat: 31.668360999999997, lng:-106.441602},
+    {lat: 31.676131, lng:-106.441602},
     // //rows
+    {lat: 31.668360999999997, lng:-106.441602},
     { lat: 31.676131, lng:-106.441602},
-    { lat: 31.674786, lng:-106.441602},
-    { lat: 31.674786, lng:-106.42384200000005},
-    { lat: 31.673441, lng:-106.42384200000005},
-    { lat: 31.673441, lng:-106.441602},
-    { lat: 31.672096, lng:-106.441602},
-    { lat: 31.672096, lng:-106.42384200000005},
-    { lat: 31.670751, lng:-106.42384200000005},
-    { lat: 31.670751, lng:-106.441602},
-    { lat: 31.669406, lng:-106.441602},
-    { lat: 31.669406, lng:-106.42384200000005},
-    { lat: 31.668060999999998, lng:-106.42384200000005},
-    { lat: 31.668060999999998, lng:-106.441602}, 
+    { lat: 31.675021, lng:-106.441602},
+    { lat: 31.675021, lng:-106.42384200000005},
+    { lat: 31.673911, lng:-106.42384200000005},
+    { lat: 31.673911, lng:-106.441602},
+    { lat: 31.672801, lng:-106.441602},
+    { lat: 31.672801, lng:-106.42384200000005},
+    { lat: 31.671691, lng:-106.42384200000005},
+    { lat: 31.671691, lng:-106.441602},
+    { lat: 31.670581, lng:-106.441602},
+    { lat: 31.670581, lng:-106.42384200000005},
+    { lat: 31.669470999999998, lng:-106.42384200000005},
+    { lat: 31.669470999999998, lng:-106.441602}, 
+    { lat: 31.668360999999997, lng:-106.441602},
 
     // //cols
     { lat: 31.676131, lng:-106.441602},
     { lat: 31.676131, lng:-106.440492},
-    { lat: 31.668060999999998, lng:-106.440492},
-    { lat: 31.668060999999998, lng:-106.43938200000001},
+    { lat: 31.668360999999997, lng:-106.440492},
+    { lat: 31.668360999999997, lng:-106.43938200000001},
     { lat: 31.676131, lng:-106.43938200000001},
     { lat: 31.676131, lng:-106.43938200000001},
-    { lat: 31.668060999999998, lng:-106.43938200000001},
-    { lat: 31.668060999999998, lng:-106.43716200000001},
+    { lat: 31.668360999999997, lng:-106.43938200000001},
+    { lat: 31.668360999999997, lng:-106.43716200000001},
     { lat: 31.676131, lng:-106.43716200000001},
     { lat: 31.676131, lng:-106.43605200000002},
-    { lat: 31.668060999999998, lng:-106.43605200000002},
-    { lat: 31.668060999999998, lng:-106.43494200000002},
+    { lat: 31.668360999999997, lng:-106.43605200000002},
+    { lat: 31.668360999999997, lng:-106.43494200000002},
     { lat: 31.676131, lng:-106.43494200000002},
     { lat: 31.676131, lng:-106.43383200000002},
-    { lat: 31.668060999999998, lng:-106.43383200000002},
-    { lat: 31.668060999999998, lng:-106.43272200000003},
+    { lat: 31.668360999999997, lng:-106.43383200000002},
+    { lat: 31.668360999999997, lng:-106.43272200000003},
     { lat: 31.676131, lng:-106.43272200000003},
     { lat: 31.676131, lng:-106.43161200000003},
-    { lat: 31.668060999999998, lng:-106.43161200000003},
-    { lat: 31.668060999999998, lng:-106.43050200000003},
+    { lat: 31.668360999999997, lng:-106.43161200000003},
+    { lat: 31.668360999999997, lng:-106.43050200000003},
     { lat: 31.676131, lng:-106.43050200000003},
     { lat: 31.676131, lng:-106.42939200000004},
-    { lat: 31.668060999999998, lng:-106.42939200000004},
-    { lat: 31.668060999999998, lng:-106.42828200000004},
+    { lat: 31.668360999999997, lng:-106.42939200000004},
+    { lat: 31.668360999999997, lng:-106.42828200000004},
     { lat: 31.676131, lng:-106.42828200000004},
     { lat: 31.676131, lng:-106.42717200000004},
-    { lat: 31.668060999999998, lng:-106.42717200000004},
-    { lat: 31.668060999999998, lng:-106.42606200000004},
+    { lat: 31.668360999999997, lng:-106.42717200000004},
+    { lat: 31.668360999999997, lng:-106.42606200000004},
     { lat: 31.676131, lng:-106.42606200000004},
     { lat: 31.676131, lng:-106.42495200000005},
-    { lat: 31.668060999999998, lng:-106.42495200000005},
-    { lat: 31.668060999999998, lng:-106.42384200000005},
+    { lat: 31.668360999999997, lng:-106.42495200000005},
+    { lat: 31.668360999999997, lng:-106.42384200000005},
     { lat: 31.676131, lng:-106.42384200000005},
     { lat: 31.676131, lng:-106.43827200000001},
-    { lat: 31.668060999999998, lng:-106.43827200000001}
+    { lat: 31.668360999999997, lng:-106.43827200000001}
   ];
   const gridPath = new google.maps.Polyline({
     path: grid,
@@ -599,33 +601,47 @@ class Grid {
     this.col = col;
   }
   static convertToRowCol(lat, lng){
-    var row = Math.trunc(Number((31.676131 - lat) / 0.001345));
+    var row = Math.trunc(Number((31.676131 - lat) / 0.00111));
     var col = Math.trunc(Number((106.441602 - Math.abs(lng)) / 0.00111));
     console.log("row is: " + row + " col is: " + col);
   }
 }
- 
-function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
-  var grids = [];
+
+function getGridsThatStepPassesThru(step){
+  var grids = []; 
   var start_point = Grid.convertToRowCol(step.startLocation.lat, step.startLocation.lng); //start and end location are LatLng objects
   var end_point = Grid.convertToRowCol(step.endLocation.lat, step.endLocation.lng);
   var row1 = start_point.row;
   var col1 = start_point.col;
   var row2 = end_point.row;
   var col2 = end_point.col;
-  var m_new = 2 * (row2 - row1); 
-  var slope_error_new = m_new - (col2 - col1);
-  for (col = col1, row = row1; col <= col2; col++){ 
-    console.log("(" + row + "," + col + ")"); 
-    grids.push(new Grid(row , col));
-    // Add slope to increment angle formed 
-    slope_error_new += m_new; 
-    // Slope error reached limit, time to 
-    // increment row and update slope error. 
-    if (slope_error_new >= 0){ 
-      row++; 
-      slope_error_new -= 2 * (col2 - col1);
-    } 
-  } 
-  return grids;
-}          
+  var h = row2 - row1 ;
+  var w = col2 - col1 ;
+  var dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+  if (w < 0) dx1 = -1 ; else if (w > 0) dx1 = 1 ;
+  if (h < 0) dy1 = -1 ; else if (h > 0) dy1 = 1 ;
+  if (w < 0) dx2 = -1 ; else if (w > 0) dx2 = 1 ;
+  var longest = Math.abs(w) ;
+  var shortest = Math.abs(h) ;
+  if (!(longest > shortest)) {
+    longest = Math.abs(h) ;
+    shortest = Math.abs(w) ;
+    if (h < 0) dy2 = -1 ; else if (h > 0) dy2 = 1 ;
+    dx2 = 0 ;            
+  }
+  var numerator = longest >> 1 ;
+  for (var i = 0; i <= longest; i++) {
+    console.log(row1 + ", " + col1);
+    grids.push(new Grid(row1, col1));
+    numerator += shortest ;
+    if (!(numerator < longest)) {
+      numerator -= longest ;
+      col1 += dx1 ;
+      row1 += dy1 ;
+    } else {
+      col1 += dx2 ;
+      row1 += dy2 ;
+    }
+  }
+  return grids;		
+}		 
