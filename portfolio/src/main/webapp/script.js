@@ -13,7 +13,6 @@
 // limitations under the License.
 
 const LOCATION_LIMIT_METERS = 5000;
-
 const LAT_NORTH_LIMIT = 31.676131;
 const LAT_SOUTH_LIMIT = 31.665916;
 const LNG_WEST_LIMIT = -106.441602;
@@ -33,8 +32,6 @@ let destLat;
 let destLng;
 let orgLat;
 let orgLng;
-let counterGridPassesThru = 0;
-let counterFindAllRoutes = 0;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -514,7 +511,7 @@ findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
   let request = {
     origin: new google.maps.LatLng(orgLat, orgLng),
     destination: new google.maps.LatLng(destLat, destLng),
-    waypoints: waypoints,
+    waypoints: waypoints, //Set waypoints
     travelMode: document.getElementById('travel').value
   }
   directionsDisplay.setMap(map);
@@ -531,15 +528,14 @@ findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
 }
 
 getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
-
   let finalRoute = [];
-  let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS waypoints of ROUTE
+  let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS full ROUTE
 
   for (var j = 0; j < route.legs[0].steps.length; j++) {
     let passingGrids = getGridsThatStepPassesThru(route.legs[0].steps[j]);
-    if (passingGrids.length == 1) {
+    if (passingGrids.length == 1) { 
       return [{location: route.legs[0].start_location, stopover: true },
-        {location: route.legs[0].end_location, stopover: true}];
+        {location: route.legs[0].end_location, stopover: true}];  //Return the start and end of the step as waypoints
     }
     
     for (var g = 0; g < passingGrids.length; g++) {
@@ -548,8 +544,8 @@ getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
         && !validLocationInsideGrid(destLat, destLng, passingGrids[g])) {
         let safeNeighboringGrids =  getSafeNeighboringGrids(passingGrids[g]);
         let routesFromSafeNeighborGrids = findAllRoutes(route.legs[0].steps[j].start_location.lat(),
-        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng);
-        let bestRoute = pickSafestRoute(routesFromSafeNeighborGrids);
+        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng); //Get all possible routes
+        let bestRoute = pickSafestRoute(routesFromSafeNeighborGrids); //Get WAYPOINTS for the best route
 
         return finalRoute.concat(bestRoute); //CONCAT WAYPOINTS UNTIL NOW and THE BEST ROUTE FROM THERE
       }
@@ -573,11 +569,11 @@ function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, destLng) {
   return routes;
 }
 
-//CHECKS if point lies inside grid 
+//CHECKS if point lies inside a specific grid 
 function validLocationInsideGrid(pointLat, pointLng, grid) {
-  var pointRow = (31.676131 - pointLat) / 0.001345;
-  var pointCol = (-106.441602 - Math.abs(pointLng)) / 0.00111;
-  return (grid.row == pointRow && grid.col == pointCol);
+  var pointRow = Math.floor((31.676131 - pointLat) / 0.001345);
+  var pointCol = Math.floor((-106.441602 - Math.abs(pointLng)) / 0.00111);
+  return (grid.row == pointRow && grid.col == pointCol); // CHecking if grid of point is the same as grid passed
 }
 
 getSafestRouteUsingMapsApi = async (orgLat, orgLng, destLat, destLng) => {
@@ -591,8 +587,8 @@ getSafestRouteUsingMapsApi = async (orgLat, orgLng, destLat, destLng) => {
   }
   directionsDisplay.setMap(map);
   
-  let safestRoute = await directionsServiceFunction(directionsService,request)
-  return safestRoute.routes[0];
+  let safestRoute = await directionsServiceFunction(directionsService,request) 
+  return safestRoute.routes[0]; //Returns complete route
 }
 
 const directionsServiceFunction = (directionsService, request) => 
@@ -605,11 +601,3 @@ const directionsServiceFunction = (directionsService, request) =>
     }
   })
 });
-
-function getGridsThatStepPassesThru(step) {}
-
-function getSafeNeighboringGrids() {}
-
-function pickSafestRoute() {}
-
-function getWaypointForGrid() {}
