@@ -27,7 +27,7 @@ public class NumberOfReportsServlet extends HttpServlet {
   @Override
   public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{     
     List<Marker> markers = MarkerServlet.getMarkers(request);
-    long reportsInGrids = getNumOfReportsforAll(markers, Integer.parseInt(request.getParameter("row")), Integer.parseInt(request.getParameter("col")));
+    long reportsInGrids = getNumOfReports(markers, Integer.parseInt(request.getParameter("row")), Integer.parseInt(request.getParameter("col")));
     String json = gson.toJson(reportsInGrids);
     response.setContentType("application/json");
     response.getWriter().println(json);    
