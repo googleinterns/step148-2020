@@ -495,6 +495,7 @@ function route() {
     if (status === 'OK') {
       console.log("Number of alternative routes: " + result.routes.length);
 
+
       var counter = 0;
       var routeIndex = 0;
       var lessCrimesInRoute = 1000;
@@ -579,18 +580,6 @@ function locationToArray(){
   locArray[0] = userLocation.lat;
   locArray[1] = userLocation.lng;
   return locArray;
-}
-
-/** Hardcoded function to get the waypoint for a given grid */
-function getWaypointFromGrid() {
-    fetch('/grids?requestRow=0&requestCol=0')
-    .then(response => console.log(response.json()))
-    .then((waypoint) => {
-        console.log('Row 0 Col 0, waypoint: ' + waypoint);
-    })
-    .catch((error) => {
-        console.error(error);
-    }); 
 }
 
 class Grid {
