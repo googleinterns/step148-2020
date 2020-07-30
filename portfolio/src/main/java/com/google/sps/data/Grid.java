@@ -19,7 +19,7 @@ import java.lang.Math;
 import java.util.Objects;
 
 public class Grid {
-  private static final double LAT_DIFF = 0.001345;
+  private static final double LAT_DIFF = 0.00111;
   private static final double LNG_DIFF = 0.00111;
   public int numOfReports; 
   public final int row;
