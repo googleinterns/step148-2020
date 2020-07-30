@@ -604,7 +604,8 @@ class Grid {
     console.log("row is: " + row + " col is: " + col);
   }
 }
- 
+
+// See https://www.geeksforgeeks.org/bresenhams-line-generation-algorithm/
 function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
   var grids = [];
   var start_point = Grid.convertToRowCol(step.startLocation.lat, step.startLocation.lng); //start and end location are LatLng objects
@@ -616,7 +617,7 @@ function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
   var m_new = 2 * (row2 - row1); 
   var slope_error_new = m_new - (col2 - col1);
   for (col = col1, row = row1; col <= col2; col++){ 
-    console.log("(" + row + "," + col + ")"); 
+    console.log("passing grid (" + row + "," + col + ")"); 
     grids.push(new Grid(row , col));
     // Add slope to increment angle formed 
     slope_error_new += m_new; 
