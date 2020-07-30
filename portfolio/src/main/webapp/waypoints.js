@@ -19,7 +19,7 @@ grid.col = 2;
 async function getWaypointForGrid(grid) {
   try{
     let response = await fetch('/grids?requestRow=' + grid.row + '&requestCol=' + grid.col);
-    let waypoint =  response.json();
+    let waypoint = await response.json();
   
     return {
       location: new google.maps.LatLng(waypoint.lat, waypoint.lng), 
