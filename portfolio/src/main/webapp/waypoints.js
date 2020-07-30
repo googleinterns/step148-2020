@@ -39,16 +39,15 @@ async function getSafeNeighboringGrids(grid){
   let rightGridCol = -1;
   let leftGridCol = -1;
   let safeGrids = [];
-  let safeGridUp;
-  let safeGridDown;
-  let safeGridRight;
-  let safeGridLeft;
+  let safeGridUp = new Object();
+  let safeGridDown = new Object();
+  let safeGridRight = new Object();
+  let safeGridLeft = new Object();
   let index = 0;
 
   if(grid.row + 1 < 6){
     upperGridRow = grid.row + 1;
 
-    // Might need to change the parameters once the class for the numberOfReports is merged.
     try{
       let response = await fetch('/numberOfReports?row=' + upperGridRow + '&col=' + grid.col);
       let reportsInGrid = await response.json();
@@ -122,7 +121,8 @@ async function getSafeNeighboringGrids(grid){
     }
   }
 
+  console.log(safeGrids);
   return safeGrids;
 }
 
-console.log(getSafeNeighboringGrids(grid)); // Remove when everything is merged.
+getSafeNeighboringGrids(grid); // Remove when everything is merged (also the var grid above).
