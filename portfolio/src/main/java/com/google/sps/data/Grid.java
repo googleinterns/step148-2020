@@ -14,15 +14,20 @@
 
 package com.google.sps.data;
 
+import com.google.sps.servlets.MarkerServlet;
+import java.lang.Math; 
 import java.util.Objects;
 
 public class Grid {
+  private static final double LAT_DIFF = 0.001345;
+  private static final double LNG_DIFF = 0.00111;
+  public int numOfReports; 
   public final int row;
   public final int col;
 
   public Grid(int row, int col){
-      this.row = row;
-      this.col = col;
+    this.row = row;
+    this.col = col;
   }
 
   @Override
@@ -38,5 +43,13 @@ public class Grid {
 
     Grid otherGrid = (Grid) other;
     return this.row == otherGrid.row && this.col == otherGrid.col;
+  }
+
+  //Converts lat and lng of a point to the x and y coordinate of the grid
+  public static Grid createFromLatLng(double lat, double lng){
+    int row = (int)((MarkerServlet.LAT_NORTH_LIMIT - lat) / LAT_DIFF);
+    int col = (int)((Math.abs(MarkerServlet.LNG_WEST_LIMIT) - Math.abs(lng)) / LNG_DIFF);
+    System.out.println("row is: " + row + " col is: " + col);
+    return new Grid(row, col); 
   }
 }
