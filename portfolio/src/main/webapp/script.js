@@ -494,7 +494,50 @@ function route() {
   directionsService.route(request, function(result, status) {
     if (status === 'OK') {
       console.log("Number of alternative routes: " + result.routes.length);
-      pickSafestRoute(result);
+
+
+      var counter = 0;
+      var routeIndex = 0;
+      var lessCrimesInRoute = 1000;
+
+      for (var r = 0; r < result.routes.length; r++) {
+        var route = result.routes[r];
+
+        for (var j = 0; j < route.legs[0].steps.length; j++) {
+          routeArray = new google.maps.Polyline({
+            path: [
+              new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(), route.legs[0].steps[j].start_location.lng()),
+              new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), route.legs[0].steps[j].end_location.lng())
+            ]
+          });
+          fetch('/markers').then(response => response.json()).then((markers) => {
+            markers.forEach((marker) => {
+              var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
+              if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
+                counter += rateCrime(marker.crimeType);
+                console.log("Rating" + counter);
+                console.log(marker.lat);
+                console.log(marker.lng);
+              }
+            });
+          });
+        }
+        console.log("Rating" + counter);
+        if (counter < lessCrimesInRoute) {
+          lessCrimesInRoute = counter;
+          routeIndex = r;
+        }
+        counter = 0;
+      }
+
+      console.log("Chosen route index: " + routeIndex);
+      /*directionsDisplay.setDirections(result);*/
+
+      new google.maps.DirectionsRenderer({
+        map: map,
+        directions: result,
+        routeIndex: routeIndex
+      });
     }
   });
 }
@@ -537,45 +580,4 @@ function locationToArray(){
   locArray[0] = userLocation.lat;
   locArray[1] = userLocation.lng;
   return locArray;
-}
-
-/** Receives an array of routes, finds the safest one using a rating system */
-function pickSafestRoute(routesFromSafeNeighborGrids){
-  var counter = 0;
-  var routeIndex = 0;
-  var lessCrimesInRoute = 1000;
-
-  for (var r = 0; r < routesFromSafeNeighborGrids.length; r++) {
-    var route = routesFromSafeNeighborGrids[r];
-
-    for (var j = 0; j < route.legs[0].steps.length; j++) {
-      var routeArray = new google.maps.Polyline({
-        path: [
-            new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(),
-              route.legs[0].steps[j].start_location.lng()),
-            new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), 
-              route.legs[0].steps[j].end_location.lng())
-        ]
-      });
-      
-      fetch('/markers').then(response => response.json()).then((markers) => {
-        markers.forEach((marker) => {
-          var myPosition = new google.maps.LatLng(marker.lat, marker.lng);
-          
-          if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
-            counter += rateCrime(marker.crimeType);
-          }
-        });
-      });
-    }
-        
-    if (counter < lessCrimesInRoute) {
-      lessCrimesInRoute = counter;
-      routeIndex = r;
-    }
-    
-    counter = 0;
-  }
-
-  return routesFromSafeNeighborGrids[routeIndex];
 }
