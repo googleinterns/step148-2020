@@ -461,16 +461,16 @@ function pickSafestRoute(routesFromSafeNeighborGrids){
   var routeIndex = 0;
   var lessCrimesInRoute = 1000;
 
-  for (var r = 0; r < routesFromSafeNeighborGrids.routes.length; r++) {
-    var route = result.routes[r];
+  for (var r = 0; r < routesFromSafeNeighborGrids.length; r++) {
+    var route = routesFromSafeNeighborGrids[r];
 
-    for (var j = 0; j < routesFromSafeNeighborGrids.legs[0].steps.length; j++) {
+    for (var j = 0; j < route.legs[0].steps.length; j++) {
       var routeArray = new google.maps.Polyline({
         path: [
-            new google.maps.LatLng(routesFromSafeNeighborGrids.legs[0].steps[j].start_location.lat(),
-              routesFromSafeNeighborGrids.legs[0].steps[j].start_location.lng()),
-            new google.maps.LatLng(routesFromSafeNeighborGrids.legs[0].steps[j].end_location.lat(), 
-              routesFromSafeNeighborGrids.legs[0].steps[j].end_location.lng())
+            new google.maps.LatLng(route.legs[0].steps[j].start_location.lat(),
+              route.legs[0].steps[j].start_location.lng()),
+            new google.maps.LatLng(route.legs[0].steps[j].end_location.lat(), 
+              route.legs[0].steps[j].end_location.lng())
         ]
       });
       
@@ -480,16 +480,11 @@ function pickSafestRoute(routesFromSafeNeighborGrids){
           
           if (google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0064)) {
             counter += rateCrime(marker.crimeType);
-            console.log("Rating" + counter);
-            console.log(marker.lat);
-            console.log(marker.lng);
           }
         });
       });
     }
-    
-    console.log("Rating" + counter);
-    
+        
     if (counter < lessCrimesInRoute) {
       lessCrimesInRoute = counter;
       routeIndex = r;
@@ -498,117 +493,5 @@ function pickSafestRoute(routesFromSafeNeighborGrids){
     counter = 0;
   }
 
-  console.log("Chosen route index: " + routeIndex);
-
-  new google.maps.DirectionsRenderer({
-    map: map,
-    directions: result,
-    routeIndex: routeIndex
-  });    
-}
-
-function getWaypointForGrid(grid) {
-  fetch('/grids?requestRow=' + grid.row + '&requestCol=' + grid.col)
-  .then(response => response.json())
-  .then((waypoint) => {
-    let waypointForGrid = {
-      location: new google.maps.LatLng(waypoint.lat, waypoint.lng),
-      stopover: true
-    }
-    
-  return waypointForGrid;
-  })
-  .catch((error) => {
-    console.error(error);
-  }); 
-}
-
-/** Return the safest neighborings grid found [up, down, right, left].
-    Assumption: at least one grid will be safe. */
-function getSafeNeighboringGrids(grid){
-  let upperGridRow = -1;
-  let lowerGridRow = -1;
-  let rightGridCol = -1;
-  let leftGridCol = -1;
-  let safeGrids = [];
-  let safeGridUp;
-  let safeGridDown;
-  let safeGridRight;
-  let safeGridLeft;
-  let index = 0;
-
-  if(grid.row + 1 < 6){
-    upperGridRow = grid.row + 1;
-
-    // Might need to change the parameters once the class for the numberOfReports is merged.
-    fetch('/numberOfReports?row=' + upperGridRow + '&col=' + grid.col)
-    .then(response => response.json())
-    .then((reportsInGrid) => {
-        if(reportsInGrid == 0){
-        safeGridUp.row = upperGridRow;
-        safeGridUp.col = grid.col;
-        safeGrids[index] = safeGridUp; 
-        index++;
-        }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-  }
-  
-  if(grid.row - 1 > 0){
-    lowerGridRow = grid.row - 1;
-
-    fetch('/numberOfReports?row=' + lowerGridRow + '&col=' + grid.col)
-    .then(response => response.json())
-    .then((reportsInGrid) => {
-      if(reportsInGrid == 0){
-        safeGridDown.row = lowerGridRow;
-        safeGridDown.col = grid.col;
-        safeGrids[index] = safeGridDown; 
-        index++;
-      }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-  }
-
-  if(grid.col + 1 < 16){
-    rightGridCol = grid.col + 1;
-
-    fetch('/numberOfReports?row=' + grid.row + '&col=' + rightGridCol)
-    .then(response => response.json())
-    .then((reportsInGrid) => {
-      if(reportsInGrid == 0){
-        safeGridRight.row = grid.row;
-        safeGridRight.col = rightGridCol;
-        safeGrids[index] = safeGridRight; 
-        index++;
-      }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-  }
-
-  if(grid.col - 1 > 0){
-    leftGridCol = grid.col -1;
-
-    fetch('/numberOfReports?row=' + grid.row + '&col=' + leftGridCol)
-    .then(response => response.json())
-    .then((reportsInGrid) => {
-      if(reportsInGrid == 0){
-        safeGridLeft.row = grid.row;
-        safeGridLeft.col = leftGridCol;
-        safeGrids[index] = safeGridLeft;
-        index++;
-      }
-    })
-    .catch((error) => {
-        console.error(error);
-    });
-  }
-
-  return safeGrids;
+  return routesFromSafeNeighborGrids[routeIndex];
 }
