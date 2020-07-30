@@ -14,6 +14,11 @@
 
 const LOCATION_LIMIT_METERS = 5000;
 
+const LAT_NORTH_LIMIT = 31.676131;
+const LAT_SOUTH_LIMIT = 31.665916;
+const LNG_WEST_LIMIT = -106.441602;
+const LNG_EAST_LIMIT = -106.424213;
+
 let map;
 /** Editable marker that displays when a user clicks in the map */
 let editMarker;
@@ -28,6 +33,8 @@ let destLat;
 let destLng;
 let orgLat;
 let orgLng;
+let counterGridPassesThru = 0;
+let counterFindAllRoutes = 0;
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -496,3 +503,113 @@ function locationToArray(){
     console.log(locArray[0]);
     return locArray;
 }
+
+
+findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
+  let waypoints = await getSafestRoute(orgLat, orgLng, destLat, destLng); //Get waypoints of the safest route
+
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    waypoints: waypoints,
+    travelMode: document.getElementById('travel').value
+  }
+  directionsDisplay.setMap(map);
+
+  directionsService.route(request, function(result, status) {
+    if (status === 'OK') {
+      //Displays the route in the map
+      new google.maps.DirectionsRenderer({
+        map: map,
+        directions: result
+      });
+    }
+  });
+}
+
+getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
+
+  let finalRoute = [];
+  let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS waypoints of ROUTE
+
+  for (var j = 0; j < route.legs[0].steps.length; j++) {
+    let passingGrids = getGridsThatStepPassesThru(route.legs[0].steps[j]);
+    if (passingGrids.length == 1) {
+      return [{location: route.legs[0].start_location, stopover: true },
+        {location: route.legs[0].end_location, stopover: true}];
+    }
+    
+    for (var g = 0; g < passingGrids.length; g++) {
+
+      if (passingGrids[g].hasCrime && !validLocationInsideGrid(orgLat, orgLng, passingGrids[g])
+        && !validLocationInsideGrid(destLat, destLng, passingGrids[g])) {
+        let safeNeighboringGrids =  getSafeNeighboringGrids(passingGrids[g]);
+        let routesFromSafeNeighborGrids = findAllRoutes(route.legs[0].steps[j].start_location.lat(),
+        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng);
+        let bestRoute = pickSafestRoute(routesFromSafeNeighborGrids);
+
+        return finalRoute.concat(bestRoute); //CONCAT WAYPOINTS UNTIL NOW and THE BEST ROUTE FROM THERE
+      }
+    }
+    finalRoute.push({ //ADD STEP by creating waypoint
+      location: route.legs[0].steps[j].start_location,
+      stopover: true
+    });
+  }
+  return finalRoute; //RETURNS ARRAY OF WAYPOINTS
+}
+
+function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, destLng) {
+  let routes = [];
+  for (var i = 0; i < safeNeighboringGrids.length; i++) {
+    let waypoint = getWaypointForGrid(safeNeighboringGrids[i]);
+    let firstPartOfRoute = getSafestRoute(orgLat, orgLng, waypoint); //RETURNS WAYPOINTS
+    let secondPartOfRoute = getSafestRoute(waypoint, destLat, destLng); //RETURNS WAYPOINTS
+    routes = routes.push(firstPartOfRoute.concat(secondPartOfRoute)); //CONCAT WAYPOINTS and ADD TO "routes"
+  }
+  return routes;
+}
+
+//CHECKS if point lies inside grid 
+function validLocationInsideGrid(pointLat, pointLng, grid) {
+  var pointRow = (31.676131 - pointLat) / 0.001345;
+  var pointCol = (-106.441602 - Math.abs(pointLng)) / 0.00111;
+  return (grid.row == pointRow && grid.col == pointCol);
+}
+
+getSafestRouteUsingMapsApi = async (orgLat, orgLng, destLat, destLng) => {
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    travelMode: 'DRIVING'
+  }
+  directionsDisplay.setMap(map);
+  
+  let safestRoute = await directionsServiceFunction(directionsService,request)
+  return safestRoute.routes[0];
+}
+
+const directionsServiceFunction = (directionsService, request) => 
+  new Promise((resolve, reject) =>  {
+  directionsService.route(request, function (result, status){
+    if(status === 'OK') {
+      resolve(result);
+    } else {
+      reject(result);
+    }
+  })
+});
+
+function getGridsThatStepPassesThru(step) {}
+
+function getSafeNeighboringGrids() {}
+
+function pickSafestRoute() {}
+
+function getWaypointForGrid() {}
