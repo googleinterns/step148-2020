@@ -618,4 +618,104 @@ function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
     } 
   } 
   return grids;
-}          
+}  
+
+findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
+  let waypoints = await getSafestRoute(orgLat, orgLng, destLat, destLng); //Get waypoints of the safest route
+
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    waypoints: waypoints, //Set waypoints
+    travelMode: document.getElementById('travel').value
+  }
+  directionsDisplay.setMap(map);
+
+  directionsService.route(request, function(result, status) {
+    if (status === 'OK') {
+      //Displays the route in the map
+      new google.maps.DirectionsRenderer({
+        map: map,
+        directions: result
+      });
+    }
+  });
+}
+
+getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
+  let finalRoute = [];
+  let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS full ROUTE
+
+  for (var j = 0; j < route.legs[0].steps.length; j++) {
+    let passingGrids = getGridsThatStepPassesThru(route.legs[0].steps[j]);
+    if (passingGrids.length == 1) { 
+      return [{location: route.legs[0].start_location, stopover: true },
+        {location: route.legs[0].end_location, stopover: true}];  //Return the start and end of the step as waypoints
+    }
+    
+    for (var g = 0; g < passingGrids.length; g++) {
+
+      if (passingGrids[g].hasCrime && !validLocationInsideGrid(orgLat, orgLng, passingGrids[g])
+        && !validLocationInsideGrid(destLat, destLng, passingGrids[g])) {
+        let safeNeighboringGrids =  getSafeNeighboringGrids(passingGrids[g]);
+        let routesFromSafeNeighborGrids = findAllRoutes(route.legs[0].steps[j].start_location.lat(),
+        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng); //Get all possible routes
+        let bestRoute = pickSafestRoute(routesFromSafeNeighborGrids); //Get WAYPOINTS for the best route
+
+        return finalRoute.concat(bestRoute); //CONCAT WAYPOINTS UNTIL NOW and THE BEST ROUTE FROM THERE
+      }
+    }
+    finalRoute.push({ //ADD STEP by creating waypoint
+      location: route.legs[0].steps[j].start_location,
+      stopover: true
+    });
+  }
+  return finalRoute; //RETURNS ARRAY OF WAYPOINTS
+}
+
+function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, destLng) {
+  let routes = [];
+  for (var i = 0; i < safeNeighboringGrids.length; i++) {
+    let waypoint = getWaypointForGrid(safeNeighboringGrids[i]);
+    let firstPartOfRoute = getSafestRoute(orgLat, orgLng, waypoint); //RETURNS WAYPOINTS
+    let secondPartOfRoute = getSafestRoute(waypoint, destLat, destLng); //RETURNS WAYPOINTS
+    routes = routes.push(firstPartOfRoute.concat(secondPartOfRoute)); //CONCAT WAYPOINTS and ADD TO "routes"
+  }
+  return routes;
+}
+
+//CHECKS if point lies inside a specific grid 
+function validLocationInsideGrid(pointLat, pointLng, grid) {
+  var pointRow = Math.floor((31.676131 - pointLat) / 0.001345);
+  var pointCol = Math.floor((-106.441602 - Math.abs(pointLng)) / 0.00111);
+  return (grid.row == pointRow && grid.col == pointCol); // CHecking if grid of point is the same as grid passed
+}
+
+getSafestRouteUsingMapsApi = async (orgLat, orgLng, destLat, destLng) => {
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    travelMode: 'DRIVING'
+  }
+  directionsDisplay.setMap(map);
+  
+  let safestRoute = await directionsServiceFunction(directionsService,request) 
+  return safestRoute.routes[0]; //Returns complete route
+}
+
+const directionsServiceFunction = (directionsService, request) => 
+  new Promise((resolve, reject) =>  {
+  directionsService.route(request, function (result, status){
+    if(status === 'OK') {
+      resolve(result);
+    } else {
+      reject(result);
+    }
+  })
+});        
