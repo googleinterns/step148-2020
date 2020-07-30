@@ -23,6 +23,8 @@ public class Marker {
   private final String time;
   private final String address;
   private final String description;
+  private final int gridRow;
+  private final int gridCol;
 
   public Marker(
       double lat,
@@ -31,7 +33,9 @@ public class Marker {
       String date,
       String time,
       String address,
-      String description) {
+      String description,
+      int gridRow,
+      int gridCol) {
     this.lat = lat;
     this.lng = lng;
     this.crimeType = crimeType;
@@ -39,6 +43,8 @@ public class Marker {
     this.time = time;
     this.address = address;
     this.description = description;
+    this.gridRow = gridRow;
+    this.gridCol = gridCol;
   }
 
   public double getLat() {
@@ -67,5 +73,13 @@ public class Marker {
 
   public String getDescription() {
     return description;
+  }
+
+  public int getGridRow() {
+    return gridRow;
+  }
+
+  public int getGridCol() {
+    return gridCol;
   }
 }
