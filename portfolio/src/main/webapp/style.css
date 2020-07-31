@@ -1,67 +1,15 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
-}
-
 * {
   box-sizing: border-box;
 }
 
 #map {
-  float: left;
   border: thin solid black;
   height: 500px;
   width: 100%;
-  margin-right: 2%;
 }
 
 #reportsForm {
     display: none;
-}
-
-.header {
-    background-color: #f1f3f4;
-    padding: 10px;
-    text-align: left;
-}
-
-/** Style the top navigation bar */
-.navbar {
-    overflow: hidden;
-    background-color: #76a0a6;
-}
-
-/** Style for the topnav links */ 
-.navbar a{
-    float: right;
-    display: block;
-    color: #333;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-/** Change color on link when mousing over it*/ 
-.topnav a:hover {
-    color: #fcb040;
-}
-
-.pictures {
-  width: 100%;
-  height: auto;
-}
-
-.image-thumbnails {
-  max-width: 80%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-footer {
-  background-color: #f1f3f4;
-  padding: 30px 0px;
 }
 
 .instructions {
@@ -70,7 +18,7 @@ footer {
     text-align: left;
 }
 
-.container {
+.containerMapButtons {
   padding: 5px;
   margin: 5px;
 }
@@ -84,31 +32,10 @@ span.b {
   background-color: yellow; 
 }
 
-/* Create two equal columns that floats next to each other */
-.col {
-  float: left;
-  width: 70%;
-  height: 500px;
-}
-
-.col2 {
-  float: left;
-  width: 30%;
-  height: 500px; 
-  text-align: center;
-}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
 body {
-  /* padding-top: 3rem;
+  padding-top: 3rem;
   padding-bottom: 3rem;
-  color: #5a5a5a; */
+  color: #5a5a5a;
   font-family: Arial, Helvetica, sans-serif;
 }
 
@@ -129,7 +56,7 @@ body {
 
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
+  color: #000
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
@@ -223,11 +150,11 @@ body {
   text-align: left;
 }
 
-/********************************************************************************8*/
 /* Carousel base class */
 .carousel {
-  margin-bottom: 4rem;
+  margin-bottom: 2rem;
 }
+
 /* Since positioning the image, we need to help out the caption */
 .carousel-caption {
   bottom: 3rem;
@@ -240,6 +167,7 @@ body {
   height: 40rem;
   background-color: #777;
 }
+
 .carousel-item > img {
   position: absolute;
   top: 0;
@@ -252,28 +180,22 @@ body {
   background-color: #000;
 }
 
+/** Change the control's color */
 .carousel-control-prev-icon {
  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
 }
 
+/** Change the control's color */
 .carousel-control-next-icon {
   background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
 }
 
-.marketing .col-lg-4 {
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
 .marketing h2 {
   font-weight: 400;
 }
-.marketing .col-lg-4 p {
-  margin-right: .75rem;
-  margin-left: .75rem;
-}
 
 .featurette-divider {
-  margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+  margin: 50px; /* Space out the Bootstrap <hr> more */
 }
 
 /* Thin out the marketing headings */
@@ -283,3 +205,15 @@ body {
   letter-spacing: -.05rem;
 }
 
+/** Change text color of brand on footer*/ 
+.brand {
+  color: #fff
+}
+
+.container {
+  padding-top: 20px;
+}
+
+.container marketing {
+  width: 100%;
+}
