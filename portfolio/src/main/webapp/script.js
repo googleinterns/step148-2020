@@ -45,62 +45,64 @@ function createMap() {
   ///grid on map
   const grid = [
       //corners
-    { lat: 31.676131, lng:-106.441602},
-    { lat: 31.668060999999998, lng:-106.441602},
-    { lat: 31.668060999999998 , lng:-106.42384200000005},
-    { lat: 31.676131, lng:-106.42384200000005},
-    { lat: 31.676131, lng:-106.441602},
+    {lat: 31.676131, lng: -106.441602},
+    {lat: 31.676131, lng:-106.42384200000005},
+    {lat: 31.668360999999997, lng:-106.42384200000005},
+    {lat: 31.668360999999997, lng:-106.441602},
+    {lat: 31.676131, lng:-106.441602},
     // //rows
+    {lat: 31.668360999999997, lng:-106.441602},
     { lat: 31.676131, lng:-106.441602},
-    { lat: 31.674786, lng:-106.441602},
-    { lat: 31.674786, lng:-106.42384200000005},
-    { lat: 31.673441, lng:-106.42384200000005},
-    { lat: 31.673441, lng:-106.441602},
-    { lat: 31.672096, lng:-106.441602},
-    { lat: 31.672096, lng:-106.42384200000005},
-    { lat: 31.670751, lng:-106.42384200000005},
-    { lat: 31.670751, lng:-106.441602},
-    { lat: 31.669406, lng:-106.441602},
-    { lat: 31.669406, lng:-106.42384200000005},
-    { lat: 31.668060999999998, lng:-106.42384200000005},
-    { lat: 31.668060999999998, lng:-106.441602}, 
+    { lat: 31.675021, lng:-106.441602},
+    { lat: 31.675021, lng:-106.42384200000005},
+    { lat: 31.673911, lng:-106.42384200000005},
+    { lat: 31.673911, lng:-106.441602},
+    { lat: 31.672801, lng:-106.441602},
+    { lat: 31.672801, lng:-106.42384200000005},
+    { lat: 31.671691, lng:-106.42384200000005},
+    { lat: 31.671691, lng:-106.441602},
+    { lat: 31.670581, lng:-106.441602},
+    { lat: 31.670581, lng:-106.42384200000005},
+    { lat: 31.669470999999998, lng:-106.42384200000005},
+    { lat: 31.669470999999998, lng:-106.441602}, 
+    { lat: 31.668360999999997, lng:-106.441602},
 
     // //cols
     { lat: 31.676131, lng:-106.441602},
     { lat: 31.676131, lng:-106.440492},
-    { lat: 31.668060999999998, lng:-106.440492},
-    { lat: 31.668060999999998, lng:-106.43938200000001},
+    { lat: 31.668360999999997, lng:-106.440492},
+    { lat: 31.668360999999997, lng:-106.43938200000001},
     { lat: 31.676131, lng:-106.43938200000001},
     { lat: 31.676131, lng:-106.43938200000001},
-    { lat: 31.668060999999998, lng:-106.43938200000001},
-    { lat: 31.668060999999998, lng:-106.43716200000001},
+    { lat: 31.668360999999997, lng:-106.43938200000001},
+    { lat: 31.668360999999997, lng:-106.43716200000001},
     { lat: 31.676131, lng:-106.43716200000001},
     { lat: 31.676131, lng:-106.43605200000002},
-    { lat: 31.668060999999998, lng:-106.43605200000002},
-    { lat: 31.668060999999998, lng:-106.43494200000002},
+    { lat: 31.668360999999997, lng:-106.43605200000002},
+    { lat: 31.668360999999997, lng:-106.43494200000002},
     { lat: 31.676131, lng:-106.43494200000002},
     { lat: 31.676131, lng:-106.43383200000002},
-    { lat: 31.668060999999998, lng:-106.43383200000002},
-    { lat: 31.668060999999998, lng:-106.43272200000003},
+    { lat: 31.668360999999997, lng:-106.43383200000002},
+    { lat: 31.668360999999997, lng:-106.43272200000003},
     { lat: 31.676131, lng:-106.43272200000003},
     { lat: 31.676131, lng:-106.43161200000003},
-    { lat: 31.668060999999998, lng:-106.43161200000003},
-    { lat: 31.668060999999998, lng:-106.43050200000003},
+    { lat: 31.668360999999997, lng:-106.43161200000003},
+    { lat: 31.668360999999997, lng:-106.43050200000003},
     { lat: 31.676131, lng:-106.43050200000003},
     { lat: 31.676131, lng:-106.42939200000004},
-    { lat: 31.668060999999998, lng:-106.42939200000004},
-    { lat: 31.668060999999998, lng:-106.42828200000004},
+    { lat: 31.668360999999997, lng:-106.42939200000004},
+    { lat: 31.668360999999997, lng:-106.42828200000004},
     { lat: 31.676131, lng:-106.42828200000004},
     { lat: 31.676131, lng:-106.42717200000004},
-    { lat: 31.668060999999998, lng:-106.42717200000004},
-    { lat: 31.668060999999998, lng:-106.42606200000004},
+    { lat: 31.668360999999997, lng:-106.42717200000004},
+    { lat: 31.668360999999997, lng:-106.42606200000004},
     { lat: 31.676131, lng:-106.42606200000004},
     { lat: 31.676131, lng:-106.42495200000005},
-    { lat: 31.668060999999998, lng:-106.42495200000005},
-    { lat: 31.668060999999998, lng:-106.42384200000005},
+    { lat: 31.668360999999997, lng:-106.42495200000005},
+    { lat: 31.668360999999997, lng:-106.42384200000005},
     { lat: 31.676131, lng:-106.42384200000005},
     { lat: 31.676131, lng:-106.43827200000001},
-    { lat: 31.668060999999998, lng:-106.43827200000001}
+    { lat: 31.668360999999997, lng:-106.43827200000001}
   ];
   const gridPath = new google.maps.Polyline({
     path: grid,
@@ -328,7 +330,6 @@ function getUserLocation() {
         initHeatMap();
         console.log("Getting reports");
         getReports();
-        //getReportsForGrid();
         let locationLimitCircle = new google.maps.Circle(
           {center: userLocation, radius: LOCATION_LIMIT_METERS});
         addressInput.setBounds(locationLimitCircle.getBounds());
@@ -588,13 +589,14 @@ class Grid {
     this.col = col;
   }
   static convertToRowCol(lat, lng){
-    var row = Math.trunc(Number((31.676131 - lat) / 0.001345));
+    var row = Math.trunc(Number((31.676131 - lat) / 0.00111));
     var col = Math.trunc(Number((106.441602 - Math.abs(lng)) / 0.00111));
     console.log("row is: " + row + " col is: " + col);
   }
 }
 
 // See https://www.geeksforgeeks.org/bresenhams-line-generation-algorithm/
+// Modified version of the Bresenham algorithm that works on any straight line regardless of direction
 function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
   var grids = [];
   var start_point = Grid.convertToRowCol(step.startLocation.lat, step.startLocation.lng); //start and end location are LatLng objects
@@ -603,19 +605,133 @@ function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
   var col1 = start_point.col;
   var row2 = end_point.row;
   var col2 = end_point.col;
-  var m_new = 2 * (row2 - row1); 
-  var slope_error_new = m_new - (col2 - col1);
-  for (col = col1, row = row1; col <= col2; col++){ 
-    console.log("passing grid (" + row + "," + col + ")"); 
-    grids.push(new Grid(row , col));
-    // Add slope to increment angle formed 
-    slope_error_new += m_new; 
-    // Slope error reached limit, time to 
-    // increment row and update slope error. 
-    if (slope_error_new >= 0){ 
-      row++; 
-      slope_error_new -= 2 * (col2 - col1);
-    } 
-  } 
-  return grids;
-}          
+  var h = row2 - row1 ;
+  var w = col2 - col1 ;
+  var dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+  if (w < 0) dx1 = -1 ; else if (w > 0) dx1 = 1 ;
+  if (h < 0) dy1 = -1 ; else if (h > 0) dy1 = 1 ;
+  if (w < 0) dx2 = -1 ; else if (w > 0) dx2 = 1 ;
+  var longest = Math.abs(w) ;
+  var shortest = Math.abs(h) ;
+  if (!(longest > shortest)) {
+    longest = Math.abs(h) ;
+    shortest = Math.abs(w) ;
+    if (h < 0) dy2 = -1 ; else if (h > 0) dy2 = 1 ;
+    dx2 = 0 ;            
+  }
+  var numerator = longest >> 1 ;
+  for (var i = 0; i <= longest; i++) {
+    console.log(row1 + ", " + col1);
+    grids.push(new Grid(row1, col1));
+    numerator += shortest ;
+    if (!(numerator < longest)) {
+      numerator -= longest ;
+      col1 += dx1 ;
+      row1 += dy1 ;
+    } else {
+      col1 += dx2 ;
+      row1 += dy2 ;
+    }
+  }
+  return grids;		
+}		  
+
+findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
+  let waypoints = await getSafestRoute(orgLat, orgLng, destLat, destLng); //Get waypoints of the safest route
+
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    waypoints: waypoints, //Set waypoints
+    travelMode: document.getElementById('travel').value
+  }
+  directionsDisplay.setMap(map);
+
+  directionsService.route(request, function(result, status) {
+    if (status === 'OK') {
+      //Displays the route in the map
+      new google.maps.DirectionsRenderer({
+        map: map,
+        directions: result
+      });
+    }
+  });
+}
+
+getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
+  let finalRoute = [];
+  let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS full ROUTE
+
+  for (var j = 0; j < route.legs[0].steps.length; j++) {
+    let passingGrids = getGridsThatStepPassesThru(route.legs[0].steps[j]);
+    if (passingGrids.length == 1) { 
+      return [{location: route.legs[0].start_location, stopover: true },
+        {location: route.legs[0].end_location, stopover: true}];  //Return the start and end of the step as waypoints
+    }
+    
+    for (var g = 0; g < passingGrids.length; g++) {
+
+      if (passingGrids[g].hasCrime && !validLocationInsideGrid(orgLat, orgLng, passingGrids[g])
+        && !validLocationInsideGrid(destLat, destLng, passingGrids[g])) {
+        let safeNeighboringGrids =  getSafeNeighboringGrids(passingGrids[g]);
+        let routesFromSafeNeighborGrids = findAllRoutes(route.legs[0].steps[j].start_location.lat(),
+        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng); //Get all possible routes
+        let bestRoute = pickSafestRoute(routesFromSafeNeighborGrids); //Get WAYPOINTS for the best route
+
+        return finalRoute.concat(bestRoute); //CONCAT WAYPOINTS UNTIL NOW and THE BEST ROUTE FROM THERE
+      }
+    }
+    finalRoute.push({ //ADD STEP by creating waypoint
+      location: route.legs[0].steps[j].start_location,
+      stopover: true
+    });
+  }
+  return finalRoute; //RETURNS ARRAY OF WAYPOINTS
+}
+
+function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, destLng) {
+  let routes = [];
+  for (var i = 0; i < safeNeighboringGrids.length; i++) {
+    let waypoint = getWaypointForGrid(safeNeighboringGrids[i]);
+    let firstPartOfRoute = getSafestRoute(orgLat, orgLng, waypoint); //RETURNS WAYPOINTS
+    let secondPartOfRoute = getSafestRoute(waypoint, destLat, destLng); //RETURNS WAYPOINTS
+    routes = routes.push(firstPartOfRoute.concat(secondPartOfRoute)); //CONCAT WAYPOINTS and ADD TO "routes"
+  }
+  return routes;
+}
+
+//CHECKS if point lies inside a specific grid 
+function validLocationInsideGrid(pointLat, pointLng, grid) {
+  var pointRow = Math.floor((31.676131 - pointLat) / 0.001345);
+  var pointCol = Math.floor((-106.441602 - Math.abs(pointLng)) / 0.00111);
+  return (grid.row == pointRow && grid.col == pointCol); // CHecking if grid of point is the same as grid passed
+}
+
+getSafestRouteUsingMapsApi = async (orgLat, orgLng, destLat, destLng) => {
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    travelMode: 'DRIVING'
+  }
+  directionsDisplay.setMap(map);
+  
+  let safestRoute = await directionsServiceFunction(directionsService,request) 
+  return safestRoute.routes[0]; //Returns complete route
+}
+
+const directionsServiceFunction = (directionsService, request) => 
+  new Promise((resolve, reject) =>  {
+  directionsService.route(request, function (result, status){
+    if(status === 'OK') {
+      resolve(result);
+    } else {
+      reject(result);
+    }
+  })
+});        
