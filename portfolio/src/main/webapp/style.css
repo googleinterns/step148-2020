@@ -12,12 +12,6 @@
     display: none;
 }
 
-.instructions {
-    background-color: #f1f3f4;
-    padding: 10px;
-    text-align: left;
-}
-
 .containerMapButtons {
   padding: 5px;
   margin: 5px;
@@ -25,8 +19,6 @@
 
 span.b {
   display: inline-block;
-  width: 100px;
-  height: 500px;
   padding: 5px;
   border: 1px solid blue;    
   background-color: yellow; 
@@ -47,8 +39,6 @@ body {
   padding-top: 100px; /* Location of the box */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -56,11 +46,10 @@ body {
 
 /* Modal Content */
 .modal-content {
-  color: #000
+  color: #000;
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
   text-align: left;
 }
 
