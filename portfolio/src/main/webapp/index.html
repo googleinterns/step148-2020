@@ -96,18 +96,21 @@
     <hr class="featurette-divider">
 
     <div class="row featurette">
-      <div class="col-lg-7 order-md-2">
-        <div id="map"></div>
-          <div class="containerMapButtons" id="floating-panel">
-            <input onclick="showMarkers();" type="button" value="Show Reports"/>
-            <input onclick="hideMarkers();" type="button" value="Hide Reports" />
-            <button onclick="toggleHeatmap()">Heatmap</button>
-            <button onclick="findAndDrawRoute(31.669135, -106.438647, 31.672999, -106.426633)">Route</button>
-          </div>
+      <div id="map"></div>
+        <div class="containerMapButtons" id="floating-panel">
+          <input onclick="showMarkers();" type="button" value="Show Reports"/>
+          <input onclick="hideMarkers();" type="button" value="Hide Reports" />
+          <button onclick="toggleHeatmap()">Heatmap</button>
+          <button onclick="findAndDrawRoute(31.669135, -106.438647, 31.672999, -106.426633)">Route</button>
         </div>
-            
-        <div class="col-sm-5 order-md-1">
-          <h2>Latest Reports</h2>
+      </div>
+    </div>
+
+    <hr class="featurette-divider">
+
+    <div class="row featurette">
+        <div class="container">
+        <h2>Latest Reports</h2>
           <button id="filters">Click here to apply filters</button>
           <div id="sideBar" class="modal">
             <div class="modal-content">
@@ -162,10 +165,8 @@
             <li>Robbery-June 29 5:00 PM. Description of the crime</li>
           </ul>
         </div>
-      </div>
-
-      <hr class="featurette-divider">
     </div>
+  </div>
  
     <div id="reportsForm">
       <form id="report" name="reports">
