@@ -183,6 +183,20 @@ body {
   font-weight: 400;
 }
 
+/* Center align the text within the three columns, contact page */
+.marketing .col-lg-4 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.marketing h2 {
+  font-weight: 400;
+}
+.marketing .col-lg-4 p {
+  margin-right: .75rem;
+  margin-left: .75rem;
+}
+
+
 .featurette-divider {
   margin: 50px; /* Space out the Bootstrap <hr> more */
 }
@@ -205,4 +219,12 @@ body {
 
 .container marketing {
   width: 100%;
+}
+
+.pick-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 400px;
+  width: 70%;
 }
