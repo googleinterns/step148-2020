@@ -97,11 +97,11 @@
 
     <div class="row featurette">
       <div id="map"></div>
-        <div class="containerMapButtons" id="floating-panel">
-          <input onclick="showMarkers();" type="button" value="Show Reports"/>
-          <input onclick="hideMarkers();" type="button" value="Hide Reports" />
-          <button onclick="toggleHeatmap()">Heatmap</button>
-          <button onclick="findAndDrawRoute(31.669135, -106.438647, 31.672999, -106.426633)">Route</button>
+        <div class="btn-group" role="group" id="floating-panel">
+          <button class="btn btn-secondary" onclick="showMarkers();" value="Show Reports">Show Reports</button>
+          <button class="btn btn-secondary" onclick="hideMarkers();" value="Hide Reports">Hide Reports</button>
+          <button class="btn btn-secondary" onclick="toggleHeatmap()">Heatmap</button>
+          <button class="btn btn-secondary" onclick="findAndDrawRoute(31.669135, -106.438647, 31.672999, -106.426633)">Route</button>
         </div>
       </div>   
     </div>
