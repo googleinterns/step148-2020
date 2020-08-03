@@ -219,18 +219,22 @@
 
     <div class="search-route" id="search-route" style="display:none">
       <div id="search-route-title">Directions API</div>
+      <div class ="mode-route">
         <select id="travel" size = "3">
           <option selected>DRIVING</option>
           <option>WALKING</option>
           <option>BICYCLING</option>
         </select>   
+      </div>
       <div id="originRoute">
         <input id="origin-location" type="text" placeholder="Enter origin"/>
       </div>
       <div id="destinationRoute">
         <input id="destination-location" type="text" placeholder="Enter destination"/>
       </div>
-      <button onclick="route()">GO SAFE!</button>
+      <div class="wrapper-routes-button">
+        <button class="btn btn-primary" onclick="route()">Enter</button>
+      </div>
     </div>
 
     <div id="repeatedMarkerUI">

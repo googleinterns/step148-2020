@@ -103,16 +103,24 @@ body {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   background-color: #fff;
   font-family: Roboto;
+  text-align: center;
+}
+
+.mode-route {
+  padding-top: 10px;
 }
 
 #originRoute {
   padding-top: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 5px;
   margin-right: 12px;
   margin-left: 12px;
 }
 
 #destinationRoute {
+  padding-top: 12px;
+  padding-bottom: 10px;
+  margin-right: 12px;
   margin-left: 12px;
 }
 
@@ -122,6 +130,7 @@ body {
   font-size: 25px;
   font-weight: 500;
   padding: 6px 12px;
+  text-align: center;
 }
 
 .search-filter {
