@@ -243,3 +243,16 @@ body {
   margin-left: 12px;
   padding-bottom: 10px;
 }
+
+.logo {
+  width: 100px;
+  height: 70px;
+}
+
+.featurette-image {
+  position: absolute;
+  left: 25px;
+  width: 500px;
+  height: 380px;
+  padding: 50px;
+}

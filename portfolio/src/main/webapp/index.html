@@ -15,7 +15,7 @@
   <body onload="createMap()">
     <header>
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <a class="navbar-brand" href="#">GoSafe</a>
+        <a class="navbar-brand" href="#"><img class="logo" src="images/logo-gosafe.png" alt="logo"></a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -79,17 +79,23 @@
 
     <div class="row featurette">
       <div class="col-md-7 order-md-2">
-        <h2 class="featurette-heading">Plan your first route.<span class="text-muted">Feel secure.</span></h2>
+        <h2 class="featurette-heading">Report a crime.<span class="text-muted"> Feel secure.</span></h2>
         <ul class="lead">
-          <li>Click on the map (Heat Map or Report) you want to display</li>
-          <li>Select a destination on the Search bar</li>
-          <li>Select which types of crime as well as the time</li>
-          <li>Choose destination</li>
+          <li>Enter the address where the crime occurred, a form will pop up</li>
+          <li>Enter the information required such as the time, date and type of crime</li>
+          <li>Click on submit, we will take care of the rest!</li>
+        </ul><br>
+
+        <h2 class="featurette-heading">Go safe to your destination.<span class="text-muted"> Feel secure.</span></h2>
+        <ul class="lead">
+          <li>Click on search for a route</li>
+          <li>Select your mode of transportation, enter your current location and enter your destination</li>
+          <li>Enjoy a safe ride or walk, we took care of avoiding unsecure zones!</li>
         </ul>
       </div>
             
       <div class="col-md-5 order-md-1">
-        <img class="featurette-image img-fluid mx-auto" src="images/home-page.jpg" />
+        <img class="featurette-image" src="images/home-page.jpg" />
       </div>
     </div>
         
@@ -113,7 +119,7 @@
         <div class="container">
           <h2>Latest Reports</h2>
           <hr class="my-4">
-          <button id="filters">Click here to apply filters</button>
+          <button class="btn btn-dark" id="filters">Click here to apply filters</button>
           <div id="sideBar" class="modal">
             <div class="modal-content">
               <span class="close">&times;</span>
@@ -215,9 +221,8 @@
       <div class="wrapper-routes-button">
         <button class="btn btn-primary" onclick="displayDirectionsAPI()">Search for a route</button>
       </div>
-    </div>
 
-    <div class="search-route" id="search-route" style="display:none">
+       <div class="search-route" id="search-route" style="display:none">
       <div id="search-route-title">Directions API</div>
       <div class ="mode-route">
         <select id="travel" size = "3">
@@ -235,6 +240,8 @@
       <div class="wrapper-routes-button">
         <button class="btn btn-primary" onclick="route()">Enter</button>
       </div>
+    </div>
+
     </div>
 
     <div id="repeatedMarkerUI">
