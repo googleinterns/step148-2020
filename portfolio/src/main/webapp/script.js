@@ -776,7 +776,7 @@ async function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, dest
 
 //CHECKS if point lies inside a specific grid 
 function validLocationInsideGrid(pointLat, pointLng, grid) {
-  var pointRow = Math.trunc(Number((31.676131 - pointLat) / 0.001345));
+  var pointRow = Math.trunc(Number((31.676131 - pointLat) / 0.00111));
   var pointCol = Math.trunc(Number((106.441602 - Math.abs(pointLng)) / 0.00111));
   return (grid.row == pointRow && grid.col == pointCol); // CHecking if grid of point is the same as grid passed
 }
