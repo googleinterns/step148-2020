@@ -590,38 +590,101 @@ class Grid {
   static convertToRowCol(lat, lng){
     var row = Math.trunc(Number((31.676131 - lat) / 0.001345));
     var col = Math.trunc(Number((106.441602 - Math.abs(lng)) / 0.00111));
-    console.log("row is: " + row + " col is: " + col);
+    //console.log("row is: " + row + " col is: " + col);
+    return new Grid(row, col);
   }
 }
 
 // See https://www.geeksforgeeks.org/bresenhams-line-generation-algorithm/
+// Modified version of the Bresenham algorithm that works on any straight line regardless of direction
 function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
   var grids = [];
-  var start_point = Grid.convertToRowCol(step.startLocation.lat, step.startLocation.lng); //start and end location are LatLng objects
-  var end_point = Grid.convertToRowCol(step.endLocation.lat, step.endLocation.lng);
+  var start_point = Grid.convertToRowCol(step.start_location.lat(), step.start_location.lng()); //start and end location are LatLng objects
+  var end_point = Grid.convertToRowCol(step.end_location.lat(), step.end_location.lng());
   var row1 = start_point.row;
   var col1 = start_point.col;
   var row2 = end_point.row;
   var col2 = end_point.col;
-  var m_new = 2 * (row2 - row1); 
-  var slope_error_new = m_new - (col2 - col1);
-  for (col = col1, row = row1; col <= col2; col++){ 
-    console.log("passing grid (" + row + "," + col + ")"); 
-    grids.push(new Grid(row , col));
-    // Add slope to increment angle formed 
-    slope_error_new += m_new; 
-    // Slope error reached limit, time to 
-    // increment row and update slope error. 
-    if (slope_error_new >= 0){ 
-      row++; 
-      slope_error_new -= 2 * (col2 - col1);
-    } 
-  } 
-  return grids;
+  var h = row2 - row1 ;
+  var w = col2 - col1 ;
+  var dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+  if (w < 0) dx1 = -1 ; else if (w > 0) dx1 = 1 ;
+  if (h < 0) dy1 = -1 ; else if (h > 0) dy1 = 1 ;
+  if (w < 0) dx2 = -1 ; else if (w > 0) dx2 = 1 ;
+  var longest = Math.abs(w) ;
+  var shortest = Math.abs(h) ;
+  if (!(longest > shortest)) {
+    longest = Math.abs(h) ;
+    shortest = Math.abs(w) ;
+    if (h < 0) dy2 = -1 ; else if (h > 0) dy2 = 1 ;
+    dx2 = 0 ;            
+  }
+  var numerator = longest >> 1 ;
+  for (var i = 0; i <= longest; i++) {
+    console.log(row1 + ", " + col1);
+    grids.push(new Grid(row1, col1));
+    numerator += shortest ;
+    if (!(numerator < longest)) {
+      numerator -= longest ;
+      col1 += dx1 ;
+      row1 += dy1 ;
+    } else {
+      col1 += dx2 ;
+      row1 += dy2 ;
+    }
+  }
+  return grids;		
 }  
 
-findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
-  let waypoints = await getSafestRoute(orgLat, orgLng, destLat, destLng); //Get waypoints of the safest route
+findAndDrawRoute = async () =>  {
+
+
+
+
+
+  var addressOrigin = await document.getElementById('origin-location').value;
+  console.log("Origin address: " + addressOrigin);
+
+  var addressDestination = await document.getElementById('destination-location').value;
+  console.log("Destination address: " + addressDestination);
+
+  var geocoderDestination = new google.maps.Geocoder();
+  var geocoderOrigin = new google.maps.Geocoder();
+
+  await geocoderOrigin.geocode({
+    address: addressOrigin
+  }, async function(results, status) {
+    if (status === "OK") {
+      orgLat = await results[0].geometry.location.lat();
+      orgLng = await results[0].geometry.location.lng();
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+
+  await geocoderDestination.geocode({
+    address: addressDestination
+  }, async function(results, status) {
+    if (status === "OK") {
+      destLat = await results[0].geometry.location.lat();
+      destLng = await results[0].geometry.location.lng();
+    } else {
+      alert("Geocode was not successful for the following reason: " + status);
+    }
+  });
+
+
+
+
+  /*orgLat = 31.669135;
+  orgLng = -106.438647;
+  destLat = 31.672999;
+  destLng = -106.426633;*/
+
+
+  let mySet = new Set(); //Already visited grids
+  console.log(orgLat + ', ' + orgLng + ', ' + destLat + ', ' + destLng + ', ');
+  let waypoints = await getSafestRoute(orgLat, orgLng, destLat, destLng, mySet); //Get waypoints of the safest route
 
   let directionsService = new google.maps.DirectionsService();
   let directionsDisplay = new google.maps.DirectionsRenderer();
@@ -645,29 +708,44 @@ findAndDrawRoute = async (orgLat, orgLng, destLat, destLng) =>  {
   });
 }
 
-getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
+getSafestRoute = async (orgLat, orgLng, destLat, destLng, set) => {
   let finalRoute = [];
   let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS full ROUTE
 
   for (var j = 0; j < route.legs[0].steps.length; j++) {
     let passingGrids = getGridsThatStepPassesThru(route.legs[0].steps[j]);
-    if (passingGrids.length == 1) { 
+    if (passingGrids.length == 1 /*&& (route.legs[0].steps[j].end_location.lat() == destLat) && (route.legs[0].end_location.lng() == destLng)*/) { 
       return [{location: route.legs[0].start_location, stopover: true },
         {location: route.legs[0].end_location, stopover: true}];  //Return the start and end of the step as waypoints
     }
     
     for (var g = 0; g < passingGrids.length; g++) {
+      let response = await fetch('/numberOfReports?row=' + passingGrids[g].row + '&col=' + passingGrids[g].col);
+      let reportsInGrid = await response.json();
+      let alreadyHereInGrid = false;   
+      
+      if ( await set.has(await numGrid(passingGrids[g])) && g != 0 ) {
+         alreadyHereInGrid = true;
+      }
 
-      if (passingGrids[g].hasCrime && !validLocationInsideGrid(orgLat, orgLng, passingGrids[g])
-        && !validLocationInsideGrid(destLat, destLng, passingGrids[g])) {
-        let safeNeighboringGrids =  getSafeNeighboringGrids(passingGrids[g]);
-        let routesFromSafeNeighborGrids = findAllRoutes(route.legs[0].steps[j].start_location.lat(),
-        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng); //Get all possible routes
-        let bestRoute = pickSafestRoute(routesFromSafeNeighborGrids); //Get WAYPOINTS for the best route
+      if (await reportsInGrid == 0) {
+        if (await (g == 0 && (set.size == 0)) || (g != 0)) {
+          await set.add(await numGrid(passingGrids[g]));
+        }
+      }
 
+      if (await (reportsInGrid != 0 && !validLocationInsideGrid(orgLat, orgLng, passingGrids[g])
+        && !validLocationInsideGrid(destLat, destLng, passingGrids[g]))  ||  alreadyHereInGrid    ) {
+
+        let safeNeighboringGrids = await getSafeNeighboringGrids(passingGrids[g-1],set);       
+        let routesFromSafeNeighborGrids = await findAllRoutes(route.legs[0].steps[j].start_location.lat(),
+        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng, set); //Get all possible routes
+        let bestRoute = await pickSafestRoute(routesFromSafeNeighborGrids); //Get WAYPOINTS for the best route
+        if (bestRoute == 5) return finalRoute;
         return finalRoute.concat(bestRoute); //CONCAT WAYPOINTS UNTIL NOW and THE BEST ROUTE FROM THERE
       }
-    }
+    } 
+    console.log('PUSHED STEP');
     finalRoute.push({ //ADD STEP by creating waypoint
       location: route.legs[0].steps[j].start_location,
       stopover: true
@@ -676,21 +754,27 @@ getSafestRoute = async (orgLat, orgLng, destLat, destLng) => {
   return finalRoute; //RETURNS ARRAY OF WAYPOINTS
 }
 
-function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, destLng) {
+async function findAllRoutes(orgLat, orgLng, safeNeighboringGrids, destLat, destLng,set) {
   let routes = [];
   for (var i = 0; i < safeNeighboringGrids.length; i++) {
-    let waypoint = getWaypointForGrid(safeNeighboringGrids[i]);
-    let firstPartOfRoute = getSafestRoute(orgLat, orgLng, waypoint); //RETURNS WAYPOINTS
-    let secondPartOfRoute = getSafestRoute(waypoint, destLat, destLng); //RETURNS WAYPOINTS
-    routes = routes.push(firstPartOfRoute.concat(secondPartOfRoute)); //CONCAT WAYPOINTS and ADD TO "routes"
+    let waypoint = await getWaypointForGrid(safeNeighboringGrids[i]);
+    let createdSet1 = new Set();
+    for (let item of set) {
+      createdSet1.add(item);
+    }
+    let firstPartOfRoute = await getSafestRoute(orgLat, orgLng, waypoint[0], waypoint[1], createdSet1); //RETURNS WAYPOINTS    
+    let secondPartOfRoute = await getSafestRoute(waypoint[0], waypoint[1], destLat, destLng, createdSet1); //RETURNS WAYPOINTS
+    let concatWaypoints = await firstPartOfRoute.concat(secondPartOfRoute);
+    let route = await getRoute(orgLat, orgLng, concatWaypoints, destLat, destLng);
+    routes.push(route); //CONCAT WAYPOINTS and ADD TO "routes"
   }
   return routes;
 }
 
 //CHECKS if point lies inside a specific grid 
 function validLocationInsideGrid(pointLat, pointLng, grid) {
-  var pointRow = Math.floor((31.676131 - pointLat) / 0.001345);
-  var pointCol = Math.floor((-106.441602 - Math.abs(pointLng)) / 0.00111);
+  var pointRow = Math.trunc(Number((31.676131 - pointLat) / 0.001345));
+  var pointCol = Math.trunc(Number((106.441602 - Math.abs(pointLng)) / 0.00111));
   return (grid.row == pointRow && grid.col == pointCol); // CHecking if grid of point is the same as grid passed
 }
 
@@ -718,4 +802,68 @@ const directionsServiceFunction = (directionsService, request) =>
       reject(result);
     }
   })
-});        
+});  
+
+async function pickSafestRoute(arrRoutes){
+  if (arrRoutes.length == 0) {return 5;}
+
+  var counter = 0;
+  var routeIndex = 0;
+  var lessCrimesInRoute = 1000;
+
+  for (var i = 0; i < arrRoutes.length; i++) {
+    let route = await arrRoutes[i].routes[0];   
+    
+    for (var r = 0; r < route.legs.length; r++) {
+
+        for (var j = 0; j < route.legs[r].steps.length; j++) {
+          routeArray = await new google.maps.Polyline({
+            path: [
+              new google.maps.LatLng(route.legs[r].steps[j].start_location.lat(), route.legs[r].steps[j].start_location.lng()),
+              new google.maps.LatLng(route.legs[r].steps[j].end_location.lat(), route.legs[r].steps[j].end_location.lng())
+            ]
+          });
+          await fetch('/markers').then(response => response.json()).then(async (markers) => {
+            await markers.forEach(async (marker) => {
+              var myPosition = await new google.maps.LatLng(marker.lat, marker.lng);
+              if (await google.maps.geometry.poly.isLocationOnEdge(myPosition, routeArray, 0.0005)) {
+                counter += await rateCrime(marker.crimeType);
+              }
+            });
+          });
+        }
+
+    }  
+    if (counter < lessCrimesInRoute) {
+      lessCrimesInRoute = counter;
+      routeIndex = i;
+    }
+    counter = 0;
+  }
+  return arrRoutes[routeIndex].request.waypoints;
+}
+
+const numRow = 6;
+const numCol = 16;
+
+async function numGrid(grid) {
+  return (grid.row * numCol) + (grid.col + 1);
+}
+
+getRoute = async (orgLat, orgLng, waypoints, destLat, destLng) => {
+  if (!Array.isArray(waypoints)) waypoints = [waypoints];
+
+  let directionsService = new google.maps.DirectionsService();
+  let directionsDisplay = new google.maps.DirectionsRenderer();
+  directionsDisplay.setMap(null);
+  let request = {
+    origin: new google.maps.LatLng(orgLat, orgLng),
+    destination: new google.maps.LatLng(destLat, destLng),
+    waypoints: waypoints,
+    travelMode: 'DRIVING'
+  }
+  directionsDisplay.setMap(map);
+  
+  let safestRoute = await directionsServiceFunction(directionsService,request) 
+  return safestRoute; //Returns complete route
+}
