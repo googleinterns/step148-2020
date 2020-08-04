@@ -1,111 +1,35 @@
-#content {
-  margin-left: auto;
-  margin-right: auto;
-  width: 650px;
-}
-
 * {
   box-sizing: border-box;
 }
 
 #map {
-  float: left;
   border: thin solid black;
   height: 500px;
   width: 100%;
-  margin-right: 2%;
 }
 
 #reportsForm {
-    display: none;
+  display: none;
 }
 
-.header {
-    background-color: #f1f3f4;
-    padding: 10px;
-    text-align: left;
-}
-
-/** Style the top navigation bar */
-.topnav {
-    overflow: hidden;
-    background-color: #76a0a6;
-}
-
-/** Style for the topnav links */ 
-.topnav a{
-    float: right;
-    display: block;
-    color: #333;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-}
-
-/** Change color on link when mousing over it*/ 
-.topnav a:hover {
-    color: #fcb040;
-}
-
-.pictures {
-  width: 100%;
-  height: auto;
-}
-
-.image-thumbnails {
-  max-width: 80%;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-footer {
-  background-color: #f1f3f4;
-  padding: 30px 0px;
-}
-
-.instructions {
-    background-color: #f1f3f4;
-    padding: 10px;
-    text-align: left;
-}
-
-.container {
+.btn-group {
   padding: 5px;
   margin: 5px;
 }
 
 span.b {
   display: inline-block;
-  width: 100px;
-  height: 500px;
   padding: 5px;
   border: 1px solid blue;    
   background-color: yellow; 
 }
 
-/* Create two equal columns that floats next to each other */
-.col {
-  float: left;
-  width: 70%;
-  height: 500px;
+body {
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  color: #5a5a5a;
+  font-family: Arial, Helvetica, sans-serif;
 }
-
-.col2 {
-  float: left;
-  width: 30%;
-  height: 500px; 
-  text-align: center;
-}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-body {font-family: Arial, Helvetica, sans-serif;}
 
 /* The Modal (background) */
 .modal {
@@ -115,8 +39,6 @@ body {font-family: Arial, Helvetica, sans-serif;}
   padding-top: 100px; /* Location of the box */
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -124,11 +46,10 @@ body {font-family: Arial, Helvetica, sans-serif;}
 
 /* Modal Content */
 .modal-content {
-  background-color: #fefefe;
+  color: #000;
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
   text-align: left;
 }
 
@@ -160,8 +81,8 @@ body {font-family: Arial, Helvetica, sans-serif;}
 }
 
 #searchBox {
-  padding-top: 12px;
-  padding-bottom: 12px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   margin-right: 12px;
   margin-left: 12px;
 }
@@ -182,16 +103,24 @@ body {font-family: Arial, Helvetica, sans-serif;}
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   background-color: #fff;
   font-family: Roboto;
+  text-align: center;
+}
+
+.mode-route {
+  padding-top: 10px;
 }
 
 #originRoute {
   padding-top: 12px;
-  padding-bottom: 12px;
+  padding-bottom: 5px;
   margin-right: 12px;
   margin-left: 12px;
 }
 
 #destinationRoute {
+  padding-top: 12px;
+  padding-bottom: 10px;
+  margin-right: 12px;
   margin-left: 12px;
 }
 
@@ -201,6 +130,7 @@ body {font-family: Arial, Helvetica, sans-serif;}
   font-size: 25px;
   font-weight: 500;
   padding: 6px 12px;
+  text-align: center;
 }
 
 .search-filter {
@@ -216,4 +146,113 @@ body {font-family: Arial, Helvetica, sans-serif;}
   border: 1px solid #888;
   width: 20%;
   text-align: left;
+}
+
+/* Carousel base class */
+.carousel {
+  margin-bottom: 2rem;
+}
+
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+  bottom: 3rem;
+  z-index: 10;
+  color: #738276 
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item {
+  height: 40rem;
+  background-color: #777;
+}
+
+.carousel-item > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  height: 40rem;
+}
+
+.carousel-indicators li {
+  background-color: #000;
+}
+
+/** Change the control's color */
+.carousel-control-prev-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E") !important;
+}
+
+/** Change the control's color */
+.carousel-control-next-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23000' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E") !important;
+}
+
+.marketing h2 {
+  font-weight: 400;
+}
+
+/* Center align the text within the three columns, contact page */
+.marketing .col-lg-4 {
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+.marketing h2 {
+  font-weight: 400;
+}
+.marketing .col-lg-4 p {
+  margin-right: .75rem;
+  margin-left: .75rem;
+}
+
+
+.featurette-divider {
+  margin: 50px; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -.05rem;
+}
+
+/** Change text color of brand on footer*/ 
+.brand {
+  color: #fff
+}
+
+.container {
+  padding-top: 20px;
+}
+
+.container marketing {
+  width: 100%;
+}
+
+.pick-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 350px;
+  width: 60%;
+}
+
+.wrapper-routes-button {
+  margin-right: 12px;
+  margin-left: 12px;
+  padding-bottom: 10px;
+}
+
+.logo {
+  width: 100px;
+  height: 70px;
+}
+
+.featurette-image {
+  position: absolute;
+  left: 25px;
+  width: 500px;
+  height: 380px;
+  padding: 40px;
 }

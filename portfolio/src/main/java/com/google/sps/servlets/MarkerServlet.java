@@ -37,7 +37,7 @@ public class MarkerServlet extends HttpServlet {
   private static final String ENTITY_PROPERTY_KEY_9 = "col";
   private static final double METERS_IN_A_MILE = 1609.34;
   public static final Double LAT_NORTH_LIMIT = 31.676131;
-  private static final Double LAT_SOUTH_LIMIT = 31.668060999999998;
+  private static final Double LAT_SOUTH_LIMIT = 31.668360999999997;
   public static final Double LNG_WEST_LIMIT = -106.441602;
   private static final Double LNG_EAST_LIMIT = -106.42384200000005;
 
