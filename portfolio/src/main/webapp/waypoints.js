@@ -21,10 +21,13 @@ async function getWaypointForGrid(grid) {
     let response = await fetch('/grids?requestRow=' + grid.row + '&requestCol=' + grid.col);
     let waypoint = await response.json();
   
-    return {
+    /*return {
       location: new google.maps.LatLng(waypoint.lat, waypoint.lng), 
       stopover: true
-    }  
+      
+    }  */
+   //CHANGED
+    return [waypoint.lat,waypoint.lng];
   }
   catch(error){
     console.error(error);
@@ -33,7 +36,8 @@ async function getWaypointForGrid(grid) {
 
 /** Return the safest neighborings grid found [up, down, right, left].
     Assumption: at least one grid will be safe. */
-async function getSafeNeighboringGrids(grid){
+async function getSafeNeighboringGrids(grid,set){
+  console.log('111111 Safe neighboring grids');
   let upperGridRow = -1;
   let lowerGridRow = -1;
   let rightGridCol = -1;
@@ -55,8 +59,11 @@ async function getSafeNeighboringGrids(grid){
       if(reportsInGrid == 0){
         safeGridUp.row = upperGridRow;
         safeGridUp.col = grid.col;
-        safeGrids[index] = safeGridUp; 
-        index++;
+        //CHANGED
+        if (!set.has(await numGrid(safeGridUp))){
+          safeGrids[index] = safeGridUp; 
+          index++;           
+        }
       }
     }
     catch(error){
@@ -74,8 +81,11 @@ async function getSafeNeighboringGrids(grid){
       if(reportsInGrid == 0){
         safeGridDown.row = lowerGridRow;
         safeGridDown.col = grid.col;
-        safeGrids[index] = safeGridDown; 
-        index++;
+        //CHANGED
+        if (!set.has(await numGrid(safeGridDown))){
+          safeGrids[index] = safeGridDown; 
+          index++;           
+        }
       }
     }
     catch(error){
@@ -93,8 +103,11 @@ async function getSafeNeighboringGrids(grid){
       if(reportsInGrid == 0){
         safeGridRight.row = grid.row;
         safeGridRight.col = rightGridCol;
-        safeGrids[index] = safeGridRight; 
-        index++;
+        //CHANGED
+        if (!set.has(await numGrid(safeGridRight))){
+          safeGrids[index] = safeGridRight; 
+          index++;           
+        }
       }
     }
     catch(error){
@@ -112,17 +125,20 @@ async function getSafeNeighboringGrids(grid){
       if(reportsInGrid == 0){
         safeGridLeft.row = grid.row;
         safeGridLeft.col = leftGridCol;
-        safeGrids[index] = safeGridLeft;
-        index++;
+        //CHANGED
+        if (!set.has(await numGrid(safeGridLeft))){
+          safeGrids[index] = safeGridLeft; 
+          index++;           
+        }
       }
     }
     catch(error){
         console.error(error);
     }
   }
-
+  console.log(grid);
   console.log(safeGrids);
   return safeGrids;
 }
 
-getSafeNeighboringGrids(grid); // Remove when everything is merged (also the var grid above).
+getSafeNeighboringGrids(grid,set); // Remove when everything is merged (also the var grid above).
