@@ -20,13 +20,6 @@ async function getWaypointForGrid(grid) {
   try{
     let response = await fetch('/grids?requestRow=' + grid.row + '&requestCol=' + grid.col);
     let waypoint = await response.json();
-  
-    /*return {
-      location: new google.maps.LatLng(waypoint.lat, waypoint.lng), 
-      stopover: true
-      
-    }  */
-   //CHANGED
     return [waypoint.lat,waypoint.lng];
   }
   catch(error){
@@ -48,6 +41,69 @@ async function getSafeNeighboringGrids(grid,set){
   let safeGridRight = new Object();
   let safeGridLeft = new Object();
   let index = 0;
+  let arrDiffGrids = [];
+
+  let upGrid = new Grid(grid.row+1,grid.col);
+  let downGrid = new Grid(grid.row-1,grid.col);
+  let leftGrid = new Grid(grid.row,grid.col-1);
+  let rightGrid = new Grid(grid.row,grid.col+1);
+
+  let upDiff = await diffGrids(passingGrid, upGrid);
+  let downDiff = await diffGrids(passingGrid, downGrid);
+  let leftDiff = await diffGrids(passingGrid, leftGrid);
+  let rightDiff = await diffGrids(passingGrid, rightGrid);
+
+  let up = false;
+  let down = false;
+  let left = false;
+  let right = false;
+  
+  if ((upDiff == leftDiff) && (upDiff != rightDiff)) {
+    if (upDiff > downDiff) {
+      console.log('Style 1');
+      down = true;
+      right = true;
+    }
+    else if (upDiff == downDiff) {
+      console.log('Style 2');
+      up = true;
+      left = true;
+      down = true;
+      right = true;
+    }
+    else {
+      console.log('Style 3');
+      up = true;
+      left = true;
+    }
+  }
+  else if ((upDiff == leftDiff) && (upDiff == rightDiff)) {
+      console.log('Style 4');
+      up = true;
+      left = true;
+      down = true;
+      right = true;
+  }
+  else if ((upDiff == rightDiff) && (upDiff != leftDiff)) {
+    if (upDiff > downDiff) {
+      console.log('Style 5');
+      left = true;
+      down = true;
+    }
+    else if (upDiff == downDiff) {
+      console.log('Style 6');
+      up = true;
+      left = true;
+      down = true;
+      right = true;
+    }
+    else {
+      console.log('Style 7');
+      right = true;
+      up = true;
+    }
+  }
+
 
   if(grid.row + 1 < 6){
     upperGridRow = grid.row + 1;
@@ -60,7 +116,7 @@ async function getSafeNeighboringGrids(grid,set){
         safeGridUp.row = upperGridRow;
         safeGridUp.col = grid.col;
         //CHANGED
-        if (!set.has(await numGrid(safeGridUp))){
+        if (!set.has(await numGrid(safeGridUp)) && up){
           safeGrids[index] = safeGridUp; 
           index++;           
         }
@@ -82,7 +138,7 @@ async function getSafeNeighboringGrids(grid,set){
         safeGridDown.row = lowerGridRow;
         safeGridDown.col = grid.col;
         //CHANGED
-        if (!set.has(await numGrid(safeGridDown))){
+        if (!set.has(await numGrid(safeGridDown)) && down){
           safeGrids[index] = safeGridDown; 
           index++;           
         }
@@ -104,7 +160,7 @@ async function getSafeNeighboringGrids(grid,set){
         safeGridRight.row = grid.row;
         safeGridRight.col = rightGridCol;
         //CHANGED
-        if (!set.has(await numGrid(safeGridRight))){
+        if (!set.has(await numGrid(safeGridRight)) && right){
           safeGrids[index] = safeGridRight; 
           index++;           
         }
@@ -126,7 +182,7 @@ async function getSafeNeighboringGrids(grid,set){
         safeGridLeft.row = grid.row;
         safeGridLeft.col = leftGridCol;
         //CHANGED
-        if (!set.has(await numGrid(safeGridLeft))){
+        if (!set.has(await numGrid(safeGridLeft)) && left ){
           safeGrids[index] = safeGridLeft; 
           index++;           
         }
@@ -142,3 +198,7 @@ async function getSafeNeighboringGrids(grid,set){
 }
 
 getSafeNeighboringGrids(grid,set); // Remove when everything is merged (also the var grid above).
+
+async function diffGrids(grid1, grid2){
+  return await Math.abs(grid1.row - grid2.row) + Math.abs(grid1.col - grid2.col);
+}

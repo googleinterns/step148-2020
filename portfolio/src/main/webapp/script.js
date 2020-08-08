@@ -28,6 +28,8 @@ let destLng;
 let orgLat;
 let orgLng;
 let routeArray;
+let travelMode;
+let passingGrid; //Grid of destination
 
 /** Creates a map and adds it to the page. */
 function createMap() {
@@ -640,19 +642,16 @@ function getGridsThatStepPassesThru(step){ //step is a DirectionsStep object
 
 
 findAndDrawRoute = async () =>  {
-
-
-
-
-
   var addressOrigin = await document.getElementById('origin-location').value;
   console.log("Origin address: " + addressOrigin);
 
   var addressDestination = await document.getElementById('destination-location').value;
   console.log("Destination address: " + addressDestination);
 
-  var geocoderDestination = new google.maps.Geocoder();
-  var geocoderOrigin = new google.maps.Geocoder();
+  travelMode = await document.getElementById('travel').value;
+
+  var geocoderDestination = await new google.maps.Geocoder();
+  var geocoderOrigin = await new google.maps.Geocoder();
 
   await geocoderOrigin.geocode({
     address: addressOrigin
@@ -676,17 +675,9 @@ findAndDrawRoute = async () =>  {
     }
   });
 
-
-
-
-  /*orgLat = 31.669135;
-  orgLng = -106.438647;
-  destLat = 31.672999;
-  destLng = -106.426633;*/
-
-
   let mySet = new Set(); //Already visited grids
-  console.log(orgLat + ', ' + orgLng + ', ' + destLat + ', ' + destLng + ', ');
+  passingGrid = await Grid.convertToRowCol(destLat, destLng);
+
   let waypoints = await getSafestRoute(orgLat, orgLng, destLat, destLng, mySet); //Get waypoints of the safest route
 
   let directionsService = new google.maps.DirectionsService();
@@ -696,7 +687,7 @@ findAndDrawRoute = async () =>  {
     origin: new google.maps.LatLng(orgLat, orgLng),
     destination: new google.maps.LatLng(destLat, destLng),
     waypoints: waypoints, //Set waypoints
-    travelMode: document.getElementById('travel').value
+    travelMode: travelMode
   }
   directionsDisplay.setMap(map);
 
@@ -711,13 +702,32 @@ findAndDrawRoute = async () =>  {
   });
 }
 
+let lastGridsStepPasses;
+
+sameGrids = async (firstArray, secondArray) => {
+  if (firstArray === undefined || secondArray === undefined) return false;
+  if (firstArray.length != secondArray.length) return false;
+  for (var i = 0; i < firstArray.length; i++) {
+    console.log(firstArray[i].row + ' ' + secondArray[i].row + ' ' + firstArray[i].col + ' ' + secondArray[i].col);
+    if ((firstArray[i].row != secondArray[i].row) || (firstArray[i].col != secondArray[i].col)) return false;
+  }
+  return true;
+}
+
 getSafestRoute = async (orgLat, orgLng, destLat, destLng, set) => {
   let finalRoute = [];
   let route = await getSafestRouteUsingMapsApi(orgLat, orgLng, destLat, destLng); //RETURNS full ROUTE
 
   for (var j = 0; j < route.legs[0].steps.length; j++) {
     let passingGrids = getGridsThatStepPassesThru(route.legs[0].steps[j]);
-    if (passingGrids.length == 1 /*&& (route.legs[0].steps[j].end_location.lat() == destLat) && (route.legs[0].end_location.lng() == destLng)*/) { 
+    if (await sameGrids(lastGridsStepPasses, passingGrids)) {
+      return [{location: route.legs[0].start_location, stopover: true },
+        {location: route.legs[0].end_location, stopover: true}]; 
+    }
+   
+    lastGridsStepPasses = passingGrids;
+
+    if (passingGrids.length == 1 && (route.legs[0].steps[j].end_location.lat() == destLat) && (route.legs[0].end_location.lng() == destLng)) { 
       return [{location: route.legs[0].start_location, stopover: true },
         {location: route.legs[0].end_location, stopover: true}];  //Return the start and end of the step as waypoints
     }
@@ -728,7 +738,7 @@ getSafestRoute = async (orgLat, orgLng, destLat, destLng, set) => {
       let alreadyHereInGrid = false;   
       
       if ( await set.has(await numGrid(passingGrids[g])) && g != 0 ) {
-         alreadyHereInGrid = true;
+        alreadyHereInGrid = true;
       }
 
       if (await reportsInGrid == 0) {
@@ -739,18 +749,23 @@ getSafestRoute = async (orgLat, orgLng, destLat, destLng, set) => {
 
       if (await (reportsInGrid != 0 && !validLocationInsideGrid(orgLat, orgLng, passingGrids[g])
         && !validLocationInsideGrid(destLat, destLng, passingGrids[g]))  ||  alreadyHereInGrid    ) {
-
+        console.log('If 2');
+        console.log(passingGrids[g]);
         let safeNeighboringGrids = await getSafeNeighboringGrids(passingGrids[g-1],set);       
-        let routesFromSafeNeighborGrids = await findAllRoutes(route.legs[0].steps[j].start_location.lat(),
-        route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng, set); //Get all possible routes
+        //let routesFromSafeNeighborGrids = await findAllRoutes(route.legs[0].steps[j].start_location.lat(),
+        //route.legs[0].steps[j].start_location.lng(), safeNeighboringGrids, destLat, destLng, set); //Get all possible routes
+
+        let waypoint = await getWaypointForGrid(passingGrids[g-1]);
+
+        let routesFromSafeNeighborGrids = await findAllRoutes(waypoint[0],waypoint[1], safeNeighboringGrids, destLat, destLng, set);
         let bestRoute = await pickSafestRoute(routesFromSafeNeighborGrids); //Get WAYPOINTS for the best route
         if (bestRoute == 5) return finalRoute;
         return finalRoute.concat(bestRoute); //CONCAT WAYPOINTS UNTIL NOW and THE BEST ROUTE FROM THERE
       }
     } 
-    console.log('PUSHED STEP');
+
     finalRoute.push({ //ADD STEP by creating waypoint
-      location: route.legs[0].steps[j].start_location,
+      location: route.legs[0].steps[j].end_location,
       stopover: true
     });
   }
@@ -788,7 +803,7 @@ getSafestRouteUsingMapsApi = async (orgLat, orgLng, destLat, destLng) => {
   let request = {
     origin: new google.maps.LatLng(orgLat, orgLng),
     destination: new google.maps.LatLng(destLat, destLng),
-    travelMode: 'DRIVING'
+    travelMode: travelMode
   }
   directionsDisplay.setMap(map);
   
@@ -846,8 +861,10 @@ async function pickSafestRoute(arrRoutes){
   return arrRoutes[routeIndex].request.waypoints;
 }
 
-const numRow = 6;
+const numRow = 7;
 const numCol = 16;
+
+let previousStep;
 
 async function numGrid(grid) {
   return (grid.row * numCol) + (grid.col + 1);
@@ -863,7 +880,7 @@ getRoute = async (orgLat, orgLng, waypoints, destLat, destLng) => {
     origin: new google.maps.LatLng(orgLat, orgLng),
     destination: new google.maps.LatLng(destLat, destLng),
     waypoints: waypoints,
-    travelMode: 'DRIVING'
+    travelMode: travelMode
   }
   directionsDisplay.setMap(map);
   
